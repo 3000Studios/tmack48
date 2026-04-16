@@ -15,6 +15,7 @@ const Privacy = lazy(() => import("@/pages/Privacy"));
 const Terms = lazy(() => import("@/pages/Terms"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Links = lazy(() => import("@/pages/Links"));
+const Merch = lazy(() => import("@/pages/Merch"));
 
 function PageFallback() {
   return (
@@ -116,6 +117,14 @@ export default function App() {
           element={
             <Suspense fallback={<PageFallback />}>
               <Links />
+            </Suspense>
+          }
+        />
+        <Route
+          path="merch"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <Merch />
             </Suspense>
           }
         />

@@ -76,7 +76,12 @@ export default function VideoCard({ video, priority = false, className = "", siz
         ) : (
           <iframe
             title={video.title}
-            src={buildEmbedUrl(video.videoId, { autoplay: true })}
+            src={buildEmbedUrl(video.videoId, {
+              autoplay: true,
+              mute: true,
+              controls: true,
+              enableJsApi: true,
+            })}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
             loading="lazy"

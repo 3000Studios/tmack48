@@ -69,8 +69,14 @@ export default function FeaturedSpotlight({
                   </button>
                 ) : (
                   <iframe
+                    key={video.videoId}
                     title={video.title}
-                    src={buildEmbedUrl(video.videoId, { autoplay: true })}
+                    src={buildEmbedUrl(video.videoId, {
+                      autoplay: true,
+                      mute: true,
+                      controls: true,
+                      enableJsApi: true,
+                    })}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
                     className="h-full w-full"

@@ -5,7 +5,7 @@ import Hero3D from "@/components/effects/Hero3D";
 import AmbientParticles from "@/components/effects/AmbientParticles";
 import { siteConfig } from "@/data/siteConfig";
 import { getRandomFeatured, type Video } from "@/data/videos";
-import { buildEmbedUrl } from "@/lib/youtube";
+import { buildEmbedUrl, YOUTUBE_EMBED_MESSAGE_ORIGIN } from "@/lib/youtube";
 import { HeartIcon, PlayIcon, SoundOffIcon, SoundOnIcon, SparkleIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
 
@@ -17,10 +17,21 @@ export default function Hero() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
-    // Attempt to show the muted autoplay player after a tick so the 3D scene renders first.
-    const t = setTimeout(() => setShowPlayer(true), 500);
-    return () => clearTimeout(t);
+    const t = window.setTimeout(() => setShowPlayer(true), 120);
+    return () => window.clearTimeout(t);
   }, []);
+
+  const heroEmbedSrc = useMemo(
+    () =>
+      buildEmbedUrl(video.videoId, {
+        autoplay: true,
+        mute: true,
+        loop: true,
+        controls: true,
+        enableJsApi: true,
+      }),
+    [video.videoId]
+  );
 
   const toggleMute = () => {
     if (!iframeRef.current) return;
@@ -33,15 +44,15 @@ export default function Hero() {
           func: next ? "mute" : "unMute",
           args: [],
         }),
-        "*"
+        YOUTUBE_EMBED_MESSAGE_ORIGIN
       );
     } catch {
-      // If postMessage fails, reload the iframe with the new mute state
       iframeRef.current.src = buildEmbedUrl(video.videoId, {
         autoplay: true,
         mute: next,
         loop: true,
-        controls: false,
+        controls: true,
+        enableJsApi: true,
       });
     }
   };
@@ -51,37 +62,11 @@ export default function Hero() {
       aria-label="TMACK48 hero"
       className="relative isolate overflow-hidden min-h-[92dvh] lg:min-h-[100dvh] flex items-center"
     >
-      {/* 3D background */}
       <Hero3D className="opacity-90" />
-
-      {/* Ambient gold / diamond particles overlay */}
       <AmbientParticles className="opacity-60" count={80} />
 
-      {/* Vignette */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]" />
       <div className="noise-overlay" />
-
-      {/* Background video layer */}
-      {showPlayer && (
-        <div className="pointer-events-none absolute inset-0 opacity-25 mix-blend-screen">
-          <div className="absolute inset-0 scale-110 blur-md">
-            <iframe
-              ref={iframeRef}
-              title="TMACK48 hero background"
-              src={`${buildEmbedUrl(video.videoId, {
-                autoplay: true,
-                mute: true,
-                loop: true,
-                controls: false,
-              })}&enablejsapi=1`}
-              allow="autoplay; encrypted-media; picture-in-picture"
-              className="h-full w-full"
-              tabIndex={-1}
-              aria-hidden="true"
-            />
-          </div>
-        </div>
-      )}
 
       <div className="relative container-lux grid gap-10 lg:grid-cols-12 items-center py-16 lg:py-20">
         <div className="lg:col-span-7 relative z-10">
@@ -142,7 +127,6 @@ export default function Hero() {
             </Link>
           </motion.div>
 
-          {/* Stat badges */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -166,7 +150,6 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Hero featured pane */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -174,33 +157,34 @@ export default function Hero() {
           className="lg:col-span-5 relative z-10"
         >
           <div className="relative rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl">
-            <div className="aspect-video-frame relative overflow-hidden">
-              <img
-                src={video.thumbnailMaxUrl}
-                onError={(e) => (e.currentTarget.src = video.thumbnailHqUrl)}
-                alt={video.title}
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-              <div className="absolute inset-0 grid place-items-center">
-                <Link
-                  to="/videos"
-                  onClick={() => trackCta("hero_featured_watch")}
-                  aria-label={`Play ${video.title}`}
-                  className="grid h-20 w-20 place-items-center rounded-full text-ink-950 hover:scale-110 transition-transform animate-pulseGlow"
-                  style={{
-                    background: "linear-gradient(135deg,#FFE29A,#D4AF37,#8D7220)",
+            <div className="aspect-video-frame relative overflow-hidden bg-black">
+              {showPlayer ? (
+                <iframe
+                  key={video.videoId}
+                  ref={iframeRef}
+                  title={video.title}
+                  src={heroEmbedSrc}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="h-full w-full"
+                />
+              ) : (
+                <img
+                  src={video.thumbnailMaxUrl}
+                  onError={(e) => {
+                    e.currentTarget.src = video.thumbnailHqUrl;
                   }}
-                >
-                  <PlayIcon className="h-8 w-8 translate-x-[2px]" />
-                </Link>
-              </div>
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              )}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/90 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
-                <span className="chip chip-active">Now Spinning</span>
+                <span className="chip chip-active">Now Playing</span>
                 <h2 className="mt-2 display-title text-2xl sm:text-3xl font-bold text-platinum drop-shadow">
                   {video.title}
                 </h2>
-                {video.blurb && <p className="text-sm text-platinum/70 mt-1">{video.blurb}</p>}
+                {video.blurb && <p className="text-sm text-platinum/70 mt-1 line-clamp-2">{video.blurb}</p>}
               </div>
             </div>
 
@@ -228,7 +212,6 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll hint */}
       <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-[10px] uppercase tracking-[0.4em] text-platinum/60">
         <span>Scroll</span>
         <span className="block h-10 w-px bg-gradient-to-b from-gold-400 to-transparent animate-pulse" />

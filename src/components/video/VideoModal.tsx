@@ -57,7 +57,12 @@ export default function VideoModal({ video, onClose }: Props) {
             <div className="aspect-video-frame w-full bg-black">
               <iframe
                 title={video.title}
-                src={buildEmbedUrl(video.videoId, { autoplay: true })}
+                src={buildEmbedUrl(video.videoId, {
+                  autoplay: true,
+                  mute: true,
+                  controls: true,
+                  enableJsApi: true,
+                })}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 className="h-full w-full"

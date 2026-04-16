@@ -12,7 +12,8 @@ import { trackOutbound, trackVideo } from "@/lib/analytics";
 export default function Shorts() {
   const { videos } = useVideos();
   const [active, setActive] = useState<Video | null>(null);
-  const stack = videos.slice(0, 18);
+  const shortsOnly = videos.filter((v) => v.tags.includes("short") || v.category === "short");
+  const stack = (shortsOnly.length ? shortsOnly : videos).slice(0, 18);
 
   return (
     <>

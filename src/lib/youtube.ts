@@ -126,21 +126,54 @@ function mergeWithStatic(live: Partial<Video>[]): Video[] {
   return Array.from(byId.values()).sort((a, b) => a.order - b.order);
 }
 
+
 export function buildEmbedUrl(
   videoId: string,
-  opts: { autoplay?: boolean; mute?: boolean; loop?: boolean; controls?: boolean; start?: number } = {}
+  opts: {
+    autoplay?: boolean;
+    mute?: boolean;
+    loop?: boolean;
+    controls?: boolean;
+    start?: number;
+    /** When true (default with autoplay), adds enablejsapi + origin for postMessage control */
+    enableJsApi?: boolean;
+    /** Parent origin for IFrame API (defaults to site URL or current window) */
+    origin?: string;
+  } = {}
 ): string {
   const u = new URL(`https://www.youtube-nocookie.com/embed/${videoId}`);
   u.searchParams.set("rel", "0");
   u.searchParams.set("modestbranding", "1");
   u.searchParams.set("playsinline", "1");
-  if (opts.autoplay) u.searchParams.set("autoplay", "1");
-  if (opts.mute) u.searchParams.set("mute", "1");
+
+  const autoplay = Boolean(opts.autoplay);
+  if (autoplay) u.searchParams.set("autoplay", "1");
+
+  // Browsers block most autoplay with sound — default mute when autoplay unless explicitly overridden.
+  const mute =
+    opts.mute !== undefined ? opts.mute : autoplay ? true : false;
+  if (mute) u.searchParams.set("mute", "1");
+
   if (opts.controls === false) u.searchParams.set("controls", "0");
   if (opts.loop) {
     u.searchParams.set("loop", "1");
     u.searchParams.set("playlist", videoId);
   }
   if (opts.start) u.searchParams.set("start", String(opts.start));
+
+  const useJsApi = opts.enableJsApi ?? autoplay;
+  if (useJsApi) {
+    u.searchParams.set("enablejsapi", "1");
+    const origin =
+      opts.origin ??
+      (typeof window !== "undefined" && window.location?.origin
+        ? window.location.origin
+        : siteConfig.url);
+    u.searchParams.set("origin", origin);
+  }
+
   return u.toString();
 }
+
+/** Target origin for postMessage to nocookie YouTube embeds */
+export const YOUTUBE_EMBED_MESSAGE_ORIGIN = "https://www.youtube-nocookie.com";

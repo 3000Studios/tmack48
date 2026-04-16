@@ -53,7 +53,7 @@ export const siteConfig = {
   youtubeApiKey: envOr(import.meta.env.VITE_YOUTUBE_API_KEY),
 
   stats: {
-    videos: "20+",
+    videos: "15+",
     years: "Active",
     fans: "Growing",
     moves: "Unstoppable",
@@ -70,10 +70,12 @@ export const nav = {
     { label: "Gallery", href: "/gallery" },
     { label: "About", href: "/about" },
     { label: "Press", href: "/press" },
+    { label: "Merch", href: "/merch" },
     { label: "Support", href: "/support" },
     { label: "Contact", href: "/contact" },
   ],
   footer: [
+    { label: "Merch", href: "/merch" },
     { label: "Links", href: "/links" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Use", href: "/terms" },

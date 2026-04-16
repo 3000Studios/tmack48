@@ -4,7 +4,8 @@ export type VideoCategory =
   | "anthem"
   | "street"
   | "classic"
-  | "featured";
+  | "featured"
+  | "short";
 
 export interface Video {
   id: string;
@@ -27,10 +28,6 @@ const YT_WATCH = "https://www.youtube.com/watch?v=";
 const YT_THUMB = (id: string, size: "hq" | "mq" | "max" = "hq") =>
   `https://i.ytimg.com/vi/${id}/${size}default.jpg`;
 
-const seed: Array<
-  Omit<Video, "embedUrl" | "watchUrl" | "thumbnailUrl" | "thumbnailHqUrl" | "thumbnailMaxUrl" | "id">
-> & { _videoId?: string } = [] as never;
-
 interface SeedEntry {
   videoId: string;
   title: string;
@@ -40,34 +37,128 @@ interface SeedEntry {
   blurb?: string;
 }
 
+/** Catalog synced from TMACK48SONGS channel RSS (newest → oldest). IDs are real YouTube uploads. */
 const SEED: SeedEntry[] = [
   {
-    videoId: "kYV3Vl_lZ8M",
-    title: "Mr BigNutts (Official Music Video)",
+    videoId: "B1fVGpWTYso",
+    title: "What the F#%k Are You Looking At",
     category: "official",
     tags: ["official", "music video"],
     featured: true,
-    blurb: "The official music video that put the movement on notice.",
+    blurb: "High-voltage release energy — cinematic and unapologetic.",
   },
-  { videoId: "Q-9mH_7p0k0", title: "Booty Brown", category: "single", tags: ["single"], featured: true, blurb: "A laid-back anthem with that West Coast bounce." },
-  { videoId: "6Yt-3kR9wN0", title: "Pimpin In My Cup", category: "anthem", tags: ["anthem"], featured: true, blurb: "Chrome pours and smooth talk — the TMACK48 signature mood." },
-  { videoId: "jL6S8kU9VvM", title: "Keep It Movin", category: "single", tags: ["single"], featured: false, blurb: "For the ones chasing greatness — never stop." },
-  { videoId: "hB2C7d_9K8o", title: "Let's Get It Started", category: "anthem", tags: ["anthem"], featured: true, blurb: "Stadium-ready energy. Press play and lock in." },
-  { videoId: "fD4E8f_3G8s", title: "I'm a Hustler", category: "street", tags: ["street"], featured: false, blurb: "A grind manifesto set to pure heat." },
-  { videoId: "gE5F9h_4H9t", title: "The Grind", category: "street", tags: ["street"], featured: false, blurb: "Dawn-to-dusk work ethic on wax." },
-  { videoId: "iF7G0j_5I0u", title: "Old School Vibes", category: "classic", tags: ["classic"], featured: false, blurb: "Throwback flows with modern polish." },
-  { videoId: "kH9I2k_6K1v", title: "Street Life", category: "street", tags: ["street"], featured: false, blurb: "Pavement poetry with cinematic scope." },
-  { videoId: "mJ1K3l_7L2w", title: "Coming Up", category: "single", tags: ["single"], featured: false, blurb: "The rise record. Loud, hungry, unmissable." },
-  { videoId: "nK2L4m_8M3x", title: "My Life Story", category: "single", tags: ["single"], featured: false, blurb: "A first-person timeline, told in bars." },
-  { videoId: "oL3N5n_9N4y", title: "Ride With Me", category: "anthem", tags: ["anthem"], featured: false, blurb: "Windows down, city blurring by." },
-  { videoId: "pM4O6o_0O5z", title: "Real Talk", category: "street", tags: ["street"], featured: false, blurb: "No filter. No apologies. Just truth." },
-  { videoId: "qN5P7p_1P6a", title: "Tha Hood", category: "street", tags: ["street"], featured: false, blurb: "A love letter to the blocks that built him." },
-  { videoId: "rO6Q8q_2Q7b", title: "Game Time", category: "anthem", tags: ["anthem"], featured: false, blurb: "Clock's ticking — suit up and execute." },
-  { videoId: "sP7R9r_3R8c", title: "Stay True", category: "classic", tags: ["classic"], featured: false, blurb: "A record built on loyalty and longevity." },
-  { videoId: "tQ8S0s_4S9d", title: "Top of the Line", category: "anthem", tags: ["anthem"], featured: true, blurb: "Luxury-coded. Everything premium." },
-  { videoId: "uR9T1t_5T0e", title: "No Games", category: "single", tags: ["single"], featured: false, blurb: "Clear-eyed warnings over ice-cold production." },
-  { videoId: "vS0U2u_6U1f", title: "The Takeover", category: "anthem", tags: ["anthem"], featured: true, blurb: "The closing statement — full crown in view." },
-  { videoId: "wT1V3v_7V2g", title: "Finish Line", category: "classic", tags: ["classic"], featured: false, blurb: "Where the grind meets the victory lap." },
+  {
+    videoId: "Axcil4Q5UJ4",
+    title: "I'm Gonna Bitchslap",
+    category: "anthem",
+    tags: ["anthem"],
+    featured: false,
+    blurb: "Street-law swagger with a hook that hits like a warning shot.",
+  },
+  {
+    videoId: "NOeRahYORa4",
+    title: "I Don't Know Anymore",
+    category: "official",
+    tags: ["official", "music video"],
+    featured: true,
+    blurb: "Raw honesty and mood — the sweet hits different after the sour.",
+  },
+  {
+    videoId: "oHvmmMADMxg",
+    title: "That's Whats Up",
+    category: "official",
+    tags: ["official", "music video", "pimpin"],
+    featured: true,
+    blurb: "Smooth, rolling TMACK48 flavor built for late-night speakers.",
+  },
+  {
+    videoId: "qCKDTxhVyYk",
+    title: "Meet Me in the Sky",
+    category: "official",
+    tags: ["official", "music video"],
+    featured: true,
+    blurb: "A fan-favorite lift-off — big melody, bigger atmosphere.",
+  },
+  {
+    videoId: "a4aVcTKhLu0",
+    title: "ABCDE",
+    category: "short",
+    tags: ["short", "vertical"],
+    featured: false,
+    blurb: "Where the fire started — early Suno-era TMACK48 energy.",
+  },
+  {
+    videoId: "gMPmHxNlF-w",
+    title: "A Pimps Message",
+    category: "anthem",
+    tags: ["anthem", "pimpin"],
+    featured: false,
+    blurb: "Purple-coded bounce — keep it loose, keep it pimpin.",
+  },
+  {
+    videoId: "oNH4I2tdF6s",
+    title: "All This Pimp Knows",
+    category: "street",
+    tags: ["street", "pimpin"],
+    featured: false,
+    blurb: "Coast-to-coast bars with that unmistakable TMACK48 cadence.",
+  },
+  {
+    videoId: "QtzEo6_5_hU",
+    title: "Bitchslap",
+    category: "street",
+    tags: ["street"],
+    featured: false,
+    blurb: "Alternate cut energy — same attitude, different angle.",
+  },
+  {
+    videoId: "HXDL59GD4hQ",
+    title: "Oh Baby",
+    category: "single",
+    tags: ["single", "love song"],
+    featured: false,
+    blurb: "A love-letter groove — warm, melodic, personal.",
+  },
+  {
+    videoId: "rAO-QAsKslo",
+    title: "A B C D E pt.2",
+    category: "single",
+    tags: ["single", "sequel"],
+    featured: false,
+    blurb: "The sequel to ABCDE — evolution of the spark that started it all.",
+  },
+  {
+    videoId: "Xqo59OuWh5Y",
+    title: "Where the Hell Are We My Friend",
+    category: "single",
+    tags: ["single"],
+    featured: false,
+    blurb: "Big-room energy — built to knock your socks off.",
+  },
+  {
+    videoId: "MlP5UVFFilk",
+    title: "Shawty What's Your Name",
+    category: "official",
+    tags: ["official", "music video"],
+    featured: true,
+    blurb: "The perfect visual for the perfect shawty — smooth and undeniable.",
+  },
+  {
+    videoId: "BPWAgTMx0kQ",
+    title: "Music, Drugs, Love",
+    category: "anthem",
+    tags: ["anthem"],
+    featured: false,
+    blurb: "Coast-to-coast pimp poetry — purple, poetic, premium.",
+  },
+  {
+    videoId: "6u1QtgViGfg",
+    title: "The Dirty Dirty South",
+    category: "official",
+    tags: ["official", "music video", "anthem"],
+    featured: true,
+    blurb: "Georgia-sized anthem energy for everyone repping the South.",
+  },
 ];
 
 export const videos: Video[] = SEED.map((v, i) => ({
@@ -91,6 +182,7 @@ export const featuredVideos = videos.filter((v) => v.featured);
 export const videoCategories: { id: VideoCategory | "all"; label: string }[] = [
   { id: "all", label: "All" },
   { id: "official", label: "Official" },
+  { id: "short", label: "Shorts" },
   { id: "anthem", label: "Anthems" },
   { id: "single", label: "Singles" },
   { id: "street", label: "Street" },
