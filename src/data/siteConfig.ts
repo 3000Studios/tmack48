@@ -74,6 +74,7 @@ export const nav = {
     { label: "Contact", href: "/contact" },
   ],
   footer: [
+    { label: "Links", href: "/links" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Use", href: "/terms" },
     { label: "Contact", href: "/contact" },

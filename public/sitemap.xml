@@ -8,6 +8,7 @@
   <url><loc>https://tmack48.com/contact</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://tmack48.com/gallery</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://tmack48.com/press</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://tmack48.com/links</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://tmack48.com/privacy</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
   <url><loc>https://tmack48.com/terms</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
 </urlset>
