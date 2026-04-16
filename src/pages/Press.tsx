@@ -70,7 +70,10 @@ export default function Press() {
             <div className="aspect-video-frame">
               <iframe
                 title={highlight.title}
-                src={buildEmbedUrl(highlight.videoId)}
+                src={buildEmbedUrl(highlight.videoId, {
+                  controls: true,
+                  enableJsApi: false,
+                })}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 className="h-full w-full"

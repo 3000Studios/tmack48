@@ -1,3 +1,9 @@
+import {
+  youtubeNocookieEmbedUrl,
+  youtubeThumbnailUrl,
+  youtubeWatchUrl,
+} from "@/lib/youtubeUrls";
+
 export type VideoCategory =
   | "official"
   | "single"
@@ -22,11 +28,6 @@ export interface Video {
   order: number;
   blurb?: string;
 }
-
-const YT_EMBED = "https://www.youtube-nocookie.com/embed/";
-const YT_WATCH = "https://www.youtube.com/watch?v=";
-const YT_THUMB = (id: string, size: "hq" | "mq" | "max" = "hq") =>
-  `https://i.ytimg.com/vi/${id}/${size}default.jpg`;
 
 interface SeedEntry {
   videoId: string;
@@ -165,11 +166,11 @@ export const videos: Video[] = SEED.map((v, i) => ({
   id: `tmack48-${v.videoId}`,
   videoId: v.videoId,
   title: v.title,
-  embedUrl: `${YT_EMBED}${v.videoId}`,
-  watchUrl: `${YT_WATCH}${v.videoId}`,
-  thumbnailUrl: YT_THUMB(v.videoId, "mq"),
-  thumbnailHqUrl: YT_THUMB(v.videoId, "hq"),
-  thumbnailMaxUrl: YT_THUMB(v.videoId, "max"),
+  embedUrl: youtubeNocookieEmbedUrl(v.videoId),
+  watchUrl: youtubeWatchUrl(v.videoId),
+  thumbnailUrl: youtubeThumbnailUrl(v.videoId, "mq"),
+  thumbnailHqUrl: youtubeThumbnailUrl(v.videoId, "hq"),
+  thumbnailMaxUrl: youtubeThumbnailUrl(v.videoId, "max"),
   category: v.category,
   tags: v.tags,
   featured: v.featured,

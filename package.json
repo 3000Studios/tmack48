@@ -12,6 +12,7 @@
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "tsc -b --noEmit",
     "deploy": "npm run build && wrangler pages deploy dist --project-name=tmack48 --branch=main --commit-dirty=true",
+    "deploy:all": "npm run build && node scripts/deploy-retry.mjs",
     "deploy:preview": "npm run build && wrangler pages deploy dist --project-name=tmack48 --branch=preview --commit-dirty=true",
     "cf:login": "wrangler login",
     "cf:whoami": "wrangler whoami",

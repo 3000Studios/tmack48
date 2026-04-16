@@ -1,5 +1,10 @@
 import { siteConfig } from "@/data/siteConfig";
 import { videos as staticVideos, type Video } from "@/data/videos";
+import {
+  youtubeNocookieEmbedUrl,
+  youtubeThumbnailUrl,
+  youtubeWatchUrl,
+} from "@/lib/youtubeUrls";
 
 export interface LiveStats {
   subscribers?: string;
@@ -111,11 +116,11 @@ function mergeWithStatic(live: Partial<Video>[]): Video[] {
         id: `tmack48-${lv.videoId}`,
         videoId: lv.videoId,
         title: lv.title ?? "New Drop",
-        embedUrl: `https://www.youtube-nocookie.com/embed/${lv.videoId}`,
-        watchUrl: `https://www.youtube.com/watch?v=${lv.videoId}`,
-        thumbnailUrl: lv.thumbnailUrl ?? `https://i.ytimg.com/vi/${lv.videoId}/mqdefault.jpg`,
-        thumbnailHqUrl: lv.thumbnailHqUrl ?? `https://i.ytimg.com/vi/${lv.videoId}/hqdefault.jpg`,
-        thumbnailMaxUrl: lv.thumbnailMaxUrl ?? `https://i.ytimg.com/vi/${lv.videoId}/maxresdefault.jpg`,
+        embedUrl: youtubeNocookieEmbedUrl(lv.videoId),
+        watchUrl: youtubeWatchUrl(lv.videoId),
+        thumbnailUrl: lv.thumbnailUrl ?? youtubeThumbnailUrl(lv.videoId, "mq"),
+        thumbnailHqUrl: lv.thumbnailHqUrl ?? youtubeThumbnailUrl(lv.videoId, "hq"),
+        thumbnailMaxUrl: lv.thumbnailMaxUrl ?? youtubeThumbnailUrl(lv.videoId, "max"),
         category: "single",
         tags: ["latest"],
         featured: false,
@@ -141,7 +146,7 @@ export function buildEmbedUrl(
     origin?: string;
   } = {}
 ): string {
-  const u = new URL(`https://www.youtube-nocookie.com/embed/${videoId}`);
+  const u = new URL(youtubeNocookieEmbedUrl(videoId));
   u.searchParams.set("rel", "0");
   u.searchParams.set("modestbranding", "1");
   u.searchParams.set("playsinline", "1");
