@@ -1,0 +1,14 @@
+node_modules
+dist
+.DS_Store
+*.log
+.env
+.env.local
+.env.*.local
+.dev.vars
+.wrangler
+.vite
+.cache
+.vercel
+.netlify
+coverage

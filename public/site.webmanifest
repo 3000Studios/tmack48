@@ -1,0 +1,12 @@
+{
+  "name": "TMACK48",
+  "short_name": "TMACK48",
+  "description": "TMACK48 — Official Artist Universe",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#D4AF37",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
