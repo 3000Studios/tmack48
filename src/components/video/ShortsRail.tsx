@@ -11,7 +11,8 @@ export default function ShortsRail({
   videos: Video[];
   onOpen?: (v: Video) => void;
 }) {
-  const shorts = videos.slice(0, 8);
+  const tagged = videos.filter((v) => v.tags.includes("short") || v.category === "short");
+  const shorts = (tagged.length ? tagged : videos).slice(0, 8);
   return (
     <section className="section">
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
