@@ -139,7 +139,7 @@ export default function Admin() {
           </div>
         )}
       </section>
-      <MrBigNutsWidget />
+      {auth && <MrBigNutsWidget />}
     </>
   );
 }

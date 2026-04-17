@@ -51,7 +51,7 @@ export default function Navbar() {
         )}
         style={{ zIndex: 60 }}
       >
-        <div className="container-lux flex h-16 md:h-20 items-center gap-3 md:gap-4">
+        <div className="container-lux flex h-16 md:h-20 items-center justify-between gap-3 md:gap-4">
           <Logo />
 
           <nav

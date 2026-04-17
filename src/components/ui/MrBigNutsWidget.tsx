@@ -1,39 +1,128 @@
-import { useMemo, useState } from "react";
-import { videos } from "@/data/videos";
+import { useMemo, useRef, useState } from "react";
+import { videos, type Video } from "@/data/videos";
 
 type Msg = { role: "bot" | "user"; text: string };
 
-function recommendSong(input: string): string {
-  const q = input.toLowerCase();
-  const match =
-    videos.find((v) => v.title.toLowerCase().includes(q)) ??
-    (q.includes("love") ? videos.find((v) => v.title.toLowerCase().includes("oh baby")) : undefined) ??
-    (q.includes("hype") ? videos.find((v) => v.title.toLowerCase().includes("dirty")) : undefined) ??
-    videos[0];
-  return `You should try "${match.title}". I got squirrel instincts for bangers.`;
+type KBEntry = {
+  video: Video;
+  tokens: string[];
+};
+
+interface SpeechRecognitionLike {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+const buildKnowledgeBase = (): KBEntry[] =>
+  videos.map((video) => ({
+    video,
+    tokens: [
+      video.title,
+      video.category,
+      ...(video.tags ?? []),
+      video.blurb ?? "",
+    ]
+      .join(" ")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean),
+  }));
+
+function recommendSong(input: string, kb: KBEntry[]): Video {
+  const words = input
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean);
+  const scores = kb.map((entry) => ({
+    entry,
+    score: words.reduce((acc, word) => acc + (entry.tokens.includes(word) ? 1 : 0), 0),
+  }));
+  scores.sort((a, b) => b.score - a.score);
+  return scores[0]?.entry.video ?? videos[0];
+}
+
+function pickVoice(): SpeechSynthesisVoice | null {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const preferred =
+    voices.find((v) => /en-us|en_us/i.test(v.lang) && /male|david|mark|daniel|alex/i.test(v.name)) ??
+    voices.find((v) => /en-us|en_us/i.test(v.lang)) ??
+    voices[0];
+  return preferred ?? null;
+}
+
+function speak(text: string) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  const utter = new SpeechSynthesisUtterance(text);
+  const voice = pickVoice();
+  if (voice) utter.voice = voice;
+  utter.rate = 0.98;
+  utter.pitch = 0.92;
+  utter.volume = 0.95;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utter);
 }
 
 export default function MrBigNutsWidget() {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
+  const [listening, setListening] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([
     {
       role: "bot",
-      text: "I'm Mr Big Nuts. Ask for your vibe and I’ll roast you and pick a song.",
+      text: "I'm Mr Big Nuts. Ask me for a vibe, lyric mood, or energy and I’ll pick your next track.",
     },
   ]);
+  const kb = useMemo(() => buildKnowledgeBase(), []);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   const canSend = useMemo(() => draft.trim().length > 0, [draft]);
 
-  const send = () => {
-    if (!canSend) return;
-    const text = draft.trim();
+  const send = (forcedText?: string) => {
+    const nextDraft = (forcedText ?? draft).trim();
+    if (!nextDraft) return;
+    const pick = recommendSong(nextDraft, kb);
+    const botText = `Try "${pick.title}" (${pick.category}). ${pick.blurb ?? "It matches your vibe."} Watch: ${pick.watchUrl}`;
     setDraft("");
     setMsgs((m) => [
       ...m,
-      { role: "user", text },
-      { role: "bot", text: `${recommendSong(text)} Also... your aux better be ready.` },
+      { role: "user", text: nextDraft },
+      { role: "bot", text: botText },
     ]);
+    speak(botText);
+  };
+
+  const startVoiceInput = () => {
+    if (typeof window === "undefined") return;
+    const Recognition =
+      (window as unknown as { SpeechRecognition?: new () => SpeechRecognitionLike }).SpeechRecognition ??
+      (window as unknown as { webkitSpeechRecognition?: new () => SpeechRecognitionLike }).webkitSpeechRecognition;
+    if (!Recognition) return;
+    if (!recognitionRef.current) {
+      const rec = new Recognition();
+      rec.lang = "en-US";
+      rec.interimResults = false;
+      rec.maxAlternatives = 1;
+      rec.onresult = (evt) => {
+        const transcript = evt.results?.[0]?.[0]?.transcript ?? "";
+        setDraft(transcript);
+        send(transcript);
+      };
+      rec.onend = () => setListening(false);
+      rec.onerror = () => setListening(false);
+      recognitionRef.current = rec;
+    }
+    setListening(true);
+    recognitionRef.current.start();
   };
 
   return (
@@ -73,7 +162,14 @@ export default function MrBigNutsWidget() {
             />
             <button
               type="button"
-              onClick={send}
+              onClick={startVoiceInput}
+              className="rounded-lg border border-gold-300/40 bg-black px-3 py-2 text-sm font-semibold text-gold-200"
+            >
+              {listening ? "..." : "🎤"}
+            </button>
+            <button
+              type="button"
+              onClick={() => send()}
               className="rounded-lg bg-gold-300 px-3 py-2 text-sm font-semibold text-ink-950"
             >
               Send
