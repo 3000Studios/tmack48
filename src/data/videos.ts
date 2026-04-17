@@ -1,5 +1,6 @@
 import {
   youtubeNocookieEmbedUrl,
+  youtubeShortsUrl,
   youtubeThumbnailUrl,
   youtubeWatchUrl,
 } from "@/lib/youtubeUrls";
@@ -167,7 +168,7 @@ export const videos: Video[] = SEED.map((v, i) => ({
   videoId: v.videoId,
   title: v.title,
   embedUrl: youtubeNocookieEmbedUrl(v.videoId),
-  watchUrl: youtubeWatchUrl(v.videoId),
+  watchUrl: v.category === "short" ? youtubeShortsUrl(v.videoId) : youtubeWatchUrl(v.videoId),
   thumbnailUrl: youtubeThumbnailUrl(v.videoId, "mq"),
   thumbnailHqUrl: youtubeThumbnailUrl(v.videoId, "hq"),
   thumbnailMaxUrl: youtubeThumbnailUrl(v.videoId, "max"),
