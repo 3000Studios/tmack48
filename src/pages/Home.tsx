@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Seo from "@/components/ui/Seo";
 import Hero from "@/components/hero/Hero";
+import MrBigNuttsBot from "@/components/home/MrBigNuttsBot";
 import FeaturedSpotlight from "@/components/video/FeaturedSpotlight";
 import VideoMarquee from "@/components/video/VideoMarquee";
 import DropSection from "@/components/video/DropSection";
@@ -195,6 +196,7 @@ export default function Home() {
 
       {/* Modal */}
       <VideoModal video={active} onClose={() => setActive(null)} />
+      <MrBigNuttsBot />
     </>
   );
 }

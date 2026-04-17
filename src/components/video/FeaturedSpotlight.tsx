@@ -51,7 +51,14 @@ export default function FeaturedSpotlight({
                   >
                     <img
                       src={video.thumbnailMaxUrl}
-                      onError={(e) => (e.currentTarget.src = video.thumbnailHqUrl)}
+                      onError={(e) => {
+                        const img = e.currentTarget;
+                        if (img.src !== video.thumbnailHqUrl) {
+                          img.src = video.thumbnailHqUrl;
+                        } else {
+                          img.src = "/golden-acorn.svg";
+                        }
+                      }}
                       alt={video.title}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />

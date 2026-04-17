@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import Home from "@/pages/Home";
 import { initAnalytics } from "@/lib/analytics";
+import GoldenAcornLoader from "@/components/ui/GoldenAcornLoader";
 
 const Videos = lazy(() => import("@/pages/Videos"));
 const Shorts = lazy(() => import("@/pages/Shorts"));
@@ -20,13 +21,7 @@ const Merch = lazy(() => import("@/pages/Merch"));
 function PageFallback() {
   return (
     <div className="container-lux py-24 flex items-center justify-center">
-      <div className="flex items-center gap-3 text-platinum/60">
-        <span className="relative flex h-3 w-3">
-          <span className="absolute inset-0 animate-ping rounded-full bg-gold-400 opacity-60" />
-          <span className="relative inline-flex h-3 w-3 rounded-full bg-gold-500" />
-        </span>
-        <span className="text-xs uppercase tracking-[0.3em]">Loading…</span>
-      </div>
+      <GoldenAcornLoader label="Loading the next drop" />
     </div>
   );
 }

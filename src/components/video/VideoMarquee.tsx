@@ -45,6 +45,9 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
                   alt={v.title}
                   loading="lazy"
                   decoding="async"
+                  onError={(e) => {
+                    e.currentTarget.src = "/golden-acorn.svg";
+                  }}
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />

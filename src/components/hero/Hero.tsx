@@ -172,7 +172,12 @@ export default function Hero() {
                 <img
                   src={video.thumbnailMaxUrl}
                   onError={(e) => {
-                    e.currentTarget.src = video.thumbnailHqUrl;
+                    const img = e.currentTarget;
+                    if (img.src !== video.thumbnailHqUrl) {
+                      img.src = video.thumbnailHqUrl;
+                    } else {
+                      img.src = "/golden-acorn.svg";
+                    }
                   }}
                   alt=""
                   className="h-full w-full object-cover"

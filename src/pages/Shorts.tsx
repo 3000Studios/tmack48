@@ -54,6 +54,9 @@ export default function Shorts() {
                 src={v.thumbnailHqUrl}
                 alt={v.title}
                 loading={i < 5 ? "eager" : "lazy"}
+                onError={(e) => {
+                  e.currentTarget.src = "/golden-acorn.svg";
+                }}
                 className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/30" />

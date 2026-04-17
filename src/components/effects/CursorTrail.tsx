@@ -2,30 +2,27 @@ import { useEffect, useRef } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useIsTouch } from "@/hooks/useMediaQuery";
 
-interface Particle {
+interface TrailPoint {
   x: number;
   y: number;
-  vx: number;
-  vy: number;
   life: number;
-  max: number;
-  hue: number;
-  size: number;
 }
 
-const HUES = [45, 48, 50, 190, 195, 0]; // gold..diamond..silver
+interface Props {
+  enabled?: boolean;
+}
 
-export default function CursorTrail() {
+export default function CursorTrail({ enabled = true }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const ringRef = useRef<HTMLDivElement | null>(null);
+  const caneRef = useRef<HTMLDivElement | null>(null);
   const reduced = useReducedMotion();
   const isTouch = useIsTouch();
 
   useEffect(() => {
-    if (reduced || isTouch) return;
+    if (reduced || isTouch || !enabled) return;
     const canvas = canvasRef.current;
-    const ring = ringRef.current;
-    if (!canvas || !ring) return;
+    const cane = caneRef.current;
+    if (!canvas || !cane) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -46,36 +43,18 @@ export default function CursorTrail() {
     resize();
     window.addEventListener("resize", resize);
 
-    const particles: Particle[] = [];
+    const trail: TrailPoint[] = [];
     let mx = w / 2;
     let my = h / 2;
-    let rx = mx;
-    let ry = my;
-    let hueIndex = 0;
+    let cx = mx;
+    let cy = my;
     let hovering = false;
-
-    const spawn = (x: number, y: number, count = 1, boost = 1) => {
-      for (let i = 0; i < count; i++) {
-        const hue = HUES[hueIndex % HUES.length];
-        hueIndex++;
-        particles.push({
-          x,
-          y,
-          vx: (Math.random() - 0.5) * 0.7 * boost,
-          vy: (Math.random() - 0.5) * 0.7 * boost,
-          life: 0,
-          max: 45 + Math.random() * 35,
-          hue,
-          size: 1 + Math.random() * 2.2,
-        });
-      }
-      if (particles.length > 220) particles.splice(0, particles.length - 220);
-    };
 
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
-      spawn(mx, my, 2);
+      trail.push({ x: mx, y: my, life: 0 });
+      if (trail.length > 40) trail.shift();
       const t = e.target as HTMLElement | null;
       if (t) {
         const isInteractive =
@@ -83,41 +62,33 @@ export default function CursorTrail() {
         hovering = isInteractive;
       }
     };
-    const onClick = (e: MouseEvent) => {
-      spawn(e.clientX, e.clientY, 24, 3.2);
-    };
-
     window.addEventListener("mousemove", onMove, { passive: true });
-    window.addEventListener("click", onClick);
 
     let raf = 0;
     const loop = () => {
-      rx += (mx - rx) * 0.18;
-      ry += (my - ry) * 0.18;
-      ring.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%) scale(${hovering ? 1.9 : 1})`;
-      ring.style.opacity = hovering ? "1" : "0.9";
+      cx += (mx - cx) * 0.22;
+      cy += (my - cy) * 0.22;
+      cane.style.transform = `translate3d(${cx}px, ${cy}px, 0) translate(-35%, -82%) rotate(${hovering ? -8 : -15}deg) scale(${hovering ? 1.08 : 1})`;
+      cane.style.opacity = hovering ? "1" : "0.95";
 
       ctx.clearRect(0, 0, w, h);
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.life++;
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.01;
-        const t = p.life / p.max;
-        if (t >= 1) {
-          particles.splice(i, 1);
-          continue;
+      for (let i = trail.length - 1; i >= 0; i--) {
+        trail[i].life += 1;
+        if (trail[i].life > 44) trail.splice(i, 1);
+      }
+
+      if (trail.length > 1) {
+        for (let i = 1; i < trail.length; i++) {
+          const a = trail[i - 1];
+          const b = trail[i];
+          const alpha = Math.max(0.08, 1 - b.life / 46);
+          ctx.strokeStyle = `rgba(212, 175, 55, ${alpha})`;
+          ctx.lineWidth = Math.max(1, 4 - b.life / 14);
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
         }
-        const alpha = (1 - t) * 0.9;
-        const size = p.size * (1 - t * 0.6);
-        const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, size * 6);
-        grd.addColorStop(0, `hsla(${p.hue},90%,70%,${alpha})`);
-        grd.addColorStop(1, `hsla(${p.hue},90%,60%,0)`);
-        ctx.fillStyle = grd;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, size * 6, 0, Math.PI * 2);
-        ctx.fill();
       }
       raf = requestAnimationFrame(loop);
     };
@@ -126,13 +97,12 @@ export default function CursorTrail() {
     return () => {
       document.body.classList.remove("cursor-ready");
       window.removeEventListener("mousemove", onMove);
-      window.removeEventListener("click", onClick);
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(raf);
     };
-  }, [reduced, isTouch]);
+  }, [reduced, isTouch, enabled]);
 
-  if (reduced || isTouch) return null;
+  if (reduced || isTouch || !enabled) return null;
 
   return (
     <>
@@ -143,18 +113,19 @@ export default function CursorTrail() {
         aria-hidden="true"
       />
       <div
-        ref={ringRef}
+        ref={caneRef}
         aria-hidden="true"
-        className="pointer-events-none fixed top-0 left-0 h-8 w-8 rounded-full"
+        className="pointer-events-none fixed top-0 left-0"
         style={{
           zIndex: 91,
-          border: "1.5px solid rgba(212,175,55,0.9)",
-          boxShadow:
-            "0 0 20px rgba(212,175,55,0.55), inset 0 0 8px rgba(255,226,154,0.35)",
+          fontSize: "2rem",
+          filter: "drop-shadow(0 0 8px rgba(212,175,55,0.55))",
           transition: "transform 0.08s linear, opacity 0.2s ease",
           willChange: "transform",
         }}
-      />
+      >
+        🦯
+      </div>
     </>
   );
 }

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Golden acorn">
+  <defs>
+    <linearGradient id="cap" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe29a" />
+      <stop offset="0.52" stop-color="#d4af37" />
+      <stop offset="1" stop-color="#8d7220" />
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#fff3c7" />
+      <stop offset="0.46" stop-color="#e4be52" />
+      <stop offset="1" stop-color="#a47814" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="#050505" />
+  <path d="M235 62c20-27 43-33 69-36-22 14-32 31-32 49v23h-23V62h-14z" fill="url(#cap)"/>
+  <path d="M256 98c-86 0-157 61-157 148 0 95 73 180 157 240 84-60 157-145 157-240 0-87-71-148-157-148z" fill="url(#body)"/>
+  <path d="M111 189c31-57 86-83 145-83 59 0 114 26 145 83H111z" fill="url(#cap)"/>
+  <path d="M134 206h244" stroke="#f9dc7a" stroke-width="8" />
+  <g stroke="#f2cc66" stroke-width="5" opacity=".72">
+    <path d="M154 206l20 27M190 206l20 27M226 206l20 27M262 206l20 27M298 206l20 27M334 206l20 27" />
+    <path d="M174 206l-20 27M210 206l-20 27M246 206l-20 27M282 206l-20 27M318 206l-20 27M354 206l-20 27" />
+  </g>
+  <ellipse cx="222" cy="286" rx="86" ry="56" fill="#fff" opacity=".1"/>
+</svg>

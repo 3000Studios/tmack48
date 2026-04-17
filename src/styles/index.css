@@ -60,6 +60,21 @@ body {
   min-height: 100dvh;
 }
 
+img,
+video,
+canvas,
+iframe,
+svg {
+  max-width: 100%;
+}
+
+/* Requested mobile density pass: shrink major UI ~20% for handheld viewport */
+@media (max-width: 640px) {
+  html {
+    font-size: 80%;
+  }
+}
+
 ::selection {
   background: rgba(212, 175, 55, 0.45);
   color: #fff;

@@ -9,6 +9,7 @@ import { trackPageView } from "@/lib/analytics";
 
 export default function Layout() {
   const loc = useLocation();
+  const isHome = loc.pathname === "/";
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
@@ -17,7 +18,7 @@ export default function Layout() {
 
   return (
     <div className="relative flex min-h-dvh flex-col">
-      <CursorTrail />
+      <CursorTrail enabled={isHome} />
       <Navbar />
       <main id="main" className="flex-1 pt-16 md:pt-20">
         <Outlet />
