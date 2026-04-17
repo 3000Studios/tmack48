@@ -28,7 +28,7 @@ export const siteConfig = {
   },
 
   support: {
-    paypal: envOr(import.meta.env.VITE_PAYPAL_URL),
+    paypal: envOr(import.meta.env.VITE_PAYPAL_URL, "https://paypal.me/taylorlynch1662"),
     cashapp: envOr(import.meta.env.VITE_CASHAPP_URL),
     donationText: envOr(import.meta.env.VITE_DONATION_TEXT, "Support the movement"),
     merch: envOr(import.meta.env.VITE_MERCH_URL),

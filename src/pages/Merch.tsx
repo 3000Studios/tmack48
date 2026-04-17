@@ -8,6 +8,7 @@ import { trackCta, trackOutbound } from "@/lib/analytics";
 
 export default function Merch() {
   const merch = siteConfig.support.merch;
+  const paypal = siteConfig.support.paypal;
 
   return (
     <>
@@ -44,6 +45,17 @@ export default function Merch() {
                 >
                   Open merch store
                 </a>
+                {isSupportedLink(paypal) && (
+                  <a
+                    href={paypal}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackOutbound(paypal, "merch_paypal")}
+                    className="btn-ghost mt-3 inline-flex"
+                  >
+                    Pay with PayPal
+                  </a>
+                )}
               </>
             ) : (
               <>
@@ -55,6 +67,17 @@ export default function Merch() {
                   <Link to="/support" onClick={() => trackCta("merch_support")} className="btn-gold">
                     <HeartIcon className="h-5 w-5" /> Support
                   </Link>
+                  {isSupportedLink(paypal) && (
+                    <a
+                      href={paypal}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackOutbound(paypal, "merch_paypal_fallback")}
+                      className="btn-diamond"
+                    >
+                      PayPal Support
+                    </a>
+                  )}
                   <a
                     href={siteConfig.channel.subscribeUrl}
                     target="_blank"

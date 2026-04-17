@@ -118,7 +118,7 @@ export default function Navbar() {
                 >
                   <Link
                     to={it.href}
-                    className="mobile-menu-card flex items-center justify-between rounded-2xl border border-white/10 bg-ink-900/95 px-5 py-4 text-base font-semibold uppercase tracking-[0.2em] text-platinum ring-1 ring-transparent transition hover:border-gold-300/35 hover:text-gold-200 hover:ring-gold"
+                    className="mobile-menu-card glint flex items-center justify-between rounded-2xl border border-gold-300/35 bg-black px-5 py-4 text-base font-semibold uppercase tracking-[0.2em] text-platinum ring-1 ring-transparent transition hover:border-gold-300 hover:bg-gold-300 hover:text-ink-950 hover:ring-gold"
                     onClick={() => setOpen(false)}
                   >
                     <span>{it.label}</span>

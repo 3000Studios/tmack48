@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 import type { Video } from "@/data/videos";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useInViewport } from "@/hooks/useInViewport";
-import VideoCard from "./VideoCard";
 import { ArrowRightIcon, PlayIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
+import { buildEmbedUrl } from "@/lib/youtube";
 
 interface Props {
   video: Video;
@@ -22,8 +22,21 @@ export default function DropSection({ video, title, copy, side, onOpen, index }:
   const dropVariant = reduced
     ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
     : {
-        hidden: { opacity: 0, y: -120, rotate: side === "left" ? -3 : 3, scale: 0.95 },
-        show: { opacity: 1, y: 0, rotate: 0, scale: 1, transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] } },
+        hidden: {
+          opacity: 0,
+          y: 80,
+          rotateX: 78,
+          transformPerspective: 1000,
+          transformOrigin: "bottom center",
+          scale: 0.94,
+        },
+        show: {
+          opacity: 1,
+          y: 0,
+          rotateX: 0,
+          scale: 1,
+          transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+        },
       };
 
   const copyVariant = reduced
@@ -44,7 +57,25 @@ export default function DropSection({ video, title, copy, side, onOpen, index }:
           animate={inView ? "show" : "hidden"}
           className={`lg:col-span-7 ${side === "right" ? "lg:col-start-6" : ""}`}
         >
-          <VideoCard video={video} onOpen={onOpen} />
+          <div className="card-premium overflow-hidden shadow-gold-xl">
+            <div className="aspect-video-frame relative bg-black">
+              {inView ? (
+                <iframe
+                  title={video.title}
+                  src={buildEmbedUrl(video.videoId, {
+                    autoplay: true,
+                    mute: true,
+                    controls: false,
+                    loop: true,
+                  })}
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  className="h-full w-full"
+                />
+              ) : (
+                <img src={video.thumbnailMaxUrl} alt={video.title} className="h-full w-full object-cover" />
+              )}
+            </div>
+          </div>
         </motion.div>
 
         <motion.div

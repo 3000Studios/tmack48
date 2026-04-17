@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Seo from "@/components/ui/Seo";
 import Hero from "@/components/hero/Hero";
@@ -23,6 +23,16 @@ import { trackCta } from "@/lib/analytics";
 export default function Home() {
   const { videos } = useVideos();
   const [active, setActive] = useState<Video | null>(null);
+  const [heroVideo, setHeroVideo] = useState<Video | null>(null);
+
+  useEffect(() => {
+    if (!videos.length) return;
+    const preferred =
+      videos.find((v) => v.title.toLowerCase().includes("booty brown")) ??
+      videos.find((v) => !v.title.toLowerCase().includes("dirty dirty south")) ??
+      videos[0];
+    setHeroVideo((prev) => prev ?? preferred);
+  }, [videos]);
 
   const featuredPool = useMemo(() => videos.filter((v) => v.featured), [videos]);
 
@@ -65,9 +75,9 @@ export default function Home() {
         }}
       />
 
-      <Hero />
+      {heroVideo && <Hero video={heroVideo} />}
 
-      <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} />
+      <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} onSetHero={setHeroVideo} />
 
       {/* Marquees */}
       <section aria-label="Video marquees" className="container-lux overflow-hidden py-8 space-y-5">

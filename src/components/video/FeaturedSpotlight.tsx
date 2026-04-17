@@ -1,36 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Video } from "@/data/videos";
 import { buildEmbedUrl } from "@/lib/youtube";
 import Reveal from "@/components/effects/Reveal";
 import { ArrowRightIcon, HeartIcon, PlayIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta, trackVideo } from "@/lib/analytics";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function FeaturedSpotlight({
   pool,
+  onSetHero,
 }: {
   pool: Video[];
+  onSetHero?: (v: Video) => void;
 }) {
-  const [video, setVideo] = useState<Video | null>(null);
+  const source = useMemo(() => {
+    const featured = pool.filter((v) => v.featured);
+    return featured.length ? featured : pool;
+  }, [pool]);
+  const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
 
-  useEffect(() => {
-    if (!pool.length) return;
-    const featured = pool.filter((v) => v.featured);
-    const source = featured.length ? featured : pool;
-    const interval = setInterval(() => {
-      setVideo((v) => {
-        const idx = v ? source.findIndex((x) => x.videoId === v.videoId) : -1;
-        const next = source[(idx + 1) % source.length];
-        return next;
-      });
-      setPlaying(false);
-    }, 9000);
-    setVideo(source[Math.floor(Math.random() * source.length)]);
-    return () => clearInterval(interval);
-  }, [pool]);
+  if (!source.length) return null;
+  const safeIdx = ((idx % source.length) + source.length) % source.length;
+  const video = source[safeIdx];
+  const prev = () => {
+    setIdx((v) => v - 1);
+    setPlaying(false);
+  };
+  const next = () => {
+    setIdx((v) => v + 1);
+    setPlaying(false);
+  };
 
-  if (!video) return null;
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setIdx((v) => v + 1);
+      setPlaying(false);
+    }, 8000);
+    return () => window.clearInterval(id);
+  }, []);
 
   return (
     <section id="featured" className="section">
@@ -84,6 +93,44 @@ export default function FeaturedSpotlight({
                 )}
               </div>
             </div>
+            <div className="mt-4 flex items-center justify-center gap-2">
+              <button type="button" onClick={prev} className="btn-ghost !px-4 !py-2.5">
+                <ArrowRightIcon className="h-4 w-4 rotate-180" />
+              </button>
+              <div className="relative h-24 w-full max-w-xl overflow-hidden">
+                <div className="absolute inset-0 grid place-items-center [perspective:1200px]">
+                  {[-1, 0, 1].map((offset) => {
+                    const cardIndex = ((safeIdx + offset) % source.length + source.length) % source.length;
+                    const card = source[cardIndex];
+                    const isCenter = offset === 0;
+                    return (
+                      <motion.button
+                        key={`${card.videoId}-${offset}`}
+                        type="button"
+                        onClick={() => {
+                          setIdx(cardIndex);
+                          setPlaying(false);
+                        }}
+                        className="absolute h-20 w-36 overflow-hidden rounded-xl border border-gold-300/30 bg-black/60"
+                        animate={{
+                          x: offset * 120,
+                          rotateY: offset * -35,
+                          scale: isCenter ? 1 : 0.86,
+                          opacity: isCenter ? 1 : 0.58,
+                          zIndex: isCenter ? 3 : 1,
+                        }}
+                        transition={{ duration: 0.35 }}
+                      >
+                        <img src={card.thumbnailHqUrl} alt={card.title} className="h-full w-full object-cover" />
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+              <button type="button" onClick={next} className="btn-ghost !px-4 !py-2.5">
+                <ArrowRightIcon className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           <div className="lg:col-span-5">
@@ -119,6 +166,13 @@ export default function FeaturedSpotlight({
               <Link to="/support" onClick={() => trackCta("featured_support")} className="btn-diamond">
                 <HeartIcon className="h-5 w-5" /> Support
               </Link>
+              <button
+                type="button"
+                onClick={() => onSetHero?.(video)}
+                className="btn-ghost"
+              >
+                Set as Hero Video
+              </button>
             </div>
 
             <Link

@@ -5,6 +5,7 @@ import Footer from "@/components/footer/Footer";
 import CursorTrail from "@/components/effects/CursorTrail";
 import BackToTop from "@/components/ui/BackToTop";
 import StickyCta from "@/components/ui/StickyCta";
+import MrBigNutsWidget from "@/components/ui/MrBigNutsWidget";
 import { trackPageView } from "@/lib/analytics";
 
 export default function Layout() {
@@ -25,6 +26,7 @@ export default function Layout() {
       <Footer />
       <BackToTop />
       <StickyCta />
+      <MrBigNutsWidget />
     </div>
   );
 }
