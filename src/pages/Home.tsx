@@ -70,7 +70,7 @@ export default function Home() {
       <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} />
 
       {/* Marquees */}
-      <section aria-label="Video marquees" className="container-lux py-8 space-y-5">
+      <section aria-label="Video marquees" className="container-lux overflow-hidden py-8 space-y-5">
         <VideoMarquee videos={marqueeA} direction="left" onOpen={setActive} />
         <VideoMarquee videos={marqueeB} direction="right" speed={55} onOpen={setActive} />
       </section>

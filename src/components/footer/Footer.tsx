@@ -90,7 +90,8 @@ export default function Footer() {
       </div>
 
       <div className="container-lux flex flex-col items-center justify-between gap-6 border-t border-white/5 pb-10 pt-6 md:flex-row">
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center justify-between gap-3 md:w-auto md:justify-start">
+          <p className="text-[10px] uppercase tracking-[0.18em] text-platinum/35">Site dev 3000 Studios</p>
           {socials.map(({ href, label, Icon }) => (
             <a
               key={label}

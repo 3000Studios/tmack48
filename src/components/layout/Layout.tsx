@@ -16,10 +16,10 @@ export default function Layout() {
   }, [loc.pathname]);
 
   return (
-    <div className="relative flex min-h-dvh flex-col">
+    <div className="relative flex min-h-dvh flex-col overflow-x-clip">
       <CursorTrail />
       <Navbar />
-      <main id="main" className="flex-1 pt-16 md:pt-20">
+      <main id="main" className="flex-1 overflow-x-clip pt-16 md:pt-20">
         <Outlet />
       </main>
       <Footer />
