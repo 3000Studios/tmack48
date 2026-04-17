@@ -1,5 +1,6 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { videos, type Video } from "@/data/videos";
+import { siteConfig } from "@/data/siteConfig";
 
 type Msg = { role: "bot" | "user"; text: string };
 
@@ -76,6 +77,8 @@ export default function MrBigNutsWidget() {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
+  const [showDevForm, setShowDevForm] = useState(false);
+  const [devRequest, setDevRequest] = useState("");
   const [msgs, setMsgs] = useState<Msg[]>([
     {
       role: "bot",
@@ -99,6 +102,32 @@ export default function MrBigNutsWidget() {
       { role: "bot", text: botText },
     ]);
     speak(botText);
+  };
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      const nudges = [
+        "Yo TMACK, your fans need another anthem right now.",
+        "Quick reminder: feed me a vibe and I'll feed you a banger.",
+        "I'm still here running point — ask for your next song pick.",
+      ];
+      const text = nudges[Math.floor(Math.random() * nudges.length)] ?? nudges[0];
+      setMsgs((m) => [...m, { role: "bot", text }]);
+    }, 120000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  const openDevRequest = () => {
+    const subject = encodeURIComponent("TMACK48 Dev Request");
+    const body = encodeURIComponent(
+      devRequest.trim() || "Please update this part of the TMACK48 website:\n\n- "
+    );
+    window.location.href = `mailto:mr.jwswain@gmail.com?subject=${subject}&body=${body}`;
+    const confirm = "Request queued for 3000 Studios. Dev team is locked in.";
+    setMsgs((m) => [...m, { role: "bot", text: confirm }]);
+    speak(confirm);
+    setShowDevForm(false);
+    setDevRequest("");
   };
 
   const startVoiceInput = () => {
@@ -150,6 +179,36 @@ export default function MrBigNutsWidget() {
               </p>
             ))}
           </div>
+          {showDevForm && (
+            <div className="border-t border-white/10 p-3 space-y-2">
+              <label className="block text-[10px] uppercase tracking-[0.16em] text-platinum/60">
+                Dev Request
+              </label>
+              <textarea
+                value={devRequest}
+                onChange={(e) => setDevRequest(e.target.value)}
+                rows={3}
+                placeholder="Describe the website changes you need..."
+                className="w-full rounded-lg border border-white/15 bg-[#111111] px-3 py-2 text-sm text-platinum outline-none focus:border-gold-300/60"
+              />
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowDevForm(false)}
+                  className="rounded-lg border border-white/20 px-3 py-2 text-xs uppercase tracking-[0.16em] text-platinum/80"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={openDevRequest}
+                  className="rounded-lg bg-gold-300 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-ink-950"
+                >
+                  Send Request
+                </button>
+              </div>
+            </div>
+          )}
           <div className="flex gap-2 border-t border-white/10 p-3">
             <input
               value={draft}
@@ -174,6 +233,16 @@ export default function MrBigNutsWidget() {
             >
               Send
             </button>
+            <button
+              type="button"
+              onClick={() => setShowDevForm((v) => !v)}
+              className="rounded-lg border border-gold-300/40 bg-black px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-gold-200"
+            >
+              Dev
+            </button>
+          </div>
+          <div className="border-t border-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-platinum/50">
+            Voice uses your browser audio engine · Channel: {siteConfig.channel.handle}
           </div>
         </div>
       )}

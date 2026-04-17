@@ -87,8 +87,8 @@ export default function Hero({ video }: { video: Video }) {
       />
       <div className="noise-overlay" />
 
-      <div className="relative container-lux grid gap-10 lg:grid-cols-12 items-center py-16 lg:py-20">
-        <div className="lg:col-span-6 relative z-10">
+      <div className="relative container-lux grid gap-8 lg:grid-cols-12 items-center py-12 sm:py-14 lg:py-20">
+        <div className="lg:col-span-6 relative z-10 max-w-2xl">
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -103,7 +103,7 @@ export default function Hero({ video }: { video: Video }) {
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-4 display-title font-black text-5xl sm:text-6xl lg:text-[8rem] leading-[0.9] tracking-tight"
+            className="mt-4 display-title font-black text-4xl sm:text-5xl lg:text-[6.5rem] leading-[0.9] tracking-tight"
           >
             <span className="gold-text">TMACK</span>
             <span className="platinum-text">48</span>
@@ -155,9 +155,9 @@ export default function Hero({ video }: { video: Video }) {
           initial={{ opacity: 0, scale: 0.95, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="lg:col-span-6 relative z-10"
+          className="lg:col-span-6 relative z-10 w-full max-w-3xl lg:ml-auto"
         >
-          <div className="relative rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl">
+          <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl">
             <div className="aspect-video-frame relative overflow-hidden bg-black">
               {showPlayer ? (
                 <iframe

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import Home from "@/pages/Home";
+import CurtainsIntro from "@/components/ui/CurtainsIntro";
 import { initAnalytics } from "@/lib/analytics";
 
 const Videos = lazy(() => import("@/pages/Videos"));
@@ -38,114 +39,117 @@ export default function App() {
   }, []);
 
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route
-          path="videos"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Videos />
-            </Suspense>
-          }
-        />
-        <Route
-          path="shorts"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Shorts />
-            </Suspense>
-          }
-        />
-        <Route
-          path="about"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <About />
-            </Suspense>
-          }
-        />
-        <Route
-          path="support"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Support />
-            </Suspense>
-          }
-        />
-        <Route
-          path="contact"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Contact />
-            </Suspense>
-          }
-        />
-        <Route
-          path="gallery"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <GalleryPage />
-            </Suspense>
-          }
-        />
-        <Route
-          path="press"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Press />
-            </Suspense>
-          }
-        />
-        <Route
-          path="privacy"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Privacy />
-            </Suspense>
-          }
-        />
-        <Route
-          path="terms"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Terms />
-            </Suspense>
-          }
-        />
-        <Route
-          path="links"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Links />
-            </Suspense>
-          }
-        />
-        <Route
-          path="merch"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Merch />
-            </Suspense>
-          }
-        />
-        <Route
-          path="admin"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <Admin />
-            </Suspense>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <Suspense fallback={<PageFallback />}>
-              <NotFound />
-            </Suspense>
-          }
-        />
-      </Route>
-    </Routes>
+    <>
+      <CurtainsIntro />
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route
+            path="videos"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Videos />
+              </Suspense>
+            }
+          />
+          <Route
+            path="shorts"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Shorts />
+              </Suspense>
+            }
+          />
+          <Route
+            path="about"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <About />
+              </Suspense>
+            }
+          />
+          <Route
+            path="support"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Support />
+              </Suspense>
+            }
+          />
+          <Route
+            path="contact"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Contact />
+              </Suspense>
+            }
+          />
+          <Route
+            path="gallery"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <GalleryPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="press"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Press />
+              </Suspense>
+            }
+          />
+          <Route
+            path="privacy"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Privacy />
+              </Suspense>
+            }
+          />
+          <Route
+            path="terms"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Terms />
+              </Suspense>
+            }
+          />
+          <Route
+            path="links"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Links />
+              </Suspense>
+            }
+          />
+          <Route
+            path="merch"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Merch />
+              </Suspense>
+            }
+          />
+          <Route
+            path="admin"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Admin />
+              </Suspense>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <NotFound />
+              </Suspense>
+            }
+          />
+        </Route>
+      </Routes>
+    </>
   );
 }
