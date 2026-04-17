@@ -48,13 +48,13 @@ export default function MrBigNutsWidget() {
         <span>{open ? "Hide chat" : "Chat with Mr Big Nuts"}</span>
       </button>
       {open && (
-        <div className="overflow-hidden rounded-2xl border border-gold-300/35 bg-black/92">
+        <div className="overflow-hidden rounded-2xl border border-gold-300/45 bg-[#050505] shadow-[0_14px_45px_rgba(0,0,0,0.72)]">
           <div className="max-h-64 space-y-2 overflow-y-auto p-3">
             {msgs.map((m, i) => (
               <p
                 key={i}
                 className={`rounded-xl px-3 py-2 text-sm ${
-                  m.role === "bot" ? "bg-gold-300/12 text-gold-100" : "bg-white/10 text-platinum"
+                  m.role === "bot" ? "bg-gold-300/12 text-gold-100" : "bg-[#161616] text-platinum"
                 }`}
               >
                 {m.text}
@@ -69,7 +69,7 @@ export default function MrBigNutsWidget() {
                 if (e.key === "Enter") send();
               }}
               placeholder="Ask for a song..."
-              className="flex-1 rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm text-platinum outline-none focus:border-gold-300/60"
+              className="flex-1 rounded-lg border border-white/15 bg-[#111111] px-3 py-2 text-sm text-platinum outline-none focus:border-gold-300/60"
             />
             <button
               type="button"

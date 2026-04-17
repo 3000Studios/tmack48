@@ -51,10 +51,13 @@ export default function Navbar() {
         )}
         style={{ zIndex: 60 }}
       >
-        <div className="container-lux flex h-16 md:h-20 items-center justify-between gap-6">
+        <div className="container-lux flex h-16 md:h-20 items-center gap-3 md:gap-4">
           <Logo />
 
-          <nav aria-label="Primary" className="hidden lg:flex items-center gap-8">
+          <nav
+            aria-label="Primary"
+            className="hidden lg:flex flex-1 min-w-0 items-center justify-center gap-3 xl:gap-6 overflow-x-auto"
+          >
             {items.map((it) => (
               <NavLink
                 key={it.href}
@@ -62,7 +65,7 @@ export default function Navbar() {
                 end={it.href === "/"}
                 className={({ isActive }) =>
                   cn(
-                    "link-u text-sm uppercase tracking-[0.25em] font-medium transition-colors",
+                    "link-u glint whitespace-nowrap rounded-lg px-2 py-1 text-[11px] xl:text-sm uppercase tracking-[0.16em] xl:tracking-[0.24em] font-medium transition-colors",
                     isActive ? "text-gold-300" : "text-platinum/80 hover:text-gold-200"
                   )
                 }
@@ -72,7 +75,7 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden xl:flex items-center gap-3 ml-auto">
             <a
               href={siteConfig.channel.subscribeUrl}
               target="_blank"

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/Icon";
 import { isSupportedLink } from "@/lib/utils";
 import { trackOutbound } from "@/lib/analytics";
+import FooterAcorns from "./FooterAcorns";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -97,6 +98,7 @@ export default function Footer() {
           © {year} TMACK48 — All rights reserved.
         </p>
       </div>
+      <FooterAcorns />
     </footer>
   );
 }

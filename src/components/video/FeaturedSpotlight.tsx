@@ -9,10 +9,8 @@ import { motion } from "framer-motion";
 
 export default function FeaturedSpotlight({
   pool,
-  onSetHero,
 }: {
   pool: Video[];
-  onSetHero?: (v: Video) => void;
 }) {
   const source = useMemo(() => {
     const featured = pool.filter((v) => v.featured);
@@ -166,13 +164,6 @@ export default function FeaturedSpotlight({
               <Link to="/support" onClick={() => trackCta("featured_support")} className="btn-diamond">
                 <HeartIcon className="h-5 w-5" /> Support
               </Link>
-              <button
-                type="button"
-                onClick={() => onSetHero?.(video)}
-                className="btn-ghost"
-              >
-                Set as Hero Video
-              </button>
             </div>
 
             <Link

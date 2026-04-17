@@ -12,6 +12,7 @@ import { trackCta } from "@/lib/analytics";
 export default function Hero({ video }: { video: Video }) {
   const [muted, setMuted] = useState(true);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [spot, setSpot] = useState({ x: 50, y: 18 });
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
@@ -59,11 +60,31 @@ export default function Hero({ video }: { video: Video }) {
     <section
       aria-label="TMACK48 hero"
       className="relative isolate overflow-hidden min-h-[92dvh] lg:min-h-[100dvh] flex items-center"
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        setSpot({ x, y });
+      }}
+      onTouchMove={(e) => {
+        const t = e.touches[0];
+        if (!t) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((t.clientX - rect.left) / rect.width) * 100;
+        const y = ((t.clientY - rect.top) / rect.height) * 100;
+        setSpot({ x, y });
+      }}
     >
       <Hero3D className="opacity-90" />
       <AmbientParticles className="opacity-60" count={80} />
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]" />
+      <div
+        className="pointer-events-none absolute inset-0 transition-[background] duration-150"
+        style={{
+          background: `radial-gradient(420px 420px at ${spot.x}% ${spot.y}%, rgba(212,175,55,0.5), rgba(212,175,55,0.1) 40%, transparent 72%)`,
+        }}
+      />
       <div className="noise-overlay" />
 
       <div className="relative container-lux grid gap-10 lg:grid-cols-12 items-center py-16 lg:py-20">
@@ -82,7 +103,7 @@ export default function Hero({ video }: { video: Video }) {
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-4 display-title font-black text-6xl sm:text-7xl lg:text-[9rem] leading-[0.9] tracking-tight"
+            className="mt-4 display-title font-black text-5xl sm:text-6xl lg:text-[8rem] leading-[0.9] tracking-tight"
           >
             <span className="gold-text">TMACK</span>
             <span className="platinum-text">48</span>

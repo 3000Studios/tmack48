@@ -8,6 +8,7 @@ import {
   saveAdminConfig,
   type AdminConfig,
 } from "@/lib/community";
+import MrBigNutsWidget from "@/components/ui/MrBigNutsWidget";
 
 export default function Admin() {
   const [auth, setAuth] = useState(false);
@@ -138,6 +139,7 @@ export default function Admin() {
           </div>
         )}
       </section>
+      <MrBigNutsWidget />
     </>
   );
 }

@@ -77,7 +77,7 @@ export default function Home() {
 
       {heroVideo && <Hero video={heroVideo} />}
 
-      <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} onSetHero={setHeroVideo} />
+      <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} />
 
       {/* Marquees */}
       <section aria-label="Video marquees" className="container-lux overflow-hidden py-8 space-y-5">
