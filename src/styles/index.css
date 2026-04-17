@@ -60,6 +60,12 @@ body {
   min-height: 100dvh;
 }
 
+body[data-mobile-menu-open="true"] .mobile-floating-ui {
+  opacity: 0 !important;
+  transform: translateY(0.75rem);
+  pointer-events: none !important;
+}
+
 ::selection {
   background: rgba(212, 175, 55, 0.45);
   color: #fff;

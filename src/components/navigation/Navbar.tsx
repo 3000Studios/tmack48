@@ -24,66 +24,78 @@ export default function Navbar() {
     };
   }, [open]);
 
+  useEffect(() => {
+    document.body.dataset.mobileMenuOpen = open ? "true" : "false";
+  }, [open]);
+
+  useEffect(() => {
+    return () => {
+      delete document.body.dataset.mobileMenuOpen;
+    };
+  }, []);
+
   const items = nav.primary.filter(
     (n) => !(n.href === "/merch" && !isSupportedLink(siteConfig.support.merch))
   );
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 transition-[transform,background,backdrop-filter,border-color] duration-500 ease-out",
-        "border-b",
-        y > 40
-          ? "bg-ink-950/80 backdrop-blur-xl border-white/5 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.8)]"
-          : "bg-transparent border-transparent",
-        dir === "down" && y > 160 ? "-translate-y-full" : "translate-y-0"
-      )}
-      style={{ zIndex: 50 }}
-    >
-      <div className="container-lux flex h-16 md:h-20 items-center justify-between gap-6">
-        <Logo />
+    <>
+      <header
+        className={cn(
+          "fixed inset-x-0 top-0 transition-[transform,background,backdrop-filter,border-color] duration-500 ease-out",
+          "border-b",
+          open || y > 40
+            ? "bg-ink-950/80 backdrop-blur-xl border-white/5 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.8)]"
+            : "bg-transparent border-transparent",
+          !open && dir === "down" && y > 160 ? "-translate-y-full" : "translate-y-0"
+        )}
+        style={{ zIndex: 60 }}
+      >
+        <div className="container-lux flex h-16 md:h-20 items-center justify-between gap-6">
+          <Logo />
 
-        <nav aria-label="Primary" className="hidden lg:flex items-center gap-8">
-          {items.map((it) => (
-            <NavLink
-              key={it.href}
-              to={it.href}
-              end={it.href === "/"}
-              className={({ isActive }) =>
-                cn(
-                  "link-u text-sm uppercase tracking-[0.25em] font-medium transition-colors",
-                  isActive ? "text-gold-300" : "text-platinum/80 hover:text-gold-200"
-                )
-              }
+          <nav aria-label="Primary" className="hidden lg:flex items-center gap-8">
+            {items.map((it) => (
+              <NavLink
+                key={it.href}
+                to={it.href}
+                end={it.href === "/"}
+                className={({ isActive }) =>
+                  cn(
+                    "link-u text-sm uppercase tracking-[0.25em] font-medium transition-colors",
+                    isActive ? "text-gold-300" : "text-platinum/80 hover:text-gold-200"
+                  )
+                }
+              >
+                {it.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="hidden md:flex items-center gap-3">
+            <a
+              href={siteConfig.channel.subscribeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCta("nav_subscribe")}
+              className="btn-gold !px-5 !py-2.5 text-sm"
             >
-              {it.label}
-            </NavLink>
-          ))}
-        </nav>
+              <YoutubeIcon className="h-4 w-4" />
+              Subscribe
+            </a>
+          </div>
 
-        <div className="hidden md:flex items-center gap-3">
-          <a
-            href={siteConfig.channel.subscribeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackCta("nav_subscribe")}
-            className="btn-gold !px-5 !py-2.5 text-sm"
+          <button
+            type="button"
+            className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-full glass text-platinum hover:text-gold-300"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
           >
-            <YoutubeIcon className="h-4 w-4" />
-            Subscribe
-          </a>
+            {open ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+          </button>
         </div>
-
-        <button
-          type="button"
-          className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-full glass text-platinum hover:text-gold-300"
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-        >
-          {open ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
-        </button>
-      </div>
+      </header>
 
       <AnimatePresence>
         {open && (
@@ -93,9 +105,10 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25 }}
-            className="lg:hidden fixed inset-x-0 top-16 md:top-20 bottom-0 bg-ink-950/95 backdrop-blur-xl border-t border-white/5"
+            className="mobile-menu-overlay lg:hidden fixed inset-x-0 top-16 md:top-20 bottom-0 z-[58] overflow-y-auto border-t border-white/10 bg-gradient-to-b from-[#080808] via-[#050505] to-[#030303] shadow-[0_20px_60px_rgba(0,0,0,0.8)]"
+            aria-label="Mobile menu"
           >
-            <div className="container-lux py-8 flex flex-col gap-2">
+            <div className="container-lux py-6 pb-28 flex flex-col gap-2">
               {items.map((it, i) => (
                 <motion.div
                   key={it.href}
@@ -105,7 +118,8 @@ export default function Navbar() {
                 >
                   <Link
                     to={it.href}
-                    className="flex items-center justify-between rounded-2xl glass px-5 py-4 text-lg font-medium uppercase tracking-widest hover:ring-gold"
+                    className="mobile-menu-card flex items-center justify-between rounded-2xl border border-white/10 bg-ink-900/95 px-5 py-4 text-base font-semibold uppercase tracking-[0.2em] text-platinum ring-1 ring-transparent transition hover:border-gold-300/35 hover:text-gold-200 hover:ring-gold"
+                    onClick={() => setOpen(false)}
                   >
                     <span>{it.label}</span>
                     <span className="text-gold-300">→</span>
@@ -124,11 +138,11 @@ export default function Navbar() {
                   Subscribe on YouTube
                 </a>
                 {isSupportedLink(siteConfig.support.cashapp) || isSupportedLink(siteConfig.support.paypal) ? (
-                  <Link to="/support" className="btn-ghost justify-center">
+                  <Link to="/support" className="btn-ghost justify-center" onClick={() => setOpen(false)}>
                     Support the Movement
                   </Link>
                 ) : (
-                  <Link to="/support" className="btn-ghost justify-center">
+                  <Link to="/support" className="btn-ghost justify-center" onClick={() => setOpen(false)}>
                     Support
                   </Link>
                 )}
@@ -137,6 +151,6 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 }
