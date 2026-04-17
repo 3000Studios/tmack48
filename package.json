@@ -11,8 +11,9 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "tsc -b --noEmit",
-    "deploy": "npm run build && wrangler pages deploy dist --project-name=tmack48 --branch=main --commit-dirty=true",
-    "deploy:preview": "npm run build && wrangler pages deploy dist --project-name=tmack48 --branch=preview --commit-dirty=true",
+    "postbuild:cf": "node scripts/patch-cfasync.mjs",
+    "deploy": "npm run build && npm run postbuild:cf && wrangler pages deploy dist --project-name=tmack48 --branch=main --commit-dirty=true",
+    "deploy:preview": "npm run build && npm run postbuild:cf && wrangler pages deploy dist --project-name=tmack48 --branch=preview --commit-dirty=true",
     "cf:login": "wrangler login",
     "cf:whoami": "wrangler whoami",
     "sitemap": "node scripts/generate-sitemap.mjs"
