@@ -1,7 +1,14 @@
 import Seo from "@/components/ui/Seo";
 import { siteConfig } from "@/data/siteConfig";
+import { isSupportedLink } from "@/lib/utils";
 
 export default function Privacy() {
+  const contactHref = isSupportedLink(siteConfig.support.paypal)
+    ? siteConfig.support.paypal
+    : siteConfig.channel.subscribeUrl;
+  const contactLabel = isSupportedLink(siteConfig.support.paypal)
+    ? "Support via PayPal"
+    : "Subscribe on YouTube";
   return (
     <>
       <Seo path="/privacy" title="Privacy Policy" description="TMACK48 privacy policy." />
@@ -28,9 +35,9 @@ export default function Privacy() {
         </p>
         <h2 className="display-title text-2xl font-bold text-platinum mt-8">Contact</h2>
         <p>
-          For any privacy-related questions, email{" "}
-          <a className="text-gold-300" href={`mailto:${siteConfig.contact.email}`}>
-            {siteConfig.contact.email}
+          For privacy-related questions, use{" "}
+          <a className="text-gold-300" href={contactHref} target="_blank" rel="noopener noreferrer">
+            {contactLabel}
           </a>
           .
         </p>

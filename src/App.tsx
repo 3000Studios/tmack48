@@ -16,6 +16,7 @@ const Terms = lazy(() => import("@/pages/Terms"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const Links = lazy(() => import("@/pages/Links"));
 const Merch = lazy(() => import("@/pages/Merch"));
+const Admin = lazy(() => import("@/pages/Admin"));
 
 function PageFallback() {
   return (
@@ -125,6 +126,14 @@ export default function App() {
           element={
             <Suspense fallback={<PageFallback />}>
               <Merch />
+            </Suspense>
+          }
+        />
+        <Route
+          path="admin"
+          element={
+            <Suspense fallback={<PageFallback />}>
+              <Admin />
             </Suspense>
           }
         />

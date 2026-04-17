@@ -4,16 +4,15 @@ import { Link } from "react-router-dom";
 import Hero3D from "@/components/effects/Hero3D";
 import AmbientParticles from "@/components/effects/AmbientParticles";
 import { siteConfig } from "@/data/siteConfig";
-import { getRandomFeatured, type Video } from "@/data/videos";
+import type { Video } from "@/data/videos";
 import { buildEmbedUrl, YOUTUBE_EMBED_MESSAGE_ORIGIN } from "@/lib/youtube";
 import { HeartIcon, PlayIcon, SoundOffIcon, SoundOnIcon, SparkleIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
 
-export default function Hero() {
-  const initial = useMemo<Video>(() => getRandomFeatured(), []);
-  const [video] = useState<Video>(initial);
+export default function Hero({ video }: { video: Video }) {
   const [muted, setMuted] = useState(true);
   const [showPlayer, setShowPlayer] = useState(false);
+  const [spot, setSpot] = useState({ x: 50, y: 18 });
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
@@ -61,15 +60,35 @@ export default function Hero() {
     <section
       aria-label="TMACK48 hero"
       className="relative isolate overflow-hidden min-h-[92dvh] lg:min-h-[100dvh] flex items-center"
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        setSpot({ x, y });
+      }}
+      onTouchMove={(e) => {
+        const t = e.touches[0];
+        if (!t) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = ((t.clientX - rect.left) / rect.width) * 100;
+        const y = ((t.clientY - rect.top) / rect.height) * 100;
+        setSpot({ x, y });
+      }}
     >
       <Hero3D className="opacity-90" />
       <AmbientParticles className="opacity-60" count={80} />
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]" />
+      <div
+        className="pointer-events-none absolute inset-0 transition-[background] duration-150"
+        style={{
+          background: `radial-gradient(420px 420px at ${spot.x}% ${spot.y}%, rgba(212,175,55,0.5), rgba(212,175,55,0.1) 40%, transparent 72%)`,
+        }}
+      />
       <div className="noise-overlay" />
 
       <div className="relative container-lux grid gap-10 lg:grid-cols-12 items-center py-16 lg:py-20">
-        <div className="lg:col-span-7 relative z-10">
+        <div className="lg:col-span-6 relative z-10">
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -84,7 +103,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-4 display-title font-black text-6xl sm:text-7xl lg:text-[9rem] leading-[0.9] tracking-tight"
+            className="mt-4 display-title font-black text-5xl sm:text-6xl lg:text-[8rem] leading-[0.9] tracking-tight"
           >
             <span className="gold-text">TMACK</span>
             <span className="platinum-text">48</span>
@@ -103,50 +122,32 @@ export default function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.45 }}
-            className="mt-8 flex flex-wrap gap-3"
-          >
-            <Link
-              to="/videos"
-              onClick={() => trackCta("hero_watch_now")}
-              className="btn-gold glint text-base"
-            >
-              <PlayIcon className="h-5 w-5" /> Watch Now
-            </Link>
-            <a
-              href={siteConfig.channel.subscribeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackCta("hero_subscribe")}
-              className="btn-ghost text-base"
-            >
-              <YoutubeIcon className="h-5 w-5" /> Subscribe on YouTube
-            </a>
-            <Link to="/support" onClick={() => trackCta("hero_support")} className="btn-diamond text-base">
-              <HeartIcon className="h-5 w-5" /> Support the Artist
-            </Link>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.6 }}
-            className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl"
+            className="mt-10 overflow-hidden rounded-2xl border border-gold-300/20 bg-black/35 px-4 py-3"
           >
-            {[
+            <div
+              className="flex w-max items-center gap-8 whitespace-nowrap will-change-transform"
+              style={{ animation: "marquee 32s linear infinite" }}
+            >
+              {[
               { label: "Videos", value: siteConfig.stats.videos },
               { label: "Years", value: siteConfig.stats.years },
               { label: "Fans", value: siteConfig.stats.fans },
               { label: "Moves", value: siteConfig.stats.moves },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="glass rounded-2xl px-4 py-3 text-center hover-lift"
-              >
-                <div className="gold-text display-title text-lg font-black">{s.value}</div>
-                <div className="text-[10px] uppercase tracking-[0.3em] text-platinum/60 mt-1">{s.label}</div>
-              </div>
-            ))}
+            ]
+                .concat([
+                  { label: "Videos", value: siteConfig.stats.videos },
+                  { label: "Years", value: siteConfig.stats.years },
+                  { label: "Fans", value: siteConfig.stats.fans },
+                  { label: "Moves", value: siteConfig.stats.moves },
+                ])
+                .map((s, i) => (
+                  <div key={`${s.label}-${i}`} className="inline-flex items-center gap-2 text-sm">
+                    <span className="gold-text font-bold">{s.value}</span>
+                    <span className="uppercase tracking-[0.25em] text-platinum/70">{s.label}</span>
+                  </div>
+                ))}
+            </div>
           </motion.div>
         </div>
 
@@ -154,7 +155,7 @@ export default function Hero() {
           initial={{ opacity: 0, scale: 0.95, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="lg:col-span-5 relative z-10"
+          className="lg:col-span-6 relative z-10"
         >
           <div className="relative rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl">
             <div className="aspect-video-frame relative overflow-hidden bg-black">
@@ -208,6 +209,23 @@ export default function Hero() {
                 <YoutubeIcon className="h-4 w-4" /> Watch on YouTube
               </a>
             </div>
+          </div>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link to="/videos" onClick={() => trackCta("hero_watch_now")} className="btn-gold glint text-base">
+              <PlayIcon className="h-5 w-5" /> Watch Now
+            </Link>
+            <a
+              href={siteConfig.channel.subscribeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCta("hero_subscribe")}
+              className="btn-ghost text-base"
+            >
+              <YoutubeIcon className="h-5 w-5" /> Subscribe on YouTube
+            </a>
+            <Link to="/support" onClick={() => trackCta("hero_support")} className="btn-diamond text-base">
+              <HeartIcon className="h-5 w-5" /> Support the Artist
+            </Link>
           </div>
         </motion.div>
       </div>

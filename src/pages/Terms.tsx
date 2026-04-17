@@ -32,13 +32,7 @@ export default function Terms() {
           resulting from your use of the site.
         </p>
         <h2 className="display-title text-2xl font-bold text-platinum mt-8">Contact</h2>
-        <p>
-          Questions? Email{" "}
-          <a className="text-gold-300" href={`mailto:${siteConfig.contact.email}`}>
-            {siteConfig.contact.email}
-          </a>
-          .
-        </p>
+        <p>Questions? Use the Contact page form for support and policy questions.</p>
         <p className="text-xs uppercase tracking-[0.3em] text-platinum/50 pt-8">
           Last updated: {new Date().getFullYear()}
         </p>

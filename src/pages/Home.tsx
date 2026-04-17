@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Seo from "@/components/ui/Seo";
 import Hero from "@/components/hero/Hero";
@@ -23,6 +23,16 @@ import { trackCta } from "@/lib/analytics";
 export default function Home() {
   const { videos } = useVideos();
   const [active, setActive] = useState<Video | null>(null);
+  const [heroVideo, setHeroVideo] = useState<Video | null>(null);
+
+  useEffect(() => {
+    if (!videos.length) return;
+    const preferred =
+      videos.find((v) => v.title.toLowerCase().includes("booty brown")) ??
+      videos.find((v) => !v.title.toLowerCase().includes("dirty dirty south")) ??
+      videos[0];
+    setHeroVideo((prev) => prev ?? preferred);
+  }, [videos]);
 
   const featuredPool = useMemo(() => videos.filter((v) => v.featured), [videos]);
 
@@ -65,12 +75,12 @@ export default function Home() {
         }}
       />
 
-      <Hero />
+      {heroVideo && <Hero video={heroVideo} />}
 
       <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} />
 
       {/* Marquees */}
-      <section aria-label="Video marquees" className="container-lux py-8 space-y-5">
+      <section aria-label="Video marquees" className="container-lux overflow-hidden py-8 space-y-5">
         <VideoMarquee videos={marqueeA} direction="left" onOpen={setActive} />
         <VideoMarquee videos={marqueeB} direction="right" speed={55} onOpen={setActive} />
       </section>
@@ -171,12 +181,9 @@ export default function Home() {
                 <MailIcon className="h-10 w-10 text-gold-300" />
                 <div className="flex-1">
                   <p className="text-sm text-platinum/70">Booking / press inquiries</p>
-                  <a
-                    href={`mailto:${siteConfig.contact.email}`}
-                    className="font-semibold text-platinum hover:text-gold-200"
-                  >
-                    {siteConfig.contact.email}
-                  </a>
+                  <Link to="/contact" className="font-semibold text-platinum hover:text-gold-200">
+                    Use contact form
+                  </Link>
                 </div>
                 <Link to="/contact" className="btn-ghost !py-2 text-xs">
                   <HeartIcon className="h-4 w-4" /> Contact

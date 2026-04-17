@@ -6,7 +6,6 @@ import {
   FacebookIcon,
   HeartIcon,
   InstagramIcon,
-  MailIcon,
   TiktokIcon,
   XIcon,
   YoutubeIcon,
@@ -73,14 +72,6 @@ export default function Links() {
       href: siteConfig.social.facebook,
       external: true,
       Icon: FacebookIcon,
-      tone: "ghost",
-    },
-    {
-      label: "Booking & Press",
-      sub: siteConfig.contact.email,
-      href: `mailto:${siteConfig.contact.email}`,
-      external: true,
-      Icon: MailIcon,
       tone: "ghost",
     },
   ].filter(Boolean) as Row[];
