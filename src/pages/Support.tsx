@@ -3,7 +3,7 @@ import SupportCta from "@/components/support/SupportCta";
 import Reveal from "@/components/effects/Reveal";
 import { siteConfig } from "@/data/siteConfig";
 import { isSupportedLink } from "@/lib/utils";
-import { HeartIcon, MailIcon, YoutubeIcon } from "@/components/ui/Icon";
+import { HeartIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackDonate, trackOutbound } from "@/lib/analytics";
 
 const faqs = [
@@ -137,19 +137,15 @@ export default function Support() {
       <section className="section">
         <Reveal>
           <div className="card-premium p-8 flex flex-col md:flex-row items-center gap-6">
-            <MailIcon className="h-10 w-10 text-gold-300" />
             <div className="flex-1 text-center md:text-left">
-              <h3 className="display-title text-xl font-bold text-platinum">Partnerships & Booking</h3>
-              <p className="text-platinum/70">Serious about a feature, a show, or a campaign? Let's talk.</p>
+              <h3 className="display-title text-xl font-bold text-platinum">Keep the Momentum</h3>
+              <p className="text-platinum/70">Subscribe and share to keep new drops coming every month.</p>
             </div>
-            <a href={`mailto:${siteConfig.contact.email}`} className="btn-gold">
-              Email Booking
-            </a>
             <a
               href={siteConfig.channel.subscribeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-ghost"
+              className="btn-gold"
             >
               <YoutubeIcon className="h-5 w-5" /> Subscribe
             </a>

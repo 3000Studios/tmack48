@@ -24,7 +24,7 @@ export const siteConfig = {
   },
 
   contact: {
-    email: envOr(import.meta.env.VITE_CONTACT_EMAIL, "booking@tmack48.com"),
+    email: envOr(import.meta.env.VITE_CONTACT_EMAIL, ""),
   },
 
   support: {

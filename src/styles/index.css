@@ -199,6 +199,9 @@ html {
   .btn-gold:active {
     transform: translateY(0);
   }
+  .btn-gold.glint::after {
+    animation-duration: 2.8s;
+  }
 
   .btn-ghost {
     @apply btn text-platinum;

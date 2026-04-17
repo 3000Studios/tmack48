@@ -4,7 +4,6 @@ import { nav, siteConfig } from "@/data/siteConfig";
 import {
   FacebookIcon,
   InstagramIcon,
-  MailIcon,
   TiktokIcon,
   XIcon,
   YoutubeIcon,
@@ -42,14 +41,10 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackOutbound(siteConfig.channel.subscribeUrl, "footer_subscribe")}
-              className="btn-gold !px-5 !py-2.5 text-sm"
+              className="btn-gold glint animate-[pulseGlow_4s_ease-in-out_infinite] !px-5 !py-2.5 text-sm"
             >
               <YoutubeIcon className="h-4 w-4" />
               Subscribe on YouTube
-            </a>
-            <a href={`mailto:${siteConfig.contact.email}`} className="btn-ghost !px-5 !py-2.5 text-sm">
-              <MailIcon className="h-4 w-4" />
-              {siteConfig.contact.email}
             </a>
           </div>
         </div>
@@ -77,14 +72,6 @@ export default function Footer() {
                 </Link>
               </li>
             ))}
-            <li>
-              <a
-                href={`mailto:${siteConfig.contact.email}`}
-                className="text-platinum/80 hover:text-gold-300 transition-colors"
-              >
-                {siteConfig.contact.email}
-              </a>
-            </li>
           </ul>
         </div>
       </div>

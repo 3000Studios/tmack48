@@ -4,6 +4,7 @@ import type { Video } from "@/data/videos";
 import { buildEmbedUrl } from "@/lib/youtube";
 import { CloseIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackVideo } from "@/lib/analytics";
+import VideoComments from "./VideoComments";
 
 interface Props {
   video: Video | null;
@@ -79,6 +80,9 @@ export default function VideoModal({ video, onClose }: Props) {
               >
                 <YoutubeIcon className="h-4 w-4" /> Watch on YouTube
               </a>
+            </div>
+            <div className="px-5 pb-5">
+              <VideoComments videoId={video.videoId} />
             </div>
           </motion.div>
         </motion.div>
