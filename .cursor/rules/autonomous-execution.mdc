@@ -1,0 +1,50 @@
+---
+description: Complete work autonomously; ask the user only when blocked after exhausting options
+alwaysApply: true
+---
+
+# Autonomous execution (no unnecessary delegation)
+
+## Default
+
+- Assume **you** perform the work: run commands, edit files, use tools and MCP, read errors, retry with fixes, search the codebase, and consult docs or the web when needed.
+- Do **not** tell the user to run commands, click UI, or change settings **unless** you truly cannot proceed without human-only access (secrets in their head, physical device, account login in browser you cannot use, irreversible destructive action they must approve, etc.).
+
+## Before asking the user for anything
+
+1. Try another approach (different command, path, flag, dependency, or tool).
+2. Narrow the failure (logs, minimal repro, read related code).
+3. Use available automation (scripts, tests, build, linters, git).
+4. If blocked on missing **information** only you could provide (e.g. API key name): infer from `.env.example`, config, or docs first.
+
+## When you must ask (rare)
+
+Only after **all** of the above failed or the task is impossible without human-only input:
+
+- Ask **once**, **politely**, and **briefly**.
+- Give the **easiest** path: numbered steps, minimal clicks, exact names/locations.
+- State clearly what you already tried so they do not repeat your work.
+
+## Anti-patterns
+
+- “You can run `npm install`” → run it yourself if the environment allows.
+- “Clear session storage” → implement a dev-only bypass, document the key, or accept that browser-only steps are a valid exception when you cannot drive their browser.
+
+---
+
+## User-facing replies (minimal context)
+
+The user wants **only** this shape for status/result messages (no extra tool logs or long preambles):
+
+1. One line restating their request (start).
+2. When in progress: a single bullet: `- Working on [two or three word label]`.
+3. When finished: **`Done.`** + **one sentence** outcome.
+4. Then: **`Change has been made and deployed live to `** + **production custom domain** (e.g. from `SITE_URL` / `VITE_SITE_URL` / `siteConfig.url` such as `https://tmack48.com`). **Never** use preview/dev hostnames in that sentence (`localhost`, `*.pages.dev`, etc.) unless they truly serve production.
+
+## Git and production deploy
+
+- **`main`** only as the production branch for routine work.
+- After the task is **done** and **tested** (build/tests/lint as fits the project): **`git add` → `commit` → `push`** to **`origin/main`** yourself.
+- **Never** ask the user to commit or push—for any reason. That includes “you can push when ready,” “remember to deploy,” or optional manual steps.
+- Expect every push to **`main`** to trigger CI/CD (e.g. Cloudflare Pages).
+- If push fails, fix credentials/config if you can; only report an unblockable failure without delegating git commands to the user.
