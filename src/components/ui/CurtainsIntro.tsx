@@ -35,6 +35,10 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
     setHasUserStarted(true);
   }, []);
 
+  const handleSkip = useCallback(() => {
+    handleComplete();
+  }, [handleComplete]);
+
   useEffect(() => {
     if (!shouldPlay) {
       setIsMounted(false);
@@ -118,6 +122,13 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
             <p className="text-xs uppercase tracking-[0.35em] text-platinum/70">TMACK48 Intro</p>
             <button type="button" onClick={handleStart} className="btn-gold text-sm sm:text-base">
               Play intro with sound
+            </button>
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="btn-ghost text-xs uppercase tracking-[0.2em]"
+            >
+              Skip intro
             </button>
           </div>
         )}

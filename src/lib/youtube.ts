@@ -168,7 +168,12 @@ export function buildEmbedUrl(
   // Browsers block most autoplay with sound — default mute when autoplay unless explicitly overridden.
   const mute =
     opts.mute !== undefined ? opts.mute : autoplay ? true : false;
-  if (mute) u.searchParams.set("mute", "1");
+  if (mute) {
+    u.searchParams.set("mute", "1");
+  } else if (opts.mute !== undefined) {
+    // Set explicit unmute for gesture-triggered autoplay flows.
+    u.searchParams.set("mute", "0");
+  }
 
   if (opts.controls === false) u.searchParams.set("controls", "0");
   if (opts.loop) {
