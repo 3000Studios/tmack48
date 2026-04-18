@@ -15,6 +15,7 @@ const INTRO_FALLBACK_MS = 120000;
 export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
   const [isMounted, setIsMounted] = useState(enabled);
   const [isVisible, setIsVisible] = useState(enabled);
+  const [hasUserStarted, setHasUserStarted] = useState(false);
   const completedRef = useRef(false);
 
   const shouldPlay = useMemo(() => {
@@ -30,12 +31,22 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
     window.setTimeout(() => setIsMounted(false), 420);
   }, []);
 
+  const handleStart = useCallback(() => {
+    setHasUserStarted(true);
+  }, []);
+
+  const handleSkip = useCallback(() => {
+    handleComplete();
+  }, [handleComplete]);
+
   useEffect(() => {
     if (!shouldPlay) {
       setIsMounted(false);
       setIsVisible(false);
       return;
     }
+
+    if (!hasUserStarted) return;
 
     completedRef.current = false;
 
@@ -75,32 +86,52 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
     }, INTRO_FALLBACK_MS);
 
     return cleanup;
-  }, [shouldPlay, handleComplete]);
+  }, [shouldPlay, handleComplete, hasUserStarted]);
 
   if (!isMounted || !shouldPlay) return null;
 
-  const embedSrc = buildEmbedUrl(CURTAINS_INTRO_VIDEO_ID, {
-    autoplay: true,
-    mute: true,
-    controls: false,
-    enableJsApi: true,
-  });
+  const embedSrc = hasUserStarted
+    ? buildEmbedUrl(CURTAINS_INTRO_VIDEO_ID, {
+        autoplay: true,
+        mute: false,
+        controls: false,
+        enableJsApi: true,
+      })
+    : "";
 
   return (
     <div
       className={`fixed inset-0 z-[120] bg-black transition-opacity duration-500 ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
-      aria-hidden
+      role="dialog"
+      aria-modal="true"
+      aria-label="Curtains intro"
     >
       <div className="relative h-full w-full overflow-hidden">
-        <iframe
-          title="Curtains intro"
-          src={embedSrc}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
-        />
+        {hasUserStarted ? (
+          <iframe
+            title="Curtains intro"
+            src={embedSrc}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
+            <p className="text-xs uppercase tracking-[0.35em] text-platinum/70">TMACK48 Intro</p>
+            <button type="button" onClick={handleStart} className="btn-gold text-sm sm:text-base">
+              Play intro with sound
+            </button>
+            <button
+              type="button"
+              onClick={handleSkip}
+              className="btn-ghost text-xs uppercase tracking-[0.2em]"
+            >
+              Skip intro
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
