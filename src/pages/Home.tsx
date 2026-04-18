@@ -27,11 +27,8 @@ export default function Home() {
 
   useEffect(() => {
     if (!videos.length) return;
-    const preferred =
-      videos.find((v) => v.title.toLowerCase().includes("booty brown")) ??
-      videos.find((v) => !v.title.toLowerCase().includes("dirty dirty south")) ??
-      videos[0];
-    setHeroVideo((prev) => prev ?? preferred);
+    const hour = Math.floor(Date.now() / (1000 * 60 * 60));
+    setHeroVideo(videos[hour % videos.length]);
   }, [videos]);
 
   const featuredPool = useMemo(() => videos.filter((v) => v.featured), [videos]);

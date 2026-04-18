@@ -56,7 +56,7 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
                 trackVideo("open", v.videoId);
                 onOpen?.(v);
               }}
-              className="group relative block w-[min(78vw,18rem)] sm:w-72 overflow-hidden rounded-2xl metal-border focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300"
+              className="group relative block w-[min(85vw,36rem)] sm:w-[36rem] overflow-hidden rounded-2xl metal-border focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300"
               aria-label={`Open ${v.title}`}
             >
               <div className="aspect-video-frame relative overflow-hidden">
@@ -67,6 +67,11 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
                   decoding="async"
                   onError={(e) => {
                     e.currentTarget.src = "/golden-acorn.svg";
+                  }}
+                  onLoad={(e) => {
+                    if (e.currentTarget.naturalWidth === 120 && e.currentTarget.src !== "/golden-acorn.svg") {
+                      e.currentTarget.src = "/golden-acorn.svg";
+                    }
                   }}
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />

@@ -15,7 +15,7 @@ const INTRO_FALLBACK_MS = 120000;
 export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
   const [isMounted, setIsMounted] = useState(enabled);
   const [isVisible, setIsVisible] = useState(enabled);
-  const [hasUserStarted, setHasUserStarted] = useState(false);
+  const [hasUserStarted, setHasUserStarted] = useState(true);
   const completedRef = useRef(false);
 
   const shouldPlay = useMemo(() => {
@@ -29,10 +29,6 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
     window.sessionStorage.setItem(INTRO_STORAGE_KEY, "1");
     setIsVisible(false);
     window.setTimeout(() => setIsMounted(false), 420);
-  }, []);
-
-  const handleStart = useCallback(() => {
-    setHasUserStarted(true);
   }, []);
 
   const handleSkip = useCallback(() => {
@@ -93,7 +89,7 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
   const embedSrc = hasUserStarted
     ? buildEmbedUrl(CURTAINS_INTRO_VIDEO_ID, {
         autoplay: true,
-        mute: false,
+        mute: true,
         controls: false,
         enableJsApi: true,
       })
@@ -109,29 +105,22 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
       aria-label="Curtains intro"
     >
       <div className="relative h-full w-full overflow-hidden">
-        {hasUserStarted ? (
-          <iframe
-            title="Curtains intro"
-            src={embedSrc}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
-          />
-        ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center">
-            <p className="text-xs uppercase tracking-[0.35em] text-platinum/70">TMACK48 Intro</p>
-            <button type="button" onClick={handleStart} className="btn-gold text-sm sm:text-base">
-              Play intro with sound
-            </button>
-            <button
-              type="button"
-              onClick={handleSkip}
-              className="btn-ghost text-xs uppercase tracking-[0.2em]"
-            >
-              Skip intro
-            </button>
-          </div>
-        )}
+        <iframe
+          title="Curtains intro"
+          src={embedSrc}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          className="pointer-events-none absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
+        />
+        <div className="absolute inset-0 z-10 flex flex-col items-end justify-start p-6">
+          <button
+            type="button"
+            onClick={handleSkip}
+            className="btn-ghost text-xs uppercase tracking-[0.2em]"
+          >
+            Skip intro
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -317,9 +317,19 @@ html {
   }
 
   .card-premium {
-    @apply glass metal-border rounded-3xl overflow-hidden;
+    @apply metal-border rounded-3xl overflow-hidden;
+    background: linear-gradient(-45deg, #050505, #151105, #1a1205, #000000);
+    background-size: 300% 300%;
+    animation: gradientShift 12s ease infinite;
     transition: transform 0.4s var(--ease-luxe), box-shadow 0.4s var(--ease-luxe);
   }
+
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
   .card-premium:hover {
     transform: translateY(-4px);
     box-shadow: 0 40px 90px -30px rgba(212, 175, 55, 0.35);

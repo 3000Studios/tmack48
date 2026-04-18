@@ -41,10 +41,15 @@ export default function VideoCard({ video, priority = false, className = "", siz
               decoding="async"
               onError={(e) => {
                 const img = e.currentTarget;
-                if (img.src !== video.thumbnailUrl) {
+                if (img.src !== video.thumbnailUrl && img.src.includes("maxresdefault")) {
                   img.src = video.thumbnailUrl;
                 } else {
                   img.src = "/golden-acorn.svg";
+                }
+              }}
+              onLoad={(e) => {
+                if (e.currentTarget.naturalWidth === 120 && !e.currentTarget.src.includes("golden-acorn.svg")) {
+                  e.currentTarget.src = "/golden-acorn.svg";
                 }
               }}
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"

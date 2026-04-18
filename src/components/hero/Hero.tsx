@@ -155,7 +155,7 @@ export default function Hero({ video }: { video: Video }) {
           transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="lg:col-span-6 relative z-10 w-full max-w-3xl lg:ml-auto"
         >
-          <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl">
+          <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
             <div className="aspect-video-frame relative overflow-hidden bg-black">
               {showPlayer ? (
                 <iframe
@@ -177,7 +177,8 @@ export default function Hero({ video }: { video: Video }) {
                   className="h-full w-full object-cover"
                 />
               )}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/90 to-transparent" />
+              <div className="pointer-events-none absolute inset-0 bg-black/40" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-5">
                 <span className="chip chip-active">Now Playing</span>
                 <h2 className="mt-2 display-title text-2xl sm:text-3xl font-bold text-platinum drop-shadow">
