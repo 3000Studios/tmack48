@@ -8,6 +8,7 @@ alwaysApply: true
 ## Default
 
 - Assume **you** perform the work: run commands, edit files, use tools and MCP, read errors, retry with fixes, search the codebase, and consult docs or the web when needed.
+- For secrets and env vars on this machine, **`%USERPROFILE%\.config\env\global.env`** is source of truth—read it before asking the user (see **`global-environment.mdc`**).
 - Do **not** tell the user to run commands, click UI, or change settings **unless** you truly cannot proceed without human-only access (secrets in their head, physical device, account login in browser you cannot use, irreversible destructive action they must approve, etc.).
 
 ## Before asking the user for anything

@@ -1,0 +1,29 @@
+---
+description: Canonical global.env path — source of truth for local dev and all agents on this machine
+alwaysApply: true
+---
+
+# Global environment file (source of truth)
+
+## Location
+
+**`%USERPROFILE%\.config\env\global.env`**  
+Example on this PC: **`C:\Users\Servi\.config\env\global.env`**
+
+All variables the user maintains live there. **This path is authoritative** for local work and agent tasks unless the user explicitly overrides for a one-off.
+
+## Agent behavior
+
+1. When a task needs env (API keys, URLs, IDs, tokens): **read `global.env` first**—do not ask the user to paste secrets.
+2. Parse `KEY=value` lines; skip comments (`#`) and blanks.
+3. **Never** echo secret values in replies, commits, or logs.
+4. If a required key is missing from `global.env`, infer from repo docs / `.env.example` variable names first; only then ask briefly what name to add—not for values already in `global.env`.
+
+## Projects
+
+- Prefer loading this path in scripts/build when possible.
+- If a framework only reads `./.env`, symlink or copy from this file, or set `envDir`/dotenv path to the absolute path above—**do not** duplicate secrets into committed files.
+
+## Deployments
+
+CI/CD dashboards (e.g. Cloudflare, GitHub) keep their own secrets for production; **`global.env` is truth on this machine** for agents and local runs.
