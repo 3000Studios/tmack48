@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://tmack48.com/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://tmack48.com/videos</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://tmack48.com/shorts</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
-  <url><loc>https://tmack48.com/about</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://tmack48.com/support</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://tmack48.com/contact</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://tmack48.com/gallery</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://tmack48.com/press</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://tmack48.com/links</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://tmack48.com/merch</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
-  <url><loc>https://tmack48.com/privacy</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
-  <url><loc>https://tmack48.com/terms</loc><priority>0.3</priority><changefreq>yearly</changefreq></url>
+  <url><loc>https://tmack48.com/</loc><changefreq>daily</changefreq><priority>1</priority></url>
+  <url><loc>https://tmack48.com/videos</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://tmack48.com/shorts</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://tmack48.com/gallery</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://tmack48.com/about</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://tmack48.com/press</loc><changefreq>weekly</changefreq><priority>0.84</priority></url>
+  <url><loc>https://tmack48.com/stories</loc><changefreq>hourly</changefreq><priority>0.92</priority></url>
+  <url><loc>https://tmack48.com/merch</loc><changefreq>weekly</changefreq><priority>0.82</priority></url>
+  <url><loc>https://tmack48.com/support</loc><changefreq>monthly</changefreq><priority>0.78</priority></url>
+  <url><loc>https://tmack48.com/contact</loc><changefreq>monthly</changefreq><priority>0.78</priority></url>
+  <url><loc>https://tmack48.com/links</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://tmack48.com/privacy</loc><changefreq>yearly</changefreq><priority>0.45</priority></url>
+  <url><loc>https://tmack48.com/terms</loc><changefreq>yearly</changefreq><priority>0.45</priority></url>
 </urlset>

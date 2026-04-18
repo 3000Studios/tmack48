@@ -1,3 +1,6 @@
+# TMACK48 — Cloudflare Pages + Functions only (production on custom domain tmack48.com).
+# Deploy: push to `main` (Git-connected Pages) OR `npm run deploy` / `npm run deploy:all`.
+# Production branch name for Wrangler CLI must stay `main` — do not add alternate preview pipelines here.
 name = "tmack48"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]

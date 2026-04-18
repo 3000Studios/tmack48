@@ -6,6 +6,8 @@ export interface SeoInput {
   path?: string;
   image?: string;
   type?: "website" | "music.musician" | "video.other" | "article";
+  /** When true, emits robots noindex (admin / utility routes). */
+  noIndex?: boolean;
 }
 
 export interface SeoData {
@@ -14,6 +16,7 @@ export interface SeoData {
   canonical: string;
   image: string;
   type: SeoInput["type"];
+  noIndex?: boolean;
 }
 
 export function seo(input: SeoInput = {}): SeoData {
@@ -22,7 +25,8 @@ export function seo(input: SeoInput = {}): SeoData {
   const canonical = `${siteConfig.url.replace(/\/$/, "")}${input.path ?? "/"}`;
   const image = input.image ?? `${siteConfig.url.replace(/\/$/, "")}/og-image.svg`;
   const type = input.type ?? "website";
-  return { title, description, canonical, image, type };
+  const noIndex = Boolean(input.noIndex);
+  return { title, description, canonical, image, type, noIndex };
 }
 
 export const artistSchema = () => ({

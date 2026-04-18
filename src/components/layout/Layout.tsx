@@ -5,6 +5,8 @@ import Footer from "@/components/footer/Footer";
 import CursorTrail from "@/components/effects/CursorTrail";
 import BackToTop from "@/components/ui/BackToTop";
 import StickyCta from "@/components/ui/StickyCta";
+import MrBigNuttsBot from "@/components/home/MrBigNuttsBot";
+import PageBackdrop from "@/components/layout/PageBackdrop";
 import { trackPageView } from "@/lib/analytics";
 
 export default function Layout() {
@@ -18,14 +20,16 @@ export default function Layout() {
 
   return (
     <div className="relative flex min-h-dvh flex-col">
+      <PageBackdrop />
       <CursorTrail enabled={isHome} />
       <Navbar />
-      <main id="main" className="flex-1 pt-16 md:pt-20">
+      <main id="main" className="relative z-10 flex-1 pt-16 md:pt-20">
         <Outlet />
       </main>
       <Footer />
       <BackToTop />
       <StickyCta />
+      <MrBigNuttsBot />
     </div>
   );
 }

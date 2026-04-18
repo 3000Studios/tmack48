@@ -1,33 +1,78 @@
-import { Suspense, useMemo, useRef, useState, useEffect } from "react";
+import { Suspense, useMemo, useRef, useState, useEffect, type ReactNode } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, Environment, MeshTransmissionMaterial, OrbitControls, Sparkles } from "@react-three/drei";
+import { Float, Environment, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
 import type { Group, Mesh } from "three";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import {
+  BACKDROP_PRESETS,
+  type PageBackdropVariant,
+} from "@/lib/pageBackdropVariant";
 
-function TmackMark() {
-  const group = useRef<Group | null>(null);
+function ParallaxRig({ children }: { children: ReactNode }) {
+  const group = useRef<Group>(null);
+  const mouse = useRef({ x: 0, y: 0 });
+  const gyro = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.current.y = (e.clientY / window.innerHeight) * 2 - 1;
+    };
+    const onOrient = (e: DeviceOrientationEvent) => {
+      if (e.gamma != null && e.beta != null) {
+        gyro.current.x = Math.max(-1, Math.min(1, (e.gamma || 0) / 45));
+        gyro.current.y = Math.max(-1, Math.min(1, ((e.beta || 0) - 45) / 45));
+      }
+    };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    window.addEventListener("deviceorientation", onOrient, true);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("deviceorientation", onOrient, true);
+    };
+  }, []);
+
+  useFrame((_, delta) => {
+    if (!group.current) return;
+    const targetY = mouse.current.x * 0.28 + gyro.current.x * 0.18;
+    const targetX = -(mouse.current.y * 0.18 + gyro.current.y * 0.12);
+    group.current.rotation.y += (targetY - group.current.rotation.y) * Math.min(1, delta * 4);
+    group.current.rotation.x += (targetX - group.current.rotation.x) * Math.min(1, delta * 4);
+  });
+
+  return <group ref={group}>{children}</group>;
+}
+
+function TmackMark({
+  accent,
+  rim,
+  chill,
+}: {
+  accent: string;
+  rim: string;
+  chill: string;
+}) {
+  const group = useRef<Group>(null);
   const core = useRef<Mesh | null>(null);
   useFrame((state, delta) => {
     if (group.current) {
-      group.current.rotation.y += delta * 0.15;
-      group.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.4) * 0.1;
+      group.current.rotation.y += delta * 0.12;
     }
     if (core.current) {
-      core.current.rotation.z -= delta * 0.4;
+      core.current.rotation.z -= delta * 0.35;
     }
   });
 
-  // Gold torus knot + diamond core + floating rings — functions as the "TMACK48" 3D emblem.
   return (
     <group ref={group}>
       <mesh castShadow>
         <torusKnotGeometry args={[1.1, 0.32, 220, 32, 2, 3]} />
         <meshStandardMaterial
-          color="#D4AF37"
+          color={accent}
           metalness={1}
           roughness={0.18}
-          emissive="#3b2a06"
-          emissiveIntensity={0.3}
+          emissive="#1a1205"
+          emissiveIntensity={0.35}
         />
       </mesh>
 
@@ -39,7 +84,7 @@ function TmackMark() {
           transmission={1}
           ior={1.5}
           chromaticAberration={0.12}
-          color="#B9F2FF"
+          color={chill}
         />
       </mesh>
 
@@ -51,11 +96,11 @@ function TmackMark() {
         >
           <torusGeometry args={[1.7 + i * 0.25, 0.012, 16, 160]} />
           <meshStandardMaterial
-            color={i === 1 ? "#E5E4E2" : "#D4AF37"}
+            color={i === 1 ? rim : accent}
             metalness={1}
             roughness={0.15}
-            emissive={i === 1 ? "#666" : "#3a2a05"}
-            emissiveIntensity={0.25}
+            emissive={i === 1 ? "#444" : "#2a2008"}
+            emissiveIntensity={0.28}
           />
         </mesh>
       ))}
@@ -63,41 +108,44 @@ function TmackMark() {
   );
 }
 
-function Scene() {
+function Scene({ variant }: { variant: PageBackdropVariant }) {
+  const preset = BACKDROP_PRESETS[variant];
+
   return (
     <>
       <color attach="background" args={["#000000"]} />
-      <fog attach="fog" args={["#050505", 6, 18]} />
-      <ambientLight intensity={0.15} />
-      <directionalLight position={[4, 5, 3]} intensity={2.2} color="#FFE29A" />
-      <directionalLight position={[-4, 2, -2]} intensity={1.1} color="#7FDBFF" />
-      <pointLight position={[0, 0, 3]} intensity={1.6} color="#D4AF37" />
+      <fog attach="fog" args={[preset.fogFar, 6, 18]} />
+      <ambientLight intensity={0.14} />
+      <directionalLight position={[4, 5, 3]} intensity={2.2} color={preset.accent} />
+      <directionalLight position={[-4, 2, -2]} intensity={1.05} color={preset.chill} />
+      <pointLight position={[0, 0, 3]} intensity={1.45} color={preset.rim} />
       <Suspense fallback={null}>
-        <Float speed={1.6} rotationIntensity={0.5} floatIntensity={1.2}>
-          <TmackMark />
+        <Float speed={1.6} rotationIntensity={0.35} floatIntensity={1.05}>
+          <ParallaxRig>
+            <TmackMark accent={preset.accent} rim={preset.rim} chill={preset.chill} />
+          </ParallaxRig>
         </Float>
-        <Sparkles count={80} scale={[10, 6, 10]} size={2} speed={0.4} color="#FFE29A" opacity={0.9} />
-        <Sparkles count={40} scale={[10, 6, 10]} size={1.4} speed={0.3} color="#B9F2FF" opacity={0.7} />
+        <Sparkles count={72} scale={[10, 6, 10]} size={2} speed={0.38} color={preset.rim} opacity={0.85} />
+        <Sparkles count={36} scale={[10, 6, 10]} size={1.35} speed={0.28} color={preset.chill} opacity={0.65} />
         <Environment preset="studio" />
       </Suspense>
-      <OrbitControls
-        enablePan={false}
-        enableZoom={false}
-        enableRotate={false}
-        autoRotate
-        autoRotateSpeed={0.35}
-      />
     </>
   );
 }
 
-function LowPowerFallback() {
+function LowPowerFallback({ variant }: { variant: PageBackdropVariant }) {
+  const preset = BACKDROP_PRESETS[variant];
   return (
     <div className="absolute inset-0">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.18)_0%,rgba(5,5,5,0)_60%)]" />
-      <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-grad blur-3xl opacity-40" />
+      <div
+        className="absolute inset-0 opacity-90"
+        style={{
+          background: `radial-gradient(ellipse at center, ${preset.accent}33 0%, transparent 62%)`,
+        }}
+      />
+      <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-grad blur-3xl opacity-35" />
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="display-title gold-text text-6xl sm:text-8xl md:text-9xl opacity-40 select-none">
+        <span className="display-title gold-text text-6xl sm:text-8xl md:text-9xl opacity-35 select-none">
           TMACK48
         </span>
       </div>
@@ -107,15 +155,15 @@ function LowPowerFallback() {
 
 interface Props {
   className?: string;
+  variant?: PageBackdropVariant;
 }
 
-export default function Hero3D({ className = "" }: Props) {
+export default function Hero3D({ className = "", variant = "gold" }: Props) {
   const reduced = useReducedMotion();
   const [failed, setFailed] = useState(false);
   const [lowPower, setLowPower] = useState(false);
 
   useEffect(() => {
-    // Heuristic: small / low-memory devices → skip heavy WebGL
     try {
       const deviceMemory = (navigator as unknown as { deviceMemory?: number }).deviceMemory;
       const cores = navigator.hardwareConcurrency || 4;
@@ -129,19 +177,20 @@ export default function Hero3D({ className = "" }: Props) {
 
   const dpr = useMemo<[number, number]>(() => [1, Math.min(window.devicePixelRatio || 1, 2)], []);
 
-  if (reduced || lowPower || failed) return <LowPowerFallback />;
+  if (reduced || lowPower || failed) return <LowPowerFallback variant={variant} />;
 
   return (
-    <div className={`absolute inset-0 ${className}`}>
+    <div className={`pointer-events-none absolute inset-0 touch-none ${className}`}>
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
         dpr={dpr}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        style={{ pointerEvents: "none" }}
         onCreated={({ gl }) => {
           gl.domElement.addEventListener("webglcontextlost", () => setFailed(true));
         }}
       >
-        <Scene />
+        <Scene variant={variant} />
       </Canvas>
     </div>
   );

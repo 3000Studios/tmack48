@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/ui/Logo";
-import { nav, siteConfig } from "@/data/siteConfig";
+import { navPrimaryPublic, siteConfig } from "@/data/siteConfig";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { CloseIcon, MenuIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { cn, isSupportedLink } from "@/lib/utils";
@@ -24,7 +24,7 @@ export default function Navbar() {
     };
   }, [open]);
 
-  const items = nav.primary.filter(
+  const items = navPrimaryPublic.filter(
     (n) => !(n.href === "/merch" && !isSupportedLink(siteConfig.support.merch))
   );
 
@@ -43,7 +43,7 @@ export default function Navbar() {
       <div className="container-lux flex h-16 md:h-20 items-center justify-between gap-6">
         <Logo />
 
-        <nav aria-label="Primary" className="hidden lg:flex items-center gap-8">
+        <nav aria-label="Primary" className="hidden lg:flex items-center gap-6 xl:gap-8">
           {items.map((it) => (
             <NavLink
               key={it.href}
@@ -51,7 +51,7 @@ export default function Navbar() {
               end={it.href === "/"}
               className={({ isActive }) =>
                 cn(
-                  "link-u text-sm uppercase tracking-[0.25em] font-medium transition-colors",
+                  "link-rise link-u text-sm uppercase tracking-[0.25em] font-medium transition-colors",
                   isActive ? "text-gold-300" : "text-platinum/80 hover:text-gold-200"
                 )
               }
@@ -59,6 +59,17 @@ export default function Navbar() {
               {it.label}
             </NavLink>
           ))}
+          <NavLink
+            to="/admin"
+            className={({ isActive }) =>
+              cn(
+                "btn-gold !px-4 !py-2 text-xs uppercase tracking-[0.2em] shrink-0 shadow-[0_8px_30px_-12px_rgba(212,175,55,0.55)]",
+                isActive && "ring-2 ring-gold-400/70"
+              )
+            }
+          >
+            Admin
+          </NavLink>
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
@@ -105,13 +116,25 @@ export default function Navbar() {
                 >
                   <Link
                     to={it.href}
-                    className="flex items-center justify-between rounded-2xl glass px-5 py-4 text-lg font-medium uppercase tracking-widest hover:ring-gold"
+                    className="link-rise flex items-center justify-between rounded-2xl glass px-5 py-4 text-lg font-medium uppercase tracking-widest hover:ring-gold"
                   >
                     <span>{it.label}</span>
                     <span className="text-gold-300">→</span>
                   </Link>
                 </motion.div>
               ))}
+              <motion.div
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.04 * items.length }}
+              >
+                <Link
+                  to="/admin"
+                  className="flex items-center justify-center rounded-2xl btn-gold px-5 py-4 text-lg font-black uppercase tracking-widest shadow-gold-xl"
+                >
+                  Admin
+                </Link>
+              </motion.div>
               <div className="mt-4 grid grid-cols-1 gap-3">
                 <a
                   href={siteConfig.channel.subscribeUrl}

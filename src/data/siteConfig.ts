@@ -70,9 +70,11 @@ export const nav = {
     { label: "Gallery", href: "/gallery" },
     { label: "About", href: "/about" },
     { label: "Press", href: "/press" },
+    { label: "Stories", href: "/stories" },
     { label: "Merch", href: "/merch" },
     { label: "Support", href: "/support" },
     { label: "Contact", href: "/contact" },
+    { label: "Admin", href: "/admin" },
   ],
   footer: [
     { label: "Merch", href: "/merch" },
@@ -83,3 +85,6 @@ export const nav = {
     { label: "Support", href: "/support" },
   ],
 };
+
+/** Visitor-safe primary links (Admin excluded — render Admin separately in the navbar). */
+export const navPrimaryPublic = nav.primary.filter((item) => item.href !== "/admin");

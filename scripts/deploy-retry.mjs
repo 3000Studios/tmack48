@@ -40,7 +40,7 @@ async function main() {
   }
 
   console.error(
-    "\n❌ All deploy attempts failed. Check `wrangler login`, or connect GitHub to Cloudflare Pages for auto-deploy.\n"
+    "\n❌ All deploy attempts failed. Check `wrangler login`, verify CLOUDFLARE_ACCOUNT_ID / token, then retry deploy to production `main`.\n"
   );
   process.exit(1);
 }

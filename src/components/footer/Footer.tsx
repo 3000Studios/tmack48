@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "@/components/ui/Logo";
-import { nav, siteConfig } from "@/data/siteConfig";
+import { nav, navPrimaryPublic, siteConfig } from "@/data/siteConfig";
 import {
   FacebookIcon,
   InstagramIcon,
@@ -24,7 +24,25 @@ export default function Footer() {
   ].filter((s) => isSupportedLink(s.href));
 
   return (
-    <footer className="relative mt-20 border-t border-white/5 bg-ink-950/80 backdrop-blur-xl">
+    <footer className="relative z-10 mt-20 border-t border-white/5 bg-ink-950/80 backdrop-blur-xl">
+      <img
+        src="/golden-acorn.svg"
+        alt=""
+        aria-hidden
+        className="pointer-events-none absolute -top-6 left-4 h-10 w-10 sm:h-12 sm:w-12 md:left-10 opacity-80 animate-float"
+      />
+      <img
+        src="/golden-acorn.svg"
+        alt=""
+        aria-hidden
+        className="pointer-events-none absolute -top-4 right-6 h-8 w-8 sm:h-10 sm:w-10 md:right-12 opacity-70 animate-float [animation-delay:1.2s]"
+      />
+      <img
+        src="/golden-acorn.svg"
+        alt=""
+        aria-hidden
+        className="pointer-events-none absolute bottom-8 left-[45%] hidden h-9 w-9 md:block opacity-60 animate-float [animation-delay:2s]"
+      />
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
         style={{ background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent)" }}
@@ -57,9 +75,12 @@ export default function Footer() {
         <div>
           <h3 className="eyebrow mb-4">Explore</h3>
           <ul className="space-y-2">
-            {nav.primary.map((it) => (
+            {navPrimaryPublic.map((it) => (
               <li key={it.href}>
-                <Link to={it.href} className="text-platinum/80 hover:text-gold-300 transition-colors">
+                <Link
+                  to={it.href}
+                  className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
+                >
                   {it.label}
                 </Link>
               </li>
@@ -72,7 +93,10 @@ export default function Footer() {
           <ul className="space-y-2">
             {nav.footer.map((it) => (
               <li key={it.href}>
-                <Link to={it.href} className="text-platinum/80 hover:text-gold-300 transition-colors">
+                <Link
+                  to={it.href}
+                  className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
+                >
                   {it.label}
                 </Link>
               </li>

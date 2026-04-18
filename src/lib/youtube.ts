@@ -14,6 +14,8 @@ export interface LiveStats {
 }
 
 const PROXY_ENDPOINT = "/api/youtube";
+const BLOCKED_VIDEO_IDS = new Set(["6u1QtgViGfg"]);
+const BLOCKED_TITLE_PATTERNS = [/dirty\s+south/i];
 
 /**
  * Strategy:
@@ -102,6 +104,7 @@ function mergeWithStatic(live: Partial<Video>[]): Video[] {
 
   for (const lv of live) {
     if (!lv.videoId) continue;
+    if (!isAllowedVideo(lv.videoId, lv.title)) continue;
     const existing = byId.get(lv.videoId);
     if (existing) {
       byId.set(lv.videoId, {
@@ -128,7 +131,15 @@ function mergeWithStatic(live: Partial<Video>[]): Video[] {
       });
     }
   }
-  return Array.from(byId.values()).sort((a, b) => a.order - b.order);
+  return Array.from(byId.values())
+    .filter((v) => isAllowedVideo(v.videoId, v.title))
+    .sort((a, b) => a.order - b.order);
+}
+
+function isAllowedVideo(videoId: string, title?: string): boolean {
+  if (BLOCKED_VIDEO_IDS.has(videoId)) return false;
+  if (title && BLOCKED_TITLE_PATTERNS.some((p) => p.test(title))) return false;
+  return true;
 }
 
 

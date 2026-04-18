@@ -1,68 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import Hero3D from "@/components/effects/Hero3D";
 import AmbientParticles from "@/components/effects/AmbientParticles";
 import { siteConfig } from "@/data/siteConfig";
 import { getRandomFeatured, type Video } from "@/data/videos";
-import { buildEmbedUrl, YOUTUBE_EMBED_MESSAGE_ORIGIN } from "@/lib/youtube";
-import { HeartIcon, PlayIcon, SoundOffIcon, SoundOnIcon, SparkleIcon, YoutubeIcon } from "@/components/ui/Icon";
+import { HeartIcon, PlayIcon, SparkleIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
 
 export default function Hero() {
-  const initial = useMemo<Video>(() => getRandomFeatured(), []);
-  const [video] = useState<Video>(initial);
-  const [muted, setMuted] = useState(true);
-  const [showPlayer, setShowPlayer] = useState(false);
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setShowPlayer(true), 120);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  const heroEmbedSrc = useMemo(
-    () =>
-      buildEmbedUrl(video.videoId, {
-        autoplay: true,
-        mute: true,
-        loop: true,
-        controls: true,
-        enableJsApi: true,
-      }),
-    [video.videoId]
-  );
-
-  const toggleMute = () => {
-    if (!iframeRef.current) return;
-    const next = !muted;
-    setMuted(next);
-    try {
-      iframeRef.current.contentWindow?.postMessage(
-        JSON.stringify({
-          event: "command",
-          func: next ? "mute" : "unMute",
-          args: [],
-        }),
-        YOUTUBE_EMBED_MESSAGE_ORIGIN
-      );
-    } catch {
-      iframeRef.current.src = buildEmbedUrl(video.videoId, {
-        autoplay: true,
-        mute: next,
-        loop: true,
-        controls: true,
-        enableJsApi: true,
-      });
-    }
-  };
+  const video = useMemo<Video>(() => getRandomFeatured(), []);
 
   return (
     <section
       aria-label="TMACK48 hero"
       className="relative isolate overflow-hidden min-h-[92dvh] lg:min-h-[100dvh] flex items-center"
     >
-      <Hero3D className="opacity-90" />
       <AmbientParticles className="opacity-60" count={80} />
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]" />
@@ -157,61 +109,37 @@ export default function Hero() {
           className="lg:col-span-5 relative z-10"
         >
           <div className="relative rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl">
-            <div className="aspect-video-frame relative overflow-hidden bg-black">
-              {showPlayer ? (
-                <iframe
-                  key={video.videoId}
-                  ref={iframeRef}
-                  title={video.title}
-                  src={heroEmbedSrc}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  className="h-full w-full"
-                />
-              ) : (
-                <img
-                  src={video.thumbnailMaxUrl}
-                  onError={(e) => {
-                    const img = e.currentTarget;
-                    if (img.src !== video.thumbnailHqUrl) {
-                      img.src = video.thumbnailHqUrl;
-                    } else {
-                      img.src = "/golden-acorn.svg";
-                    }
-                  }}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              )}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/90 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-5">
-                <span className="chip chip-active">Now Playing</span>
+            <div className="aspect-[4/5] relative overflow-hidden bg-black">
+              <img
+                src={video.thumbnailMaxUrl}
+                onError={(e) => {
+                  const img = e.currentTarget;
+                  if (img.src !== video.thumbnailHqUrl) {
+                    img.src = video.thumbnailHqUrl;
+                  } else {
+                    img.src = "/golden-acorn.svg";
+                  }
+                }}
+                alt={video.title}
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-6">
+                <span className="chip chip-active">Featured Drop</span>
                 <h2 className="mt-2 display-title text-2xl sm:text-3xl font-bold text-platinum drop-shadow">
                   {video.title}
                 </h2>
-                {video.blurb && <p className="text-sm text-platinum/70 mt-1 line-clamp-2">{video.blurb}</p>}
+                {video.blurb && <p className="mt-2 text-sm text-platinum/75 line-clamp-2">{video.blurb}</p>}
+                <a
+                  href={video.watchUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackCta("hero_watch_on_youtube")}
+                  className="mt-4 inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gold-300 hover:text-gold-200"
+                >
+                  <YoutubeIcon className="h-4 w-4" /> Watch on YouTube
+                </a>
               </div>
-            </div>
-
-            <div className="flex items-center justify-between gap-2 px-5 py-3">
-              <button
-                type="button"
-                onClick={toggleMute}
-                className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-platinum/80 hover:text-gold-200"
-                aria-label={muted ? "Unmute hero" : "Mute hero"}
-              >
-                {muted ? <SoundOffIcon className="h-4 w-4" /> : <SoundOnIcon className="h-4 w-4" />}
-                {muted ? "Unmute" : "Mute"}
-              </button>
-              <a
-                href={video.watchUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackCta("hero_watch_on_youtube")}
-                className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gold-300 hover:text-gold-200"
-              >
-                <YoutubeIcon className="h-4 w-4" /> Watch on YouTube
-              </a>
             </div>
           </div>
         </motion.div>

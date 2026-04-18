@@ -153,14 +153,6 @@ const SEED: SeedEntry[] = [
     featured: false,
     blurb: "Coast-to-coast pimp poetry — purple, poetic, premium.",
   },
-  {
-    videoId: "6u1QtgViGfg",
-    title: "The Dirty Dirty South",
-    category: "official",
-    tags: ["official", "music video", "anthem"],
-    featured: true,
-    blurb: "Georgia-sized anthem energy for everyone repping the South.",
-  },
 ];
 
 export const videos: Video[] = SEED.map((v, i) => ({

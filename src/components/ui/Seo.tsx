@@ -2,12 +2,13 @@ import { Helmet } from "react-helmet-async";
 import { seo, type SeoInput } from "@/lib/seo";
 
 export default function Seo(props: SeoInput & { children?: React.ReactNode; schema?: object }) {
-  const { title, description, canonical, image, type } = seo(props);
+  const { title, description, canonical, image, type, noIndex } = seo(props);
   return (
     <Helmet prioritizeSeoTags>
       <title>{title}</title>
       <meta name="description" content={description} />
       <link rel="canonical" href={canonical} />
+      {noIndex && <meta name="robots" content="noindex,nofollow" />}
 
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
