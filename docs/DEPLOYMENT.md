@@ -3,8 +3,19 @@
 ## Single source of truth
 
 - **One repository** hosts this site (this repo).
-- **One production branch:** `main` (rename local `master` → `main` if needed, set as default in GitHub, delete stale branches).
+- **One production branch:** **`main`** (GitHub default branch is **`main`**; production deploys must target this branch only).
 - **One public URL:** custom domain **`https://tmack48.com`** (configure in Cloudflare Pages → Custom domains). Do not treat `*.pages.dev` preview hosts as “live” in user-facing messaging.
+
+### Git push / HTTPS auth (agents & local dev)
+
+If `git push` fails with “could not read Username” or “Invalid username or token”, the shell may have **broken one-character `GH_TOKEN` / `GITHUB_TOKEN` / `GH_PAT` env vars** (common in IDE sessions). Remove them for the push, then use GitHub CLI credentials:
+
+```powershell
+Remove-Item Env:GH_TOKEN,Env:GITHUB_TOKEN,Env:GH_PAT,Env:GH_BOT_TOKEN -ErrorAction SilentlyContinue
+git -c credential.helper="!gh auth git-credential" push -u origin main
+```
+
+Or run **`scripts/push-main.ps1`** from the repo root (same cleanup + push).
 
 ## How releases ship
 
