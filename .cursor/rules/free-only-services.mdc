@@ -1,0 +1,22 @@
+---
+description: Use only free agents/APIs/services; build a free substitute if none exists
+alwaysApply: true
+---
+
+# Free-only external services
+
+## Rule
+
+Only **free** agents, bots, REST/GraphQL/other APIs, cloud hosted backends, and third-party SaaS integrations may be used—no paid tiers, subscriptions, or metered APIs that bill the user unless they explicitly instruct otherwise.
+
+Permitted:
+
+- Truly free tiers that cover the workload without forced upgrade.
+- Open-source / self-hosted options on **free-tier** infra already in the project.
+- **Implement your own** minimal replacement (Pages Function, Worker, script, local CLI) when no good free API exists—it must match or beat the needed behavior within free constraints.
+
+## Process
+
+1. Prefer free documented APIs and local/open-source tooling.
+2. If none suffice, **design and ship** a small custom integration that stays **free** to run.
+3. Never reach for paid vendor SDKs or APIs as the default shortcut.
