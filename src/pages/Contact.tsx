@@ -145,11 +145,13 @@ export default function Contact() {
                 {status === "submitting" ? "Sending…" : "Send Message"}
               </button>
               <a
-                href={`mailto:${siteConfig.contact.email}`}
+                href={siteConfig.channel.subscribeUrl}
                 className="btn-ghost"
-                onClick={() => trackCta("contact_mail_direct")}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCta("contact_subscribe_direct")}
               >
-                <MailIcon className="h-5 w-5" /> Email directly
+                <MailIcon className="h-5 w-5" /> Subscribe directly
               </a>
             </div>
 
@@ -160,14 +162,7 @@ export default function Contact() {
             )}
             {status === "error" && (
               <p role="alert" className="text-sm text-red-300">
-                {errMsg || "Something went wrong."} Please email{" "}
-                <a
-                  className="underline text-gold-300"
-                  href={`mailto:${siteConfig.contact.email}`}
-                >
-                  {siteConfig.contact.email}
-                </a>
-                .
+                {errMsg || "Something went wrong."} Please try again shortly.
               </p>
             )}
           </form>
@@ -176,12 +171,14 @@ export default function Contact() {
         <Reveal className="lg:col-span-5 space-y-6">
           <div className="card-premium p-8">
             <MailIcon className="h-8 w-8 text-gold-300" />
-            <h3 className="mt-3 display-title text-xl font-bold text-platinum">Direct email</h3>
+            <h3 className="mt-3 display-title text-xl font-bold text-platinum">Direct follow</h3>
             <a
-              href={`mailto:${siteConfig.contact.email}`}
+              href={siteConfig.channel.url}
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-2 inline-block text-lg text-gold-200 hover:text-gold-100"
             >
-              {siteConfig.contact.email}
+              TMACK48 YouTube Channel
             </a>
           </div>
 

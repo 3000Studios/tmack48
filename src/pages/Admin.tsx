@@ -2,8 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Seo from "@/components/ui/Seo";
 import Reveal from "@/components/effects/Reveal";
+import MrBigNutsWidget from "@/components/ui/MrBigNutsWidget";
 import { siteConfig } from "@/data/siteConfig";
 import { ArrowRightIcon, DiamondIcon, SparkleIcon, StarIcon } from "@/components/ui/Icon";
+import {
+  deleteComment,
+  getMetrics,
+  loadAdminConfig,
+  loadComments,
+  saveAdminConfig,
+  type AdminConfig,
+} from "@/lib/community";
 
 const SESSION_KEY = "tmack48-admin-session";
 const USER = "admin";
@@ -18,10 +27,20 @@ export default function Admin() {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  const [cfg, setCfg] = useState<AdminConfig>(() => loadAdminConfig());
+  const [comments, setComments] = useState(() => loadComments());
 
   useEffect(() => {
     setAuthed(isSessionValid());
   }, []);
+
+  useEffect(() => {
+    if (!authed) return;
+    setComments(loadComments());
+    setCfg(loadAdminConfig());
+  }, [authed]);
+
+  const metrics = useMemo(() => getMetrics(), [comments]);
 
   const login = useCallback(
     (e: React.FormEvent) => {
@@ -194,16 +213,104 @@ export default function Admin() {
             <Reveal>
               <div className="card-premium p-6 h-full flex flex-col border border-gold-500/30">
                 <DiamondIcon className="h-9 w-9 text-gold-300" />
-                <h2 className="mt-4 display-title text-xl font-bold text-platinum">Placeholder modules</h2>
+                <h2 className="mt-4 display-title text-xl font-bold text-platinum">Reserved modules</h2>
                 <p className="mt-2 text-sm text-platinum/70 flex-1">
-                  Slots reserved for mailing-list export, drop calendar, pixel verification, and inventory —
-                  hook your free-tier Workers or KV here.
+                  Slots for mailing-list export, drop calendar, pixel verification, and inventory — hook
+                  free-tier Workers or KV here.
                 </p>
               </div>
             </Reveal>
           </div>
+
+          <div className="mt-16 space-y-8">
+            <span className="eyebrow">Community & site editors</span>
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="card-premium p-5">
+                <p className="text-xs uppercase tracking-[0.2em] text-platinum/60">Visits (local)</p>
+                <p className="mt-2 text-3xl gold-text">{metrics.visits}</p>
+              </div>
+              <div className="card-premium p-5">
+                <p className="text-xs uppercase tracking-[0.2em] text-platinum/60">Comments</p>
+                <p className="mt-2 text-3xl gold-text">{comments.length}</p>
+              </div>
+              <div className="card-premium p-5">
+                <p className="text-xs uppercase tracking-[0.2em] text-platinum/60">Tips</p>
+                <p className="mt-2 text-sm text-platinum/80">PayPal / merch URLs live in Support + env.</p>
+              </div>
+            </div>
+
+            <div className="card-premium p-6">
+              <h2 className="display-title text-xl text-platinum">Quick site fields</h2>
+              <p className="mt-2 text-sm text-platinum/65">
+                Stored in this browser&apos;s localStorage — use for staging copy ideas (production content still
+                ships from the repo).
+              </p>
+              <div className="mt-4 grid gap-3 md:grid-cols-2">
+                <label className="text-xs uppercase tracking-[0.2em] text-platinum/60">
+                  Hero video id
+                  <input
+                    value={cfg.heroVideoId || ""}
+                    onChange={(e) => setCfg((s) => ({ ...s, heroVideoId: e.target.value }))}
+                    className="mt-1 w-full rounded-xl bg-black/40 px-3 py-2 normal-case tracking-normal ring-1 ring-white/15 focus:outline-none focus:ring-gold-300"
+                  />
+                </label>
+                <label className="text-xs uppercase tracking-[0.2em] text-platinum/60">
+                  Hero title
+                  <input
+                    value={cfg.heroTitle || ""}
+                    onChange={(e) => setCfg((s) => ({ ...s, heroTitle: e.target.value }))}
+                    className="mt-1 w-full rounded-xl bg-black/40 px-3 py-2 normal-case tracking-normal ring-1 ring-white/15 focus:outline-none focus:ring-gold-300"
+                  />
+                </label>
+                <label className="text-xs uppercase tracking-[0.2em] text-platinum/60 md:col-span-2">
+                  Hero bio
+                  <textarea
+                    value={cfg.heroBio || ""}
+                    onChange={(e) => setCfg((s) => ({ ...s, heroBio: e.target.value }))}
+                    rows={3}
+                    className="mt-1 w-full rounded-xl bg-black/40 px-3 py-2 normal-case tracking-normal ring-1 ring-white/15 focus:outline-none focus:ring-gold-300"
+                  />
+                </label>
+                <label className="text-xs uppercase tracking-[0.2em] text-platinum/60 md:col-span-2">
+                  PayPal URL (override hint)
+                  <input
+                    value={cfg.paypalUrl || ""}
+                    onChange={(e) => setCfg((s) => ({ ...s, paypalUrl: e.target.value }))}
+                    className="mt-1 w-full rounded-xl bg-black/40 px-3 py-2 normal-case tracking-normal ring-1 ring-white/15 focus:outline-none focus:ring-gold-300"
+                  />
+                </label>
+              </div>
+              <button type="button" className="btn-gold mt-4" onClick={() => saveAdminConfig(cfg)}>
+                Save local edits
+              </button>
+            </div>
+
+            <div className="card-premium p-6">
+              <h2 className="display-title text-xl text-platinum">Comments</h2>
+              <ul className="mt-4 space-y-2 max-h-80 overflow-auto">
+                {comments.map((c) => (
+                  <li key={c.id} className="rounded-xl bg-black/40 px-3 py-2">
+                    <p className="text-xs text-platinum/60">
+                      {c.author} · {new Date(c.createdAt).toLocaleString()} · {c.videoId}
+                    </p>
+                    <p className="text-sm text-platinum">{c.body}</p>
+                    <button
+                      type="button"
+                      className="mt-1 text-xs text-red-300 hover:text-red-200"
+                      onClick={() => setComments(deleteComment(c.id))}
+                    >
+                      Delete
+                    </button>
+                  </li>
+                ))}
+                {!comments.length && <li className="text-xs text-platinum/60">No comments yet.</li>}
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
+
+      <MrBigNutsWidget />
     </>
   );
 }

@@ -3,7 +3,7 @@ import Reveal from "@/components/effects/Reveal";
 import { siteConfig } from "@/data/siteConfig";
 import { featuredVideos, videos } from "@/data/videos";
 import { buildEmbedUrl } from "@/lib/youtube";
-import { MailIcon, YoutubeIcon } from "@/components/ui/Icon";
+import { YoutubeIcon } from "@/components/ui/Icon";
 
 export default function Press() {
   const highlight = featuredVideos[0] ?? videos[0];
@@ -46,18 +46,12 @@ export default function Press() {
               </p>
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              <a
-                href={`mailto:${siteConfig.contact.email}?subject=TMACK48%20Press%20Inquiry`}
-                className="btn-gold"
-              >
-                <MailIcon className="h-5 w-5" /> Press / Booking
-              </a>
+            <div className="mt-6 grid gap-3 sm:grid-cols-1">
               <a
                 href={siteConfig.channel.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-ghost"
+                className="btn-gold"
               >
                 <YoutubeIcon className="h-5 w-5" /> YouTube Channel
               </a>
@@ -117,13 +111,8 @@ export default function Press() {
 
       <section className="container-lux py-12">
         <div className="card-premium p-8 text-center">
-          <h2 className="display-title text-2xl font-bold text-platinum">Official Booking & Press Contact</h2>
-          <a
-            href={`mailto:${siteConfig.contact.email}`}
-            className="mt-3 inline-block text-gold-200 hover:text-gold-100 text-lg"
-          >
-            {siteConfig.contact.email}
-          </a>
+          <h2 className="display-title text-2xl font-bold text-platinum">Official Press</h2>
+          <p className="mt-3 text-platinum/70">For inquiries, connect through YouTube and official socials.</p>
         </div>
       </section>
     </>

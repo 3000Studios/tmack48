@@ -2,9 +2,9 @@ import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import Home from "@/pages/Home";
+import CurtainsIntro from "@/components/ui/CurtainsIntro";
 import { initAnalytics } from "@/lib/analytics";
 import GoldenAcornLoader from "@/components/ui/GoldenAcornLoader";
-import CurtainsIntro from "@/components/ui/CurtainsIntro";
 
 const Videos = lazy(() => import("@/pages/Videos"));
 const Shorts = lazy(() => import("@/pages/Shorts"));

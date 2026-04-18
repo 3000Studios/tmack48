@@ -62,8 +62,8 @@ export default function Terms() {
           Questions? Email{" "}
           <a className="text-gold-300 link-rise" href={`mailto:${siteConfig.contact.email}`}>
             {siteConfig.contact.email}
-          </a>
-          .
+          </a>{" "}
+          or use the Contact page for support and policy requests.
         </p>
         <p className="text-xs uppercase tracking-[0.3em] text-platinum/50 pt-8">
           Last updated: {new Date().getFullYear()}

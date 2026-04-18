@@ -11,8 +11,9 @@
     "preview": "vite preview",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
     "typecheck": "tsc -b --noEmit",
-    "deploy": "npm run build && wrangler pages deploy dist --project-name=tmack48 --branch=main --commit-dirty=true",
-    "deploy:all": "npm run build && node scripts/deploy-retry.mjs",
+    "postbuild:cf": "node scripts/patch-cfasync.mjs",
+    "deploy": "npm run build && npm run postbuild:cf && wrangler pages deploy dist --project-name=tmack48 --branch=main --commit-dirty=true",
+    "deploy:all": "npm run build && npm run postbuild:cf && node scripts/deploy-retry.mjs",
     "cf:login": "wrangler login",
     "cf:whoami": "wrangler whoami",
     "sitemap": "node scripts/generate-sitemap.mjs"
@@ -29,6 +30,7 @@
     "three": "^0.169.0"
   },
   "devDependencies": {
+    "@types/node": "^25.6.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@types/three": "^0.169.0",

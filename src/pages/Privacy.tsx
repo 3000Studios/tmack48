@@ -44,11 +44,15 @@ export default function Privacy() {
 
         <h2 className="display-title text-2xl font-bold text-platinum mt-8">Contact</h2>
         <p>
-          For any privacy-related questions, email{" "}
+          For privacy-related questions, email{" "}
           <a className="text-gold-300 link-rise" href={`mailto:${siteConfig.contact.email}`}>
             {siteConfig.contact.email}
-          </a>
-          .
+          </a>{" "}
+          or use the{" "}
+          <Link to="/contact" className="text-gold-300 link-rise">
+            Contact
+          </Link>{" "}
+          page.
         </p>
         <p className="text-xs uppercase tracking-[0.3em] text-platinum/50 pt-8">
           Last updated: {new Date().getFullYear()}
