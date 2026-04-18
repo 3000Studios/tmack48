@@ -111,7 +111,7 @@ export default function Hero({ video }: { video: Video }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.3 }}
-            className="mt-5 max-w-xl text-lg sm:text-xl text-platinum/80 leading-relaxed text-balance"
+            className="mt-5 max-w-xl text-lg sm:text-xl text-white font-semibold drop-shadow-md leading-relaxed text-balance"
           >
             Luxury-flashy music, cinematic visuals, and relentless energy. Press play, feel the grind,
             and watch the movement take over.
@@ -153,7 +153,7 @@ export default function Hero({ video }: { video: Video }) {
           initial={{ opacity: 0, scale: 0.95, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="lg:col-span-6 relative z-10 w-full max-w-3xl lg:ml-auto"
+          className="lg:col-span-6 relative z-10 w-full max-w-full sm:max-w-3xl mx-auto lg:ml-auto lg:mr-0"
         >
           <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
             <div className="aspect-video-frame relative overflow-hidden bg-black">

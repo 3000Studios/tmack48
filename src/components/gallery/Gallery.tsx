@@ -6,6 +6,7 @@ import TiltCard from "@/components/effects/TiltCard";
 
 export default function Gallery({ items = defaultGallery }: { items?: GalleryItem[] }) {
   const [active, setActive] = useState<GalleryItem | null>(null);
+  const [deadIds, setDeadIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!active) return;
@@ -17,7 +18,9 @@ export default function Gallery({ items = defaultGallery }: { items?: GalleryIte
   return (
     <>
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {items.map((item, i) => (
+        {items.map((item, i) => {
+          if (deadIds.has(item.id)) return null;
+          return (
           <TiltCard key={item.id} className="card-premium">
             <button
               type="button"
@@ -32,6 +35,11 @@ export default function Gallery({ items = defaultGallery }: { items?: GalleryIte
                 decoding="async"
                 className="absolute inset-0 h-full w-full object-cover transition-all duration-700
                            group-hover:scale-[1.18] group-hover:drop-shadow-[0_20px_40px_rgba(212,175,55,0.45)]"
+                onLoad={(e) => {
+                  if (e.currentTarget.naturalWidth <= 120) {
+                    setDeadIds((prev) => new Set(prev).add(item.id));
+                  }
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
               <div className="absolute left-0 right-0 bottom-0 p-4 translate-y-2 opacity-90 group-hover:translate-y-0 group-hover:opacity-100 transition">
@@ -42,7 +50,8 @@ export default function Gallery({ items = defaultGallery }: { items?: GalleryIte
               </span>
             </button>
           </TiltCard>
-        ))}
+          );
+        })}
       </div>
 
       <AnimatePresence>

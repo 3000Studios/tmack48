@@ -13,6 +13,7 @@ interface Props {
 export default function VideoMarquee({ videos, direction = "left", speed = 50, onOpen }: Props) {
   const reduced = useReducedMotion();
   const [interacting, setInteracting] = useState(false);
+  const [deadIds, setDeadIds] = useState<Set<string>>(new Set());
   const items = [...videos, ...videos];
   const anim = direction === "left" ? "marquee" : "marqueeReverse";
 
@@ -39,7 +40,9 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
           if (!reduced) setInteracting(false);
         }}
       >
-        {items.map((v, i) => (
+        {items.map((v, i) => {
+          if (deadIds.has(v.videoId)) return null;
+          return (
           <li key={`${v.id}-${i}`} className="shrink-0">
             <button
               type="button"
@@ -69,8 +72,8 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
                     e.currentTarget.src = "/golden-acorn.svg";
                   }}
                   onLoad={(e) => {
-                    if (e.currentTarget.naturalWidth === 120 && e.currentTarget.src !== "/golden-acorn.svg") {
-                      e.currentTarget.src = "/golden-acorn.svg";
+                    if (e.currentTarget.naturalWidth <= 120) {
+                      setDeadIds((prev) => new Set(prev).add(v.videoId));
                     }
                   }}
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
@@ -84,7 +87,8 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
               </div>
             </button>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </div>
   );

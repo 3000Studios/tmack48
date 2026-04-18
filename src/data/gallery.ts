@@ -12,7 +12,7 @@ export interface GalleryItem {
 // (each links to the track). Swap for real images in /public/images and update this module.
 export const gallery: GalleryItem[] = videos.slice(0, 12).map((v) => ({
   id: v.id,
-  src: v.thumbnailMaxUrl,
+  src: v.thumbnailHqUrl,
   alt: `${v.title} — TMACK48 visual moment`,
   caption: v.title,
   href: v.watchUrl,

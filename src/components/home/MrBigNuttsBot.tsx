@@ -49,7 +49,7 @@ export default function MrBigNuttsBot() {
   }, [lines]);
 
   return (
-    <div className="fixed bottom-5 right-4 z-[85] max-w-[min(90vw,320px)]">
+    <div className="fixed bottom-24 right-4 z-[85] max-w-[min(90vw,320px)]">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

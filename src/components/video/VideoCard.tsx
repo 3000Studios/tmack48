@@ -15,6 +15,7 @@ interface Props {
 
 export default function VideoCard({ video, priority = false, className = "", size = "md", onOpen }: Props) {
   const [playing, setPlaying] = useState(false);
+  const [isDead, setIsDead] = useState(false);
   const sizeClass =
     size === "sm" ? "rounded-2xl" : size === "lg" ? "rounded-4xl" : "rounded-3xl";
 
@@ -23,6 +24,8 @@ export default function VideoCard({ video, priority = false, className = "", siz
     trackVideo("open", video.videoId);
     onOpen?.(video);
   };
+
+  if (isDead) return null;
 
   return (
     <TiltCard className={`card-premium ${sizeClass} ${className}`}>
@@ -48,8 +51,8 @@ export default function VideoCard({ video, priority = false, className = "", siz
                 }
               }}
               onLoad={(e) => {
-                if (e.currentTarget.naturalWidth === 120 && !e.currentTarget.src.includes("golden-acorn.svg")) {
-                  e.currentTarget.src = "/golden-acorn.svg";
+                if (e.currentTarget.naturalWidth <= 120) {
+                  setIsDead(true);
                 }
               }}
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
