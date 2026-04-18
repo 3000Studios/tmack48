@@ -30,6 +30,15 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
     window.setTimeout(() => setIsMounted(false), 420);
   }, []);
 
+  const handleTapDismiss = useCallback(
+    (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+      event.preventDefault();
+      event.stopPropagation();
+      handleComplete();
+    },
+    [handleComplete]
+  );
+
   useEffect(() => {
     if (!shouldPlay) {
       setIsMounted(false);
@@ -49,16 +58,46 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
           return;
         }
       }
-      if (
-        data &&
-        typeof data === "object" &&
-        "event" in data &&
-        (data as { event?: string }).event === "onStateChange" &&
-        "info" in data &&
-        (data as { info?: number }).info === 0
-      ) {
-        cleanup();
-        handleComplete();
+      if (!data || typeof data !== "object" || !("event" in data)) return;
+
+      const payload = data as {
+        event?: string;
+        info?:
+          | number
+          | {
+              playerState?: number;
+              currentTime?: number;
+              duration?: number;
+            };
+      };
+
+      if (payload.event === "onStateChange") {
+        const state =
+          typeof payload.info === "number"
+            ? payload.info
+            : typeof payload.info === "object" && payload.info
+            ? payload.info.playerState
+            : undefined;
+        if (state === 0) {
+          cleanup();
+          handleComplete();
+        }
+        return;
+      }
+
+      if (payload.event === "infoDelivery" && typeof payload.info === "object" && payload.info) {
+        const { playerState, currentTime, duration } = payload.info;
+        const endedFromState = playerState === 0;
+        const endedFromTime =
+          typeof currentTime === "number" &&
+          typeof duration === "number" &&
+          duration > 0 &&
+          currentTime >= duration - 0.2;
+
+        if (endedFromState || endedFromTime) {
+          cleanup();
+          handleComplete();
+        }
       }
     };
 
@@ -91,6 +130,7 @@ export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
       className={`fixed inset-0 z-[120] bg-black transition-opacity duration-500 ${
         isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
       }`}
+      onPointerDown={handleTapDismiss}
       aria-hidden
     >
       <div className="relative h-full w-full overflow-hidden">
