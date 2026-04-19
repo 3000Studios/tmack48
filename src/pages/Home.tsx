@@ -72,7 +72,7 @@ export default function Home() {
         }}
       />
 
-      {heroVideo && <Hero video={heroVideo} />}
+      {heroVideo && <Hero video={heroVideo} playlist={videos} />}
 
       <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} />
 
