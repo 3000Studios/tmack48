@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Seo from "@/components/ui/Seo";
 import VideoGrid from "@/components/video/VideoGrid";
 import VideoModal from "@/components/video/VideoModal";
@@ -18,6 +18,8 @@ export default function Videos() {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>("featured");
   const [active, setActive] = useState<Video | null>(null);
+  const [page, setPage] = useState(0);
+  const dragRef = useRef({ x0: 0, t0: 0, active: false });
 
   const filtered = useMemo(() => {
     let list = videos;
@@ -35,6 +37,14 @@ export default function Videos() {
     else copy.sort((a, b) => a.order - b.order);
     return copy;
   }, [videos, cat, q, sort]);
+
+  const paged = useMemo(() => {
+    const per = 9;
+    const pages = Math.max(1, Math.ceil(filtered.length / per));
+    const safe = ((page % pages) + pages) % pages;
+    const start = safe * per;
+    return { pages, safe, items: filtered.slice(start, start + per) };
+  }, [filtered, page]);
 
   return (
     <>
@@ -105,7 +115,43 @@ export default function Videos() {
         </Reveal>
 
         <div className="mt-10">
-          <VideoGrid videos={filtered} onOpen={setActive} />
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <p className="text-xs uppercase tracking-[0.3em] text-platinum/50">
+              Page {paged.safe + 1} / {paged.pages}
+            </p>
+            <div className="flex items-center gap-2">
+              <button type="button" className="btn-ghost !px-4 !py-2.5" onClick={() => setPage((p) => p - 1)}>
+                Prev
+              </button>
+              <button type="button" className="btn-ghost !px-4 !py-2.5" onClick={() => setPage((p) => p + 1)}>
+                Next
+              </button>
+            </div>
+          </div>
+          <div
+            className="touch-pan-y"
+            onPointerDown={(e) => {
+              dragRef.current.active = true;
+              dragRef.current.x0 = e.clientX;
+              dragRef.current.t0 = performance.now();
+            }}
+            onPointerUp={(e) => {
+              const st = dragRef.current;
+              if (!st.active) return;
+              st.active = false;
+              const dx = e.clientX - st.x0;
+              const dt = performance.now() - st.t0;
+              if (dt < 900 && Math.abs(dx) > 52) {
+                if (dx < 0) setPage((p) => p + 1);
+                else setPage((p) => p - 1);
+              }
+            }}
+            onPointerCancel={() => {
+              dragRef.current.active = false;
+            }}
+          >
+            <VideoGrid videos={paged.items} onOpen={setActive} />
+          </div>
         </div>
       </section>
 

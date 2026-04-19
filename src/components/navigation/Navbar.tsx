@@ -45,6 +45,7 @@ export default function Navbar() {
         className={cn(
           "fixed inset-x-0 top-0 transition-[transform,background,backdrop-filter,border-color] duration-500 ease-out",
           "border-b",
+          "header-3d",
           open || y > 40
             ? "bg-ink-950/80 backdrop-blur-xl border-white/5 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.8)]"
             : "bg-transparent border-transparent",

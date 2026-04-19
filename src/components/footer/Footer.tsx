@@ -1,18 +1,30 @@
 import { Link } from "react-router-dom";
 import Logo from "@/components/ui/Logo";
 import { nav, navPrimaryPublic, siteConfig } from "@/data/siteConfig";
-import {
-  FacebookIcon,
-  InstagramIcon,
-  TiktokIcon,
-  XIcon,
-  YoutubeIcon,
-} from "@/components/ui/Icon";
+import { YoutubeIcon } from "@/components/ui/Icon";
 import { isSupportedLink } from "@/lib/utils";
 import { trackOutbound } from "@/lib/analytics";
-import FooterAcorns from "./FooterAcorns";
 import { subscribeAcornLandingCount } from "@/lib/acornBus";
 import { useEffect, useState } from "react";
+import FooterAcornObject from "@/components/effects/FooterAcornObject";
+
+function SiteDevMark() {
+  const text = "Site dev 3000 Studios";
+  return (
+    <span className="site-dev-3000" aria-label={text}>
+      {Array.from(text).map((ch, i) => (
+        <span
+          key={`${ch}-${i}`}
+          className={ch === " " ? "site-dev-space" : "site-dev-char"}
+          style={{ ["--i" as never]: i }}
+          aria-hidden="true"
+        >
+          {ch === " " ? "\u00A0" : ch}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -21,11 +33,11 @@ export default function Footer() {
   useEffect(() => subscribeAcornLandingCount(setLanded), []);
 
   const socials = [
-    { href: siteConfig.social.youtube, label: "YouTube", Icon: YoutubeIcon },
-    { href: siteConfig.social.instagram, label: "Instagram", Icon: InstagramIcon },
-    { href: siteConfig.social.facebook, label: "Facebook", Icon: FacebookIcon },
-    { href: siteConfig.social.tiktok, label: "TikTok", Icon: TiktokIcon },
-    { href: siteConfig.social.x, label: "X", Icon: XIcon },
+    { href: siteConfig.social.youtube, label: "YouTube" },
+    { href: siteConfig.social.instagram, label: "Instagram" },
+    { href: siteConfig.social.facebook, label: "Facebook" },
+    { href: siteConfig.social.tiktok, label: "TikTok" },
+    { href: siteConfig.social.x, label: "X" },
   ].filter((s) => isSupportedLink(s.href));
 
   const glow = Math.min(1, landed / 10);
@@ -63,8 +75,14 @@ export default function Footer() {
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
         style={{ background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent)" }}
       />
-      <div className="container-lux py-14 grid gap-12 lg:grid-cols-4">
-        <div className="lg:col-span-2">
+
+      {/* 3D layer: behind footer content but above wallpaper */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <FooterAcornObject />
+      </div>
+
+      <div className="container-lux relative z-10 py-12 grid gap-10 md:grid-cols-3">
+        <div>
           <Logo />
           <p className="mt-5 max-w-md text-platinum/70 leading-relaxed">
             TMACK48 is a premium music universe — luxury-flashy visuals, street-smart anthems,
@@ -84,61 +102,68 @@ export default function Footer() {
           </div>
         </div>
 
-        <div>
-          <h3 className="eyebrow mb-4">Explore</h3>
-          <ul className="space-y-2">
-            {navPrimaryPublic.map((it) => (
-              <li key={it.href}>
-                <Link
-                  to={it.href}
-                  className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
-                >
-                  {it.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <div className="grid grid-cols-3 gap-6 md:col-span-2">
+          <div>
+            <h3 className="eyebrow mb-4">Explore</h3>
+            <ul className="space-y-2">
+              {navPrimaryPublic.map((it) => (
+                <li key={it.href}>
+                  <Link
+                    to={it.href}
+                    className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
+                  >
+                    {it.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <div>
-          <h3 className="eyebrow mb-4">Legal & Contact</h3>
-          <ul className="space-y-2">
-            {nav.footer.map((it) => (
-              <li key={it.href}>
-                <Link
-                  to={it.href}
-                  className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
-                >
-                  {it.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <div>
+            <h3 className="eyebrow mb-4">Legal</h3>
+            <ul className="space-y-2">
+              {nav.footer.map((it) => (
+                <li key={it.href}>
+                  <Link
+                    to={it.href}
+                    className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
+                  >
+                    {it.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="eyebrow mb-4">Social</h3>
+            <ul className="space-y-2">
+              {socials.map(({ href, label }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackOutbound(href, `footer_${label}`)}
+                    className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
+                  >
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
 
-      <div className="container-lux flex flex-col items-center justify-between gap-6 border-t border-white/5 pb-10 pt-6 md:flex-row">
+      <div className="container-lux relative z-10 flex flex-col items-center justify-between gap-6 border-t border-white/5 pb-8 pt-5 md:flex-row">
         <div className="flex w-full items-center justify-between gap-3 md:w-auto md:justify-start">
-          <p className="text-[10px] uppercase tracking-[0.18em] text-platinum/35">Site dev 3000 Studios</p>
-          {socials.map(({ href, label, Icon }) => (
-            <a
-              key={label}
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={label}
-              onClick={() => trackOutbound(href, `footer_${label}`)}
-              className="grid h-10 w-10 place-items-center rounded-full glass text-platinum/80 hover:text-gold-300 hover:ring-gold transition-all"
-            >
-              <Icon className="h-5 w-5" />
-            </a>
-          ))}
+          <SiteDevMark />
         </div>
         <p className="text-xs uppercase tracking-[0.3em] text-platinum/50">
           © {year} TMACK48 — All rights reserved.
         </p>
       </div>
-      <FooterAcorns />
     </footer>
   );
 }

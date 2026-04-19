@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Video } from "@/data/videos";
-import { buildEmbedUrl } from "@/lib/youtube";
 import Reveal from "@/components/effects/Reveal";
 import { ArrowRightIcon, HeartIcon, PlayIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta, trackVideo } from "@/lib/analytics";
@@ -17,24 +16,21 @@ export default function FeaturedSpotlight({
     return featured.length ? featured : pool;
   }, [pool]);
   const [idx, setIdx] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const dragRef = useMemo(() => ({ x0: 0, t0: 0, active: false }), []);
 
   if (!source.length) return null;
   const safeIdx = ((idx % source.length) + source.length) % source.length;
   const video = source[safeIdx];
   const prev = () => {
     setIdx((v) => v - 1);
-    setPlaying(false);
   };
   const next = () => {
     setIdx((v) => v + 1);
-    setPlaying(false);
   };
 
   useEffect(() => {
     const id = window.setInterval(() => {
       setIdx((v) => v + 1);
-      setPlaying(false);
     }, 8000);
     return () => window.clearInterval(id);
   }, []);
@@ -44,65 +40,31 @@ export default function FeaturedSpotlight({
       <Reveal>
         <div className="grid gap-8 lg:grid-cols-12 items-center">
           <div className="lg:col-span-7">
-            <div className="card-premium overflow-hidden shadow-gold-xl">
-              <div className="aspect-video-frame relative">
-                {!playing ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPlaying(true);
-                      trackVideo("play", video.videoId);
-                    }}
-                    className="group absolute inset-0"
-                    aria-label={`Play ${video.title}`}
-                  >
-                    <img
-                      src={video.thumbnailMaxUrl}
-                      onError={(e) => {
-                        const img = e.currentTarget;
-                        if (img.src !== video.thumbnailHqUrl) {
-                          img.src = video.thumbnailHqUrl;
-                        } else {
-                          img.src = "/golden-acorn.svg";
-                        }
-                      }}
-                      alt={video.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <span className="absolute inset-0 grid place-items-center">
-                      <span
-                        className="grid h-24 w-24 place-items-center rounded-full animate-pulseGlow"
-                        style={{
-                          background: "linear-gradient(135deg,#FFE29A,#D4AF37,#8D7220)",
-                        }}
-                      >
-                        <PlayIcon className="h-10 w-10 text-ink-950 translate-x-[3px]" />
-                      </span>
-                    </span>
-                  </button>
-                ) : (
-                  <iframe
-                    key={video.videoId}
-                    title={video.title}
-                    src={buildEmbedUrl(video.videoId, {
-                      autoplay: true,
-                      mute: true,
-                      controls: true,
-                      enableJsApi: true,
-                    })}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    className="h-full w-full"
-                  />
-                )}
-              </div>
-            </div>
             <div className="mt-4 flex items-center justify-center gap-2">
               <button type="button" onClick={prev} className="btn-ghost !px-4 !py-2.5">
                 <ArrowRightIcon className="h-4 w-4 rotate-180" />
               </button>
-              <div className="relative h-40 w-full max-w-3xl overflow-hidden">
+              <div
+                className="relative h-40 w-full max-w-3xl overflow-hidden touch-pan-y"
+                onPointerDown={(e) => {
+                  dragRef.active = true;
+                  dragRef.x0 = e.clientX;
+                  dragRef.t0 = performance.now();
+                }}
+                onPointerUp={(e) => {
+                  if (!dragRef.active) return;
+                  dragRef.active = false;
+                  const dx = e.clientX - dragRef.x0;
+                  const dt = performance.now() - dragRef.t0;
+                  if (dt < 900 && Math.abs(dx) > 48) {
+                    if (dx < 0) next();
+                    else prev();
+                  }
+                }}
+                onPointerCancel={() => {
+                  dragRef.active = false;
+                }}
+              >
                 <div className="absolute inset-0 grid place-items-center [perspective:1400px]">
                   {[-1, 0, 1].map((offset) => {
                     const cardIndex = ((safeIdx + offset) % source.length + source.length) % source.length;
@@ -114,7 +76,6 @@ export default function FeaturedSpotlight({
                         type="button"
                         onClick={() => {
                           setIdx(cardIndex);
-                          setPlaying(false);
                         }}
                         className="absolute h-32 w-[min(58vw,260px)] sm:w-[min(420px,60vw)] overflow-hidden rounded-2xl border border-gold-300/30 bg-black/60 shadow-[0_18px_55px_-28px_rgba(212,175,55,0.65)]"
                         animate={{
@@ -162,12 +123,11 @@ export default function FeaturedSpotlight({
               <button
                 type="button"
                 onClick={() => {
-                  setPlaying(true);
                   trackVideo("play", video.videoId);
                 }}
                 className="btn-gold"
               >
-                <PlayIcon className="h-5 w-5" /> Play Now
+                <PlayIcon className="h-5 w-5" /> Open Video
               </button>
               <a
                 href={video.watchUrl}

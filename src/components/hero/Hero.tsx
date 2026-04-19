@@ -2,40 +2,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import AmbientParticles from "@/components/effects/AmbientParticles";
-import { siteConfig } from "@/data/siteConfig";
 import type { Video } from "@/data/videos";
 import { buildEmbedUrl, YOUTUBE_EMBED_MESSAGE_ORIGIN } from "@/lib/youtube";
-import { HeartIcon, PlayIcon, SoundOffIcon, SoundOnIcon, SparkleIcon, YoutubeIcon } from "@/components/ui/Icon";
+import { HeartIcon, SoundOffIcon, SoundOnIcon, SparkleIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
 
 const HERO_AUDIO_PREF_KEY = "tmack48-hero-audio";
-
-function playTing() {
-  if (typeof window === "undefined") return;
-  const Ctx = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-  if (!Ctx) return;
-  const ctx = new Ctx();
-  const o = ctx.createOscillator();
-  const g = ctx.createGain();
-  o.type = "sine";
-  o.frequency.value = 1046.5;
-  g.gain.value = 0.0001;
-  o.connect(g);
-  g.connect(ctx.destination);
-  const now = ctx.currentTime;
-  g.gain.setValueAtTime(0.0001, now);
-  g.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
-  g.gain.exponentialRampToValueAtTime(0.0001, now + 0.22);
-  o.start(now);
-  o.stop(now + 0.24);
-  o.onended = () => {
-    try {
-      ctx.close();
-    } catch {
-      // ignore
-    }
-  };
-}
 
 export default function Hero({ video, playlist }: { video: Video; playlist?: Video[] }) {
   const pool = useMemo(() => (playlist && playlist.length ? playlist : [video]), [playlist, video]);
@@ -64,7 +36,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
         autoplay: true,
         mute: muted,
         loop: true,
-        controls: true,
+        controls: false,
         enableJsApi: true,
       }),
     [current.videoId, muted]
@@ -102,7 +74,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
         autoplay: true,
         mute: next,
         loop: true,
-        controls: true,
+        controls: false,
         enableJsApi: true,
       });
     }
@@ -208,42 +180,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
             and watch the movement take over.
           </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, x: -18, y: 14 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.6 }}
-            className="mt-10 w-full max-w-full min-w-0 overflow-hidden rounded-2xl border border-gold-300/20 bg-black/35 px-4 py-3"
-            onMouseEnter={() => playTing()}
-          >
-            <div
-              className="flex w-max items-center gap-8 whitespace-nowrap will-change-transform"
-              style={{ animation: "marquee 32s linear infinite" }}
-            >
-              <span className="inline-flex items-center gap-2 pr-4">
-                <SparkleIcon className="h-4 w-4 text-gold-300 animate-pulse" />
-                <SparkleIcon className="h-3.5 w-3.5 text-gold-200/80 animate-pulse [animation-delay:300ms]" />
-                <SparkleIcon className="h-3 w-3 text-gold-100/70 animate-pulse [animation-delay:600ms]" />
-              </span>
-              {[
-                { label: "Videos", value: siteConfig.stats.videos },
-                { label: "Years", value: siteConfig.stats.years },
-                { label: "Fans", value: siteConfig.stats.fans },
-                { label: "Moves", value: siteConfig.stats.moves },
-              ]
-                .concat([
-                  { label: "Videos", value: siteConfig.stats.videos },
-                  { label: "Years", value: siteConfig.stats.years },
-                  { label: "Fans", value: siteConfig.stats.fans },
-                  { label: "Moves", value: siteConfig.stats.moves },
-                ])
-                .map((s, i) => (
-                  <div key={`${s.label}-${i}`} className="inline-flex items-center gap-2 text-sm">
-                    <span className="gold-text font-bold">{s.value}</span>
-                    <span className="uppercase tracking-[0.25em] text-platinum/70">{s.label}</span>
-                  </div>
-                ))}
-            </div>
-          </motion.div>
+          {/* Text scroll removed per mobile layout request */}
         </div>
 
         <motion.div
@@ -297,31 +234,14 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
                 {muted ? <SoundOffIcon className="h-4 w-4" /> : <SoundOnIcon className="h-4 w-4" />}
                 {muted ? "Unmute" : "Mute"}
               </button>
-              <a
-                href={current.watchUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackCta("hero_watch_on_youtube")}
-                className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-gold-300 hover:text-gold-200"
-              >
-                <YoutubeIcon className="h-4 w-4" /> Watch on YouTube
-              </a>
             </div>
           </div>
           <div className="mt-4 sm:mt-5 flex flex-wrap gap-3">
-            <Link to="/videos" onClick={() => trackCta("hero_watch_now")} className="btn-gold glint text-sm sm:text-base">
-              <PlayIcon className="h-5 w-5" /> Watch Now
-            </Link>
-            <a
-              href={siteConfig.channel.subscribeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackCta("hero_subscribe")}
-              className="btn-ghost text-sm sm:text-base"
+            <Link
+              to="/support"
+              onClick={() => trackCta("hero_support")}
+              className="btn-diamond !px-4 !py-2 text-xs sm:text-sm"
             >
-              <YoutubeIcon className="h-5 w-5" /> Subscribe on YouTube
-            </a>
-            <Link to="/support" onClick={() => trackCta("hero_support")} className="btn-diamond text-sm sm:text-base">
               <HeartIcon className="h-5 w-5" /> Support the Artist
             </Link>
           </div>
