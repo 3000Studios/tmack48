@@ -261,10 +261,10 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
           initial={{ opacity: 0, scale: 0.95, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="lg:col-span-6 relative z-10 w-full max-w-full sm:max-w-3xl mx-auto lg:ml-auto lg:mr-0"
+          className="lg:col-span-6 relative z-10 w-full max-w-[min(100%,560px)] mx-auto lg:ml-auto lg:mr-0 self-center"
         >
           <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
-            <div className="aspect-video-frame max-h-[28dvh] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black">
+            <div className="aspect-video-frame max-h-[min(28svh,260px)] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black flex items-center justify-center">
               {showPlayer ? (
                 <iframe
                   key={current.videoId}
@@ -273,7 +273,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
                   src={heroEmbedSrc}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
-                  className="h-full w-full border-0"
+                  className="block h-full w-full border-0"
                 />
               ) : (
                 <img
