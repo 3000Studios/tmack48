@@ -58,7 +58,7 @@ export default function Hero({ video }: { video: Video }) {
   return (
     <section
       aria-label="TMACK48 hero"
-      className="relative isolate overflow-hidden min-h-[92dvh] lg:min-h-[100dvh] flex items-center"
+      className="relative isolate overflow-hidden lg:min-h-[100dvh] lg:flex lg:items-center"
       onMouseMove={(e) => {
         const rect = e.currentTarget.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -156,7 +156,7 @@ export default function Hero({ video }: { video: Video }) {
           className="lg:col-span-6 relative z-10 w-full max-w-full sm:max-w-3xl mx-auto lg:ml-auto lg:mr-0"
         >
           <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
-            <div className="relative h-[52dvh] sm:h-[56dvh] lg:h-[72dvh] overflow-hidden bg-black">
+            <div className="aspect-video-frame max-h-[44dvh] sm:max-h-[52dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black">
               {showPlayer ? (
                 <iframe
                   key={video.videoId}
@@ -165,7 +165,7 @@ export default function Hero({ video }: { video: Video }) {
                   src={heroEmbedSrc}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
-                  className="absolute left-1/2 top-1/2 h-[56.25vw] min-h-full w-[177.77vh] min-w-full -translate-x-1/2 -translate-y-1/2 border-0"
+                  className="h-full w-full border-0"
                 />
               ) : (
                 <img
