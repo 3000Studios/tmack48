@@ -20,5 +20,7 @@ export function youtubeShortsUrl(videoId: string): string {
 }
 
 export function youtubeThumbnailUrl(videoId: string, size: "mq" | "hq" | "max" = "hq"): string {
-  return `https://i.ytimg.com/vi/${videoId}/${size}default.jpg`;
+  const file =
+    size === "mq" ? "mqdefault.jpg" : size === "hq" ? "hqdefault.jpg" : "maxresdefault.jpg";
+  return `https://i.ytimg.com/vi/${videoId}/${file}`;
 }

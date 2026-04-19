@@ -264,7 +264,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
           className="lg:col-span-6 relative z-10 w-full max-w-[min(100%,560px)] mx-auto lg:ml-auto lg:mr-0 self-center"
         >
           <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
-            <div className="aspect-video-frame max-h-[min(28svh,260px)] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black flex items-center justify-center">
+            <div className="aspect-video-frame w-full max-h-[min(28svh,260px)] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black flex items-center justify-center">
               {showPlayer ? (
                 <iframe
                   key={current.videoId}
