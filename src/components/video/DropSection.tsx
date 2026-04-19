@@ -57,24 +57,22 @@ export default function DropSection({ video, title, copy, side, onOpen, index }:
           animate={inView ? "show" : "hidden"}
           className={`lg:col-span-7 ${side === "right" ? "lg:col-start-6" : ""}`}
         >
-          <div className="card-premium overflow-hidden shadow-gold-xl">
-            <div className="aspect-video-frame relative bg-black">
-              {inView ? (
-                <iframe
-                  title={video.title}
-                  src={buildEmbedUrl(video.videoId, {
-                    autoplay: true,
-                    mute: true,
-                    controls: false,
-                    loop: true,
-                  })}
-                  allow="autoplay; encrypted-media; picture-in-picture"
-                  className="h-full w-full"
-                />
-              ) : (
-                <img src={video.thumbnailMaxUrl} alt={video.title} className="h-full w-full object-cover" />
-              )}
-            </div>
+          <div className="card-premium aspect-video-frame relative overflow-hidden shadow-gold-xl">
+            {inView ? (
+              <iframe
+                title={video.title}
+                src={buildEmbedUrl(video.videoId, {
+                  autoplay: true,
+                  mute: true,
+                  controls: false,
+                  loop: true,
+                })}
+                allow="autoplay; encrypted-media; picture-in-picture"
+                className="absolute inset-0 h-full w-full border-0"
+              />
+            ) : (
+              <img src={video.thumbnailMaxUrl} alt={video.title} className="h-full w-full object-cover" />
+            )}
           </div>
         </motion.div>
 
