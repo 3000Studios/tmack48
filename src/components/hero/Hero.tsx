@@ -187,7 +187,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
       />
       <div className="noise-overlay" />
 
-      <div className="relative container-lux grid gap-8 lg:grid-cols-12 items-center py-12 sm:py-14 lg:py-20">
+      <div className="relative container-lux grid gap-7 lg:gap-8 lg:grid-cols-12 items-center py-8 sm:py-12 lg:py-20">
         <div className="lg:col-span-6 relative z-10 max-w-2xl">
           <motion.p
             initial={{ opacity: 0, y: 14 }}
@@ -264,7 +264,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
           className="lg:col-span-6 relative z-10 w-full max-w-full sm:max-w-3xl mx-auto lg:ml-auto lg:mr-0"
         >
           <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
-            <div className="aspect-video-frame max-h-[44dvh] sm:max-h-[52dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black">
+            <div className="aspect-video-frame max-h-[34dvh] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black">
               {showPlayer ? (
                 <iframe
                   key={current.videoId}
