@@ -42,7 +42,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
   const initialIndex = useMemo(() => Math.max(0, pool.findIndex((v) => v.id === video.id)), [pool, video.id]);
   const [idx, setIdx] = useState(initialIndex);
 
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
   const [showPlayer, setShowPlayer] = useState(false);
   const [spot, setSpot] = useState({ x: 50, y: 18 });
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -109,24 +109,13 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
   };
 
   useEffect(() => {
-    // Respect browser autoplay policy: we can autoplay video, but audio requires a user gesture.
-    // If the visitor previously enabled audio, we try to unmute after initial load; if the browser blocks it, video stays muted.
-    try {
-      const pref = window.localStorage.getItem(HERO_AUDIO_PREF_KEY);
-      if (pref === "1") setMuted(false);
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  useEffect(() => {
     if (!showPlayer) return;
-    if (muted) return;
+    // Attempt to start with audio on. If the browser blocks autoplay audio, playback will remain muted.
     const t = window.setTimeout(() => {
       sendCommand("unMute");
     }, 250);
     return () => window.clearTimeout(t);
-  }, [muted, showPlayer, sendCommand]);
+  }, [showPlayer, sendCommand]);
 
   useEffect(() => {
     if (!showPlayer) return;
