@@ -7,6 +7,7 @@ import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { CloseIcon, MenuIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { cn, isSupportedLink } from "@/lib/utils";
 import { trackCta } from "@/lib/analytics";
+import HeaderAcorns from "@/components/effects/HeaderAcorns";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -51,6 +52,7 @@ export default function Navbar() {
         )}
         style={{ zIndex: 60 }}
       >
+        <HeaderAcorns />
         <div className="container-lux flex h-16 md:h-20 items-center justify-between gap-3 md:gap-4">
           <Logo />
 

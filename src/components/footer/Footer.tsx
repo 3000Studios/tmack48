@@ -11,9 +11,14 @@ import {
 import { isSupportedLink } from "@/lib/utils";
 import { trackOutbound } from "@/lib/analytics";
 import FooterAcorns from "./FooterAcorns";
+import { subscribeAcornLandingCount } from "@/lib/acornBus";
+import { useEffect, useState } from "react";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const [landed, setLanded] = useState(0);
+
+  useEffect(() => subscribeAcornLandingCount(setLanded), []);
 
   const socials = [
     { href: siteConfig.social.youtube, label: "YouTube", Icon: YoutubeIcon },
@@ -23,8 +28,19 @@ export default function Footer() {
     { href: siteConfig.social.x, label: "X", Icon: XIcon },
   ].filter((s) => isSupportedLink(s.href));
 
+  const glow = Math.min(1, landed / 10);
+  const bgBoost = 0.8 + glow * 0.55;
+
   return (
-    <footer className="relative z-10 mt-20 border-t border-white/5 bg-ink-950/80 backdrop-blur-xl">
+    <footer
+      className="relative z-10 mt-20 border-t border-white/5 bg-ink-950/80 backdrop-blur-xl transition-[filter,background-color] duration-700"
+      style={{
+        filter: `brightness(${bgBoost})`,
+        boxShadow: glow
+          ? `0 -30px 90px -60px rgba(212,175,55,${0.25 + glow * 0.45})`
+          : undefined,
+      }}
+    >
       <img
         src="/golden-acorn.svg"
         alt=""
