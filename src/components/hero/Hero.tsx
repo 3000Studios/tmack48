@@ -188,7 +188,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
       <div className="noise-overlay" />
 
       <div className="relative container-lux grid gap-7 lg:gap-8 lg:grid-cols-12 items-center py-8 sm:py-12 lg:py-20">
-        <div className="lg:col-span-6 relative z-10 max-w-2xl">
+        <div className="lg:col-span-6 relative z-10 max-w-2xl min-w-0">
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -223,7 +223,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
             initial={{ opacity: 0, x: -18, y: 14 }}
             animate={{ opacity: 1, x: 0, y: 0 }}
             transition={{ duration: 0.9, delay: 0.6 }}
-            className="mt-10 overflow-hidden rounded-2xl border border-gold-300/20 bg-black/35 px-4 py-3"
+            className="mt-10 w-full max-w-full min-w-0 overflow-hidden rounded-2xl border border-gold-300/20 bg-black/35 px-4 py-3"
             onMouseEnter={() => playTing()}
           >
             <div
