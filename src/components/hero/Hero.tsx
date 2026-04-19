@@ -264,7 +264,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
           className="lg:col-span-6 relative z-10 w-full max-w-full sm:max-w-3xl mx-auto lg:ml-auto lg:mr-0"
         >
           <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
-            <div className="aspect-video-frame max-h-[34dvh] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black">
+            <div className="aspect-video-frame max-h-[28dvh] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black">
               {showPlayer ? (
                 <iframe
                   key={current.videoId}
@@ -319,8 +319,8 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
               </a>
             </div>
           </div>
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Link to="/videos" onClick={() => trackCta("hero_watch_now")} className="btn-gold glint text-base">
+          <div className="mt-4 sm:mt-5 flex flex-wrap gap-3">
+            <Link to="/videos" onClick={() => trackCta("hero_watch_now")} className="btn-gold glint text-sm sm:text-base">
               <PlayIcon className="h-5 w-5" /> Watch Now
             </Link>
             <a
@@ -328,11 +328,11 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackCta("hero_subscribe")}
-              className="btn-ghost text-base"
+              className="btn-ghost text-sm sm:text-base"
             >
               <YoutubeIcon className="h-5 w-5" /> Subscribe on YouTube
             </a>
-            <Link to="/support" onClick={() => trackCta("hero_support")} className="btn-diamond text-base">
+            <Link to="/support" onClick={() => trackCta("hero_support")} className="btn-diamond text-sm sm:text-base">
               <HeartIcon className="h-5 w-5" /> Support the Artist
             </Link>
           </div>
