@@ -39,7 +39,8 @@ export default function App() {
 
   return (
     <>
-      <CurtainsIntro enabled={location.pathname === "/"} />
+      {/* Intro video disabled until a replacement is ready. */}
+      <CurtainsIntro enabled={false} />
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />

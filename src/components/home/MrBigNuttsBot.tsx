@@ -11,7 +11,10 @@ const BIG_NUTTS_LINES = [
   "If the beat drop, your confidence better drop heavier.",
 ];
 
+const BOT_VOICE_ENABLED = import.meta.env.VITE_BOT_VOICE === "1";
+
 function speakLine(line: string) {
+  if (!BOT_VOICE_ENABLED) return;
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(line);
@@ -32,19 +35,13 @@ export default function MrBigNuttsBot() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const pickAndSpeak = () => {
+    // First random line shortly after landing.
+    const starter = window.setTimeout(() => {
       const pick = lines[Math.floor(Math.random() * lines.length)];
       setLine(pick);
-      speakLine(pick);
-    };
-
-    // First random line shortly after landing.
-    const starter = window.setTimeout(pickAndSpeak, 10000);
-    // Random trash-talk every 7 minutes.
-    const interval = window.setInterval(pickAndSpeak, 7 * 60 * 1000);
+    }, 10000);
     return () => {
       window.clearTimeout(starter);
-      window.clearInterval(interval);
     };
   }, [lines]);
 
