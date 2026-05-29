@@ -27,6 +27,10 @@ const Tour = lazy(() => import("@/pages/Tour"));
 const News = lazy(() => import("@/pages/News"));
 const NewsPost = lazy(() => import("@/pages/NewsPost"));
 const SongRequest = lazy(() => import("@/pages/SongRequest"));
+const Community = lazy(() => import("@/pages/Community"));
+const Cookies = lazy(() => import("@/pages/Cookies"));
+const Disclaimer = lazy(() => import("@/pages/Disclaimer"));
+const Refunds = lazy(() => import("@/pages/Refunds"));
 
 function PageFallback() {
   return (
@@ -181,6 +185,38 @@ export default function App() {
             element={
               <Suspense fallback={<PageFallback />}>
                 <Terms />
+              </Suspense>
+            }
+          />
+          <Route
+            path="community"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Community />
+              </Suspense>
+            }
+          />
+          <Route
+            path="cookies"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Cookies />
+              </Suspense>
+            }
+          />
+          <Route
+            path="disclaimer"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Disclaimer />
+              </Suspense>
+            }
+          />
+          <Route
+            path="refunds"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Refunds />
               </Suspense>
             }
           />

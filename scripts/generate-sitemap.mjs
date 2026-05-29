@@ -36,8 +36,12 @@ const STATIC = [
   { loc: "/support", changefreq: "monthly", priority: "0.78" },
   { loc: "/contact", changefreq: "monthly", priority: "0.78" },
   { loc: "/links", changefreq: "monthly", priority: "0.65" },
+  { loc: "/community", changefreq: "daily", priority: "0.8" },
   { loc: "/privacy", changefreq: "yearly", priority: "0.45" },
   { loc: "/terms", changefreq: "yearly", priority: "0.45" },
+  { loc: "/cookies", changefreq: "yearly", priority: "0.4" },
+  { loc: "/disclaimer", changefreq: "yearly", priority: "0.4" },
+  { loc: "/refunds", changefreq: "yearly", priority: "0.4" },
 ];
 
 // --- Tracks: titles of non-short catalog entries from src/data/videos.ts ---

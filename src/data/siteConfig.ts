@@ -71,6 +71,7 @@ export const nav = {
     { label: "Gallery", href: "/gallery" },
     { label: "Tour", href: "/tour" },
     { label: "News", href: "/news" },
+    { label: "Community", href: "/community" },
     { label: "Request", href: "/request" },
     { label: "About", href: "/about" },
     { label: "Support", href: "/support" },
@@ -83,8 +84,12 @@ export const nav = {
     { label: "Stories", href: "/stories" },
     { label: "Merch", href: "/merch" },
     { label: "Links", href: "/links" },
+    { label: "Community", href: "/community" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Use", href: "/terms" },
+    { label: "Cookie Policy", href: "/cookies" },
+    { label: "Disclaimer", href: "/disclaimer" },
+    { label: "Refund Policy", href: "/refunds" },
   ],
 };
 
