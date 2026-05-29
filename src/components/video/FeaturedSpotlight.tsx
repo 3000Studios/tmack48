@@ -18,6 +18,13 @@ export default function FeaturedSpotlight({
   const [idx, setIdx] = useState(0);
   const dragRef = useMemo(() => ({ x0: 0, t0: 0, active: false }), []);
 
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setIdx((v) => v + 1);
+    }, 8000);
+    return () => window.clearInterval(id);
+  }, []);
+
   if (!source.length) return null;
   const safeIdx = ((idx % source.length) + source.length) % source.length;
   const video = source[safeIdx];
@@ -27,13 +34,6 @@ export default function FeaturedSpotlight({
   const next = () => {
     setIdx((v) => v + 1);
   };
-
-  useEffect(() => {
-    const id = window.setInterval(() => {
-      setIdx((v) => v + 1);
-    }, 8000);
-    return () => window.clearInterval(id);
-  }, []);
 
   return (
     <section id="featured" className="section">

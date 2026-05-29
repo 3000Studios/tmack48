@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import Layout from "@/components/layout/Layout";
 import Home from "@/pages/Home";
 import CurtainsIntro from "@/components/ui/CurtainsIntro";
@@ -21,6 +21,12 @@ const Merch = lazy(() => import("@/pages/Merch"));
 const Admin = lazy(() => import("@/pages/Admin"));
 const Stories = lazy(() => import("@/pages/Stories"));
 const StoryEdition = lazy(() => import("@/pages/StoryEdition"));
+const Music = lazy(() => import("@/pages/Music"));
+const TrackPage = lazy(() => import("@/pages/TrackPage"));
+const Tour = lazy(() => import("@/pages/Tour"));
+const News = lazy(() => import("@/pages/News"));
+const NewsPost = lazy(() => import("@/pages/NewsPost"));
+const SongRequest = lazy(() => import("@/pages/SongRequest"));
 
 function PageFallback() {
   return (
@@ -31,8 +37,6 @@ function PageFallback() {
 }
 
 export default function App() {
-  const location = useLocation();
-
   useEffect(() => {
     initAnalytics();
   }, []);
@@ -97,6 +101,54 @@ export default function App() {
             element={
               <Suspense fallback={<PageFallback />}>
                 <Press />
+              </Suspense>
+            }
+          />
+          <Route
+            path="music"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Music />
+              </Suspense>
+            }
+          />
+          <Route
+            path="music/:slug"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <TrackPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="tour"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <Tour />
+              </Suspense>
+            }
+          />
+          <Route
+            path="news"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <News />
+              </Suspense>
+            }
+          />
+          <Route
+            path="news/:slug"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <NewsPost />
+              </Suspense>
+            }
+          />
+          <Route
+            path="request"
+            element={
+              <Suspense fallback={<PageFallback />}>
+                <SongRequest />
               </Suspense>
             }
           />

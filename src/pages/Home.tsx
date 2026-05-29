@@ -12,6 +12,7 @@ import SupportCta from "@/components/support/SupportCta";
 import StatsStrip from "@/components/video/StatsStrip";
 import VideoModal from "@/components/video/VideoModal";
 import Reveal from "@/components/effects/Reveal";
+import Newsletter from "@/components/support/Newsletter";
 import { useVideos } from "@/hooks/useVideos";
 import type { Video } from "@/data/videos";
 import { artistSchema, siteSchema } from "@/lib/seo";
@@ -193,6 +194,38 @@ export default function Home() {
 
       {/* Stats */}
       <StatsStrip count={videos.length} />
+
+      {/* Join the list + request a song */}
+      <section className="section">
+        <Reveal>
+          <div className="grid gap-6 lg:grid-cols-12 items-stretch">
+            <div className="lg:col-span-7">
+              <Newsletter source="home" className="h-full" />
+            </div>
+            <div className="lg:col-span-5">
+              <div className="card-premium flex h-full flex-col justify-between p-8">
+                <div>
+                  <span className="eyebrow">Your turn</span>
+                  <h2 className="mt-2 display-title text-3xl font-black">
+                    <span className="diamond-text">Request a song</span>
+                  </h2>
+                  <p className="mt-3 text-platinum/75">
+                    Got a vibe you want to hear? Tell TMACK48 what to make next — pick a mood, drop
+                    your idea, and help shape the next drop.
+                  </p>
+                </div>
+                <Link
+                  to="/request"
+                  onClick={() => trackCta("home_request_song")}
+                  className="btn-gold mt-6 self-start"
+                >
+                  Request a song <ArrowRightIcon className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </section>
 
       {/* Support CTA */}
       <SupportCta />

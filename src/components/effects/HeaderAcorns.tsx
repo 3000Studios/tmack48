@@ -104,7 +104,7 @@ export default function HeaderAcorns() {
       window.removeEventListener("deviceorientation", onOrient);
       window.removeEventListener("devicemotion", onMotion);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [motionReady]);
 
   const triggerDrop = () => {
@@ -327,7 +327,7 @@ export default function HeaderAcorns() {
         let x = a.x;
         let y = a.y;
         let vx = a.vx + wind;
-        let vy = a.vy + gravity;
+        const vy = a.vy + gravity;
 
         vx *= 0.995;
         x += vx * (dt / 16) * 10;

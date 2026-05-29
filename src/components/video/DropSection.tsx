@@ -35,7 +35,7 @@ export default function DropSection({ video, title, copy, side, onOpen, index }:
           y: 0,
           rotateX: 0,
           scale: 1,
-          transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] },
+          transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] as const },
         },
       };
 
@@ -43,7 +43,7 @@ export default function DropSection({ video, title, copy, side, onOpen, index }:
     ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
     : {
         hidden: { opacity: 0, x: side === "left" ? 40 : -40 },
-        show: { opacity: 1, x: 0, transition: { duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] } },
+        show: { opacity: 1, x: 0, transition: { duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const } },
       };
 
   const order = side === "left" ? "" : "lg:[&>div:first-child]:order-2";

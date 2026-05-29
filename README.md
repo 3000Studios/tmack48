@@ -12,7 +12,13 @@ YouTube: **[@TMACK48SONGS](https://www.youtube.com/@TMACK48SONGS)**
 - 3D/animated hero with floating gold/platinum "TMACK48" emblem (React Three Fiber), cinematic lighting, particles
 - Random featured hero video on each refresh, muted autoplay (browser-safe), unmute control
 - Rotating featured-spotlight, alternating **drop** sections, bidirectional **video marquees**, video **grid** preview
-- Dedicated **Videos**, **Shorts**, **About**, **Support**, **Contact**, **Press/EPK**, **Gallery**, **Privacy**, **Terms**, **404** pages
+- Dedicated **Videos**, **Music & Lyrics**, **Shorts**, **About**, **Support**, **Contact**, **Press/EPK**, **Gallery**, **Tour & Events**, **News**, **Request a Song**, **Privacy**, **Terms**, **404** pages
+- **Music & Lyrics** hub with per-track pages (`/music/:slug`), `MusicRecording` schema, and a lyrics slot ready for real words
+- **News / blog** (`/news`, `/news/:slug`) with `BlogPosting` schema and evergreen launch posts
+- **Tour & Events** (`/tour`) with `MusicEvent` schema and an elegant "no dates yet" + waitlist state
+- **Request a Song** (`/request`) — fans pick a vibe and submit ideas (Cloudflare Function + mailto fallback)
+- **Newsletter capture** everywhere (Cloudflare Function `/api/subscribe`, webhook or mailto fallback)
+- **PWA**: installable, offline-capable (service worker), maskable icons, install prompt, app shortcuts
 - Premium interactions: custom cursor/particle trail, 3D tilt cards, glint/shimmer, reveal-on-scroll, animated marquees, glass/metallic styling
 - Custom gold-themed scrollbar, sticky mobile CTA, back-to-top
 - Static video fallback catalog (always works) + optional live YouTube API merge via Cloudflare Pages Function (`/api/youtube/*`) using a server-side key
@@ -66,6 +72,11 @@ See `.env.example` for the full list and descriptions.
 | `VITE_MERCH_URL` | browser | Merch button — hide if blank |
 | `VITE_GA_MEASUREMENT_ID` / `VITE_META_PIXEL_ID` / `VITE_CF_WEB_ANALYTICS_TOKEN` | browser | Optional analytics |
 | `CONTACT_FORWARD_URL` | server | Optional: webhook that the contact form forwards to (Zapier, Formspree, etc.) |
+| `NEWSLETTER_FORWARD_URL` | server | Optional: webhook for newsletter signups (Mailchimp/ConvertKit/Beehiiv/Zapier). Falls back to mailto. |
+| `SONG_REQUEST_FORWARD_URL` | server | Optional: webhook for song requests (Sheets/Discord/Zapier). Falls back to mailto. |
+| `CONTACT_EMAIL` | server | Fallback inbox for contact, newsletter, and song-request mailto links |
+
+> All `*_FORWARD_URL` vars are optional. With none set, each form degrades to a `mailto:` so it still works.
 
 ---
 
@@ -124,6 +135,34 @@ Open `src/data/videos.ts`, add an entry to `SEED`:
 ```
 
 Thumbnails come from `i.ytimg.com/vi/<id>/hqdefault.jpg` automatically. No other edits required.
+
+## Add real lyrics to a track
+
+Track pages (`/music/:slug`) are derived from `src/data/videos.ts` automatically. To publish lyrics, paste the real words into `LYRICS` in `src/data/tracks.ts`, keyed by `videoId`:
+
+```ts
+const LYRICS: Record<string, string[]> = {
+  "B1fVGpWTYso": ["First real line", "Second real line", "…"],
+};
+```
+
+Until filled, the page shows a tasteful "lyrics coming soon" state. **Do not invent lyrics.**
+
+## Add a news post
+
+Append an entry to `RAW` in `src/data/posts.ts` (slug is generated from the title). Posts use `BlogPosting` schema and appear on `/news` newest-first.
+
+## Add a tour date
+
+Uncomment / add a real, confirmed show to `EVENTS` in `src/data/events.ts`. Events render with `MusicEvent` schema; an empty list shows a waitlist signup instead. **Real dates only.**
+
+## Regenerate static assets
+
+```bash
+npm run og        # 1200x630 PNG/JPG social images from public/og-image.svg
+npm run icons     # PWA PNG icons from public/favicon.svg
+npm run sitemap   # public/sitemap.xml from routes + tracks + posts (also runs on prebuild)
+```
 
 ## Update support / social links
 

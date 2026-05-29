@@ -46,7 +46,7 @@ export default function Shorts() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ delay: i * 0.04, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ delay: i * 0.04, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
               className="group relative aspect-[9/16] overflow-hidden rounded-3xl metal-border focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300"
               aria-label={`Open ${v.title}`}
             >

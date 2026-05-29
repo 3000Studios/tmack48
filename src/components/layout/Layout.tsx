@@ -7,6 +7,7 @@ import BackToTop from "@/components/ui/BackToTop";
 import StickyCta from "@/components/ui/StickyCta";
 import MrBigNuttsBot from "@/components/home/MrBigNuttsBot";
 import PageBackdrop from "@/components/layout/PageBackdrop";
+import InstallPrompt from "@/components/ui/InstallPrompt";
 import { trackPageView } from "@/lib/analytics";
 
 export default function Layout() {
@@ -30,6 +31,7 @@ export default function Layout() {
       <BackToTop />
       <StickyCta />
       <MrBigNuttsBot />
+      <InstallPrompt />
     </div>
   );
 }

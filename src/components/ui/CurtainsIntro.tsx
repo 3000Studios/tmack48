@@ -15,7 +15,7 @@ const INTRO_FALLBACK_MS = 120000;
 export default function CurtainsIntro({ enabled }: CurtainsIntroProps) {
   const [isMounted, setIsMounted] = useState(enabled);
   const [isVisible, setIsVisible] = useState(enabled);
-  const [hasUserStarted, setHasUserStarted] = useState(true);
+  const [hasUserStarted] = useState(true);
   const completedRef = useRef(false);
 
   const shouldPlay = useMemo(() => {

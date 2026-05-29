@@ -70,7 +70,7 @@ export default function Gallery({ items = defaultGallery }: { items?: GalleryIte
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as const }}
               className="relative max-h-[90dvh] max-w-5xl w-full rounded-3xl overflow-hidden metal-border glass"
               onClick={(e) => e.stopPropagation()}
             >

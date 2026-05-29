@@ -18,7 +18,7 @@ interface Row {
   sub?: string;
   href: string;
   external?: boolean;
-  Icon: (p: React.SVGProps<SVGSVGElement>) => JSX.Element;
+  Icon: (p: React.SVGProps<SVGSVGElement>) => React.JSX.Element;
   tone?: "gold" | "diamond" | "ghost";
 }
 

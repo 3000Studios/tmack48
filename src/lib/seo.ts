@@ -23,7 +23,7 @@ export function seo(input: SeoInput = {}): SeoData {
   const title = input.title ? `${input.title} — TMACK48` : "TMACK48 — Official Artist Universe";
   const description = input.description ?? siteConfig.description;
   const canonical = `${siteConfig.url.replace(/\/$/, "")}${input.path ?? "/"}`;
-  const image = input.image ?? `${siteConfig.url.replace(/\/$/, "")}/og-image.svg`;
+  const image = input.image ?? `${siteConfig.url.replace(/\/$/, "")}/og-image.png`;
   const type = input.type ?? "website";
   const noIndex = Boolean(input.noIndex);
   return { title, description, canonical, image, type, noIndex };
@@ -41,7 +41,7 @@ export const artistSchema = () => ({
     siteConfig.social.tiktok,
     siteConfig.social.x,
   ].filter(Boolean),
-  image: `${siteConfig.url}/og-image.svg`,
+  image: `${siteConfig.url}/og-image.png`,
   description: siteConfig.description,
 });
 

@@ -40,6 +40,8 @@ export default function Admin() {
     setCfg(loadAdminConfig());
   }, [authed]);
 
+  // getMetrics() reads from storage; recompute whenever the comments list changes (e.g. after delete).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const metrics = useMemo(() => getMetrics(), [comments]);
 
   const login = useCallback(

@@ -40,7 +40,8 @@ const config: Config = {
       },
       fontFamily: {
         display: ['"Unbounded"', '"Orbitron"', "system-ui", "sans-serif"],
-        sans: ['"Inter"', "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
+        serif: ['"Playfair Display"', "Georgia", "serif"],
+        sans: ['"Source Sans 3"', "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
         mono: ['"JetBrains Mono"', "ui-monospace", "monospace"],
       },
       boxShadow: {

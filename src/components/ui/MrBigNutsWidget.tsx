@@ -229,7 +229,8 @@ export default function MrBigNutsWidget() {
             <button
               type="button"
               onClick={() => send()}
-              className="rounded-lg bg-gold-300 px-3 py-2 text-sm font-semibold text-ink-950"
+              disabled={!canSend}
+              className="rounded-lg bg-gold-300 px-3 py-2 text-sm font-semibold text-ink-950 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Send
             </button>

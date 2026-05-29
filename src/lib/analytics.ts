@@ -61,7 +61,7 @@ export function track(event: string, params: Params = {}): void {
     if (window.gtag) window.gtag("event", event, params);
     if (window.fbq) window.fbq("trackCustom", event, params);
     if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
+       
       console.debug("[track]", event, params);
     }
   } catch {

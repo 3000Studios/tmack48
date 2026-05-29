@@ -39,7 +39,7 @@ export default function ShortsRail({
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
-            transition={{ delay: i * 0.05, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ delay: i * 0.05, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const }}
             className="group relative shrink-0 w-48 sm:w-56 aspect-[9/16] rounded-3xl overflow-hidden metal-border snap-start"
             aria-label={`Open ${v.title}`}
           >

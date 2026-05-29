@@ -120,7 +120,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="eyebrow mb-4">Legal</h3>
+            <h3 className="eyebrow mb-4">More</h3>
             <ul className="space-y-2">
               {nav.footer.map((it) => (
                 <li key={it.href}>

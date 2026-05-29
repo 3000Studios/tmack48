@@ -153,7 +153,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
           <motion.p
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }}
             className="eyebrow flex items-center gap-2"
           >
             <SparkleIcon className="h-4 w-4 text-gold-300" />
@@ -163,7 +163,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
           <motion.h1
             initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] as const }}
             className="mt-4 display-title font-black text-4xl sm:text-5xl lg:text-[6.5rem] leading-[0.9] tracking-tight"
           >
             <span className="gold-text">TMACK</span>
@@ -186,7 +186,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] as const }}
           className="lg:col-span-6 relative z-10 w-full max-w-[min(100%,560px)] mx-auto lg:ml-auto lg:mr-0 self-center"
         >
           <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">

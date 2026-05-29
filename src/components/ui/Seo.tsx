@@ -15,10 +15,13 @@ export default function Seo(props: SeoInput & { children?: React.ReactNode; sche
       <meta property="og:type" content={type ?? "website"} />
       <meta property="og:url" content={canonical} />
       <meta property="og:image" content={image} />
+      <meta property="og:image:alt" content={title} />
+      <meta property="og:site_name" content="TMACK48" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={image} />
+      <meta name="twitter:image:alt" content={title} />
 
       {props.schema && (
         <script type="application/ld+json">{JSON.stringify(props.schema)}</script>

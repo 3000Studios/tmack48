@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -168,7 +166,7 @@ html {
 body {
   background: radial-gradient(1400px 800px at 50% -20%, #1a1205 0%, #050505 55%, #000000 100%) fixed;
   color: var(--brand-platinum);
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
   overflow-x: hidden;
   min-height: 100dvh;
 }
@@ -245,7 +243,7 @@ html {
   }
 
   .display-title {
-    font-family: "Unbounded", "Inter", sans-serif;
+    font-family: "Unbounded", "Source Sans 3", sans-serif;
     letter-spacing: -0.02em;
     line-height: 0.95;
   }

@@ -43,7 +43,7 @@ export default function VideoModal({ video, onClose }: Props) {
             initial={{ scale: 0.94, y: 14, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.96, opacity: 0 }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] as const }}
             className="relative w-full max-w-5xl rounded-3xl glass metal-border overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >

@@ -1,12 +1,27 @@
 {
-  "name": "TMACK48",
+  "name": "TMACK48 — Official Artist Universe",
   "short_name": "TMACK48",
-  "description": "TMACK48 — Official Artist Universe",
-  "start_url": "/",
+  "description": "TMACK48 — Premium universe of music, videos, and moments. Watch the latest drops and support the movement.",
+  "id": "/",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
+  "lang": "en-US",
+  "dir": "ltr",
+  "categories": ["music", "entertainment"],
   "background_color": "#050505",
-  "theme_color": "#D4AF37",
+  "theme_color": "#050505",
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Videos", "url": "/videos" },
+    { "name": "Music & Lyrics", "url": "/music" },
+    { "name": "News", "url": "/news" },
+    { "name": "Support", "url": "/support" }
   ]
 }
