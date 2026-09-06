@@ -1,9 +1,11 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Seo from "@/components/ui/Seo";
 import VideoGrid from "@/components/video/VideoGrid";
 import VideoModal from "@/components/video/VideoModal";
 import FeaturedSpotlight from "@/components/video/FeaturedSpotlight";
 import SupportCta from "@/components/support/SupportCta";
+import ShortsRail from "@/components/video/ShortsRail";
 import { useVideos } from "@/hooks/useVideos";
 import type { Video, VideoCategory } from "@/data/videos";
 import { videoCategories } from "@/data/videos";
@@ -14,12 +16,24 @@ type SortKey = "featured" | "title" | "order";
 
 export default function Videos() {
   const { videos, loading, source } = useVideos();
+  const loc = useLocation();
   const [cat, setCat] = useState<VideoCategory | "all">("all");
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>("featured");
   const [active, setActive] = useState<Video | null>(null);
   const [page, setPage] = useState(0);
   const dragRef = useRef({ x0: 0, t0: 0, active: false });
+  const shortsRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (loc.hash === "#shorts") {
+      const t = window.setTimeout(() => {
+        shortsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (cat !== "short") setCat("short");
+      }, 120);
+      return () => window.clearTimeout(t);
+    }
+  }, [loc.hash, cat]);
 
   const filtered = useMemo(() => {
     let list = videos;
@@ -50,17 +64,19 @@ export default function Videos() {
     <>
       <Seo
         path="/videos"
-        title="Videos"
-        description="The full TMACK48 video catalog — singles, anthems, and official drops. Play on-site or watch on YouTube."
+        title="Watch"
+        description="TMACK48 Watch hub — official videos, anthems, and Shorts. Play on-site or open on YouTube."
       />
 
-      <header className="container-lux pt-16 pb-6">
-        <span className="eyebrow">The Vault</span>
+      <header className="page-header">
+        <span className="eyebrow">Watch Hub</span>
         <h1 className="mt-2 display-title text-5xl sm:text-6xl lg:text-7xl font-black">
           <span className="gold-text">Videos</span>
+          <span className="platinum-text"> &amp; Shorts</span>
         </h1>
-        <p className="mt-4 max-w-2xl text-platinum/75 text-lg">
-          Every official drop, signature anthem, and catalog staple. Filter, search, play.
+        <p className="page-lede">
+          Official drops, anthems, and vertical heat — filter, search, tap to play. No forced sign-in for
+          on-site playback.
         </p>
       </header>
 
@@ -154,6 +170,10 @@ export default function Videos() {
           </div>
         </div>
       </section>
+
+      <div id="shorts" ref={shortsRef} className="scroll-mt-24">
+        <ShortsRail videos={videos} onOpen={setActive} />
+      </div>
 
       <SupportCta />
 

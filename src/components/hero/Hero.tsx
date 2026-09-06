@@ -14,13 +14,15 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
   const initialIndex = useMemo(() => Math.max(0, pool.findIndex((v) => v.id === video.id)), [pool, video.id]);
   const [idx, setIdx] = useState(initialIndex);
 
-  const [muted, setMuted] = useState(false);
+  // Start muted so autoplay works without sign-in / browser blocks
+  const [muted, setMuted] = useState(true);
   const [showPlayer, setShowPlayer] = useState(false);
   const [spot, setSpot] = useState({ x: 50, y: 18 });
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
-    const t = window.setTimeout(() => setShowPlayer(true), 120);
+    // Delay iframe mount so the page paints first; user can unmute after load
+    const t = window.setTimeout(() => setShowPlayer(true), 280);
     return () => window.clearTimeout(t);
   }, []);
 
@@ -82,17 +84,14 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
 
   useEffect(() => {
     if (!showPlayer) return;
-    // Attempt to start with audio on. If the browser blocks autoplay audio, playback will remain muted.
-    const t = window.setTimeout(() => {
-      sendCommand("unMute");
-    }, 250);
-    return () => window.clearTimeout(t);
-  }, [showPlayer, sendCommand]);
-
-  useEffect(() => {
-    if (!showPlayer) return;
     const onMessage = (event: MessageEvent) => {
-      if (event.origin !== YOUTUBE_EMBED_MESSAGE_ORIGIN) return;
+      // Accept both youtube.com and legacy nocookie origins
+      if (
+        event.origin !== YOUTUBE_EMBED_MESSAGE_ORIGIN &&
+        event.origin !== "https://www.youtube-nocookie.com"
+      ) {
+        return;
+      }
       let data: unknown = event.data;
       if (typeof data === "string") {
         try {
@@ -199,6 +198,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
                   src={heroEmbedSrc}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
+                  referrerPolicy="strict-origin-when-cross-origin"
                   className="block h-full w-full border-0"
                 />
               ) : (

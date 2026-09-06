@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Video } from "@/data/videos";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import { buildEmbedUrl } from "@/lib/youtube";
+import { PlayIcon } from "@/components/ui/Icon";
 import { trackVideo } from "@/lib/analytics";
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
   onOpen?: (v: Video) => void;
 }
 
+/** Thumbnail-only marquee — never loads live iframes (avoids sign-in walls). */
 export default function VideoMarquee({ videos, direction = "left", speed = 50, onOpen }: Props) {
   const reduced = useReducedMotion();
   const [interacting, setInteracting] = useState(false);
@@ -59,8 +60,7 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
           if (!reduced) setInteracting(false);
         }}
       >
-        {items.map((v, i) => {
-          return (
+        {items.map((v, i) => (
           <li key={`${v.id}-${i}`} className="shrink-0">
             <button
               type="button"
@@ -80,26 +80,26 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
               className="group relative block w-[min(85vw,36rem)] sm:w-[36rem] overflow-hidden rounded-2xl metal-border focus:outline-none focus-visible:ring-2 focus-visible:ring-gold-300"
               aria-label={`Open ${v.title}`}
             >
-              <div className="aspect-video-frame relative overflow-hidden">
-                <iframe
-                  title={`${v.title} preview`}
-                  src={
-                    inView
-                      ? buildEmbedUrl(v.videoId, {
-                          autoplay: true,
-                          mute: true,
-                          loop: true,
-                          controls: false,
-                          enableJsApi: false,
-                        })
-                      : ""
-                  }
-                  allow="autoplay; encrypted-media; picture-in-picture"
-                  loading="lazy"
-                  className="pointer-events-none absolute inset-0 h-full w-full border-0"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="absolute inset-0 flex items-end p-3">
+              <div className="aspect-video-frame relative overflow-hidden bg-ink-950">
+                {inView && (
+                  <img
+                    src={v.thumbnailHqUrl}
+                    onError={(e) => {
+                      e.currentTarget.src = v.thumbnailUrl;
+                    }}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                <div className="absolute inset-0 grid place-items-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                  <span className="grid h-12 w-12 place-items-center rounded-full bg-gold-grad text-ink-950 shadow-gold">
+                    <PlayIcon className="h-5 w-5 translate-x-[1px]" />
+                  </span>
+                </div>
+                <div className="absolute inset-x-0 bottom-0 flex items-end p-3">
                   <span className="text-sm font-semibold text-platinum drop-shadow line-clamp-2">
                     {v.title}
                   </span>
@@ -107,8 +107,7 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
               </div>
             </button>
           </li>
-          );
-        })}
+        ))}
       </ul>
     </div>
   );

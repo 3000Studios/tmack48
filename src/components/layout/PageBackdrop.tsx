@@ -14,25 +14,26 @@ export default function PageBackdrop() {
 
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-[2] overflow-hidden motion-reduce:hidden"
+      className="pointer-events-none fixed inset-0 z-[2] overflow-hidden"
       aria-hidden
     >
       <div
         className="absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-10%,rgba(212,175,55,0.14),transparent_52%),radial-gradient(ellipse_90%_60%_at_80%_100%,rgba(127,219,255,0.08),transparent_45%),#020202]"
         style={{ zIndex: 0 }}
       />
-      <Suspense
-        fallback={
-          <div
-            className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(212,175,55,0.08),transparent_65%)]"
-            style={{ zIndex: 1 }}
-          />
-        }
-      >
-        <Hero3D variant={variant} className="opacity-[0.88]" />
-      </Suspense>
+      {/* CSS vortex always present (all pages); WebGL layer enhances when available */}
+      <div className="vortex-layer absolute inset-0 motion-reduce:opacity-40" style={{ zIndex: 1 }} />
+      <div className="motion-reduce:hidden absolute inset-0" style={{ zIndex: 1 }}>
+        <Suspense
+          fallback={
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(212,175,55,0.08),transparent_65%)]" />
+          }
+        >
+          <Hero3D variant={variant} className="opacity-[0.9]" />
+        </Suspense>
+      </div>
       <div
-        className="noise-overlay absolute inset-0 opacity-[0.035]"
+        className="noise-overlay absolute inset-0 opacity-[0.04]"
         style={{ zIndex: 2, pointerEvents: "none" }}
       />
     </div>

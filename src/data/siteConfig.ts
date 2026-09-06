@@ -62,29 +62,34 @@ export const siteConfig = {
 
 export type SiteConfig = typeof siteConfig;
 
+/**
+ * Slim primary nav (desktop + mobile share this list).
+ * Combined hubs:
+ *  - Watch  → videos + shorts
+ *  - Fans   → community + song request
+ *  - Connect → support + contact
+ */
 export const nav = {
   primary: [
     { label: "Home", href: "/" },
-    { label: "Videos", href: "/videos" },
+    { label: "Watch", href: "/videos" },
     { label: "Music", href: "/music" },
-    { label: "Shorts", href: "/shorts" },
     { label: "Gallery", href: "/gallery" },
-    { label: "Tour", href: "/tour" },
     { label: "News", href: "/news" },
-    { label: "Community", href: "/community" },
-    { label: "Request", href: "/request" },
+    { label: "Fans", href: "/community" },
     { label: "About", href: "/about" },
-    { label: "Support", href: "/support" },
-    { label: "Contact", href: "/contact" },
+    { label: "Connect", href: "/support" },
     { label: "Admin", href: "/admin" },
   ],
   footer: [
-    { label: "Request a Song", href: "/request" },
+    { label: "Tour", href: "/tour" },
+    { label: "Request a Song", href: "/community#request" },
+    { label: "Contact", href: "/support#contact" },
+    { label: "Shorts", href: "/videos#shorts" },
     { label: "Press / EPK", href: "/press" },
     { label: "Stories", href: "/stories" },
     { label: "Merch", href: "/merch" },
     { label: "Links", href: "/links" },
-    { label: "Community", href: "/community" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Use", href: "/terms" },
     { label: "Cookie Policy", href: "/cookies" },

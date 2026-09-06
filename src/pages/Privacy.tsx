@@ -49,7 +49,7 @@ export default function Privacy() {
             {siteConfig.contact.email}
           </a>{" "}
           or use the{" "}
-          <Link to="/contact" className="text-gold-300 link-rise">
+          <Link to="/support#contact" className="text-gold-300 link-rise">
             Contact
           </Link>{" "}
           page.

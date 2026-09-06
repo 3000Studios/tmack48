@@ -22,7 +22,7 @@ export default function StickyCta() {
     return () => observer.disconnect();
   }, []);
 
-  if (loc.pathname === "/support" || loc.pathname === "/contact") return null;
+  if (loc.pathname === "/support") return null;
 
   return (
     <div

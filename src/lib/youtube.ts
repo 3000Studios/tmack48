@@ -1,7 +1,8 @@
 import { siteConfig } from "@/data/siteConfig";
 import { videos as staticVideos, type Video } from "@/data/videos";
 import {
-  youtubeNocookieEmbedUrl,
+  cleanYoutubeTitle,
+  youtubeEmbedUrl,
   youtubeThumbnailUrl,
   youtubeWatchUrl,
 } from "@/lib/youtubeUrls";
@@ -22,8 +23,7 @@ const BLOCKED_TITLE_PATTERNS = [/dirty\s+south/i];
  *   1. Always render static fallback first (so the site works offline / no key).
  *   2. Try the Cloudflare Pages Function proxy (/api/youtube) — uses server-side key.
  *   3. If that fails AND a VITE_YOUTUBE_API_KEY is present in the browser, try direct.
- *   4. Merge live data (titles, thumbs, viewCount) onto the static catalog by videoId.
- *      Unknown videoIds coming back from a channel search are appended.
+ *   4. Merge live data onto the static catalog; unknown IDs append as newest.
  */
 export async function fetchLiveVideos(): Promise<Video[]> {
   try {
@@ -72,7 +72,7 @@ async function fetchDirectFromYouTube(apiKey: string): Promise<Partial<Video>[]>
   url.searchParams.set("channelId", channelId);
   url.searchParams.set("part", "snippet");
   url.searchParams.set("order", "date");
-  url.searchParams.set("maxResults", "30");
+  url.searchParams.set("maxResults", "50");
   url.searchParams.set("type", "video");
 
   const res = await fetch(url.toString());
@@ -90,7 +90,7 @@ async function fetchDirectFromYouTube(apiKey: string): Promise<Partial<Video>[]>
     .filter((it) => it.id?.videoId)
     .map((it) => ({
       videoId: it.id!.videoId!,
-      title: it.snippet?.title,
+      title: it.snippet?.title ? cleanYoutubeTitle(it.snippet.title) : undefined,
       thumbnailUrl: it.snippet?.thumbnails?.medium?.url,
       thumbnailHqUrl: it.snippet?.thumbnails?.high?.url,
       thumbnailMaxUrl:
@@ -99,41 +99,52 @@ async function fetchDirectFromYouTube(apiKey: string): Promise<Partial<Video>[]>
 }
 
 function mergeWithStatic(live: Partial<Video>[]): Video[] {
-  const byId = new Map<string, Video>();
-  for (const v of staticVideos) byId.set(v.videoId, v);
+  const staticById = new Map(staticVideos.map((v) => [v.videoId, v]));
+  const ordered: Video[] = [];
+  const seen = new Set<string>();
 
-  for (const lv of live) {
-    if (!lv.videoId) continue;
-    if (!isAllowedVideo(lv.videoId, lv.title)) continue;
-    const existing = byId.get(lv.videoId);
+  // Live order first (newest from API / channel)
+  live.forEach((lv, i) => {
+    if (!lv.videoId || !isAllowedVideo(lv.videoId, lv.title)) return;
+    if (seen.has(lv.videoId)) return;
+    seen.add(lv.videoId);
+    const existing = staticById.get(lv.videoId);
+    const title = lv.title ? cleanYoutubeTitle(lv.title) : existing?.title ?? "New Drop";
     if (existing) {
-      byId.set(lv.videoId, {
+      ordered.push({
         ...existing,
-        title: lv.title ?? existing.title,
+        title,
         thumbnailUrl: lv.thumbnailUrl ?? existing.thumbnailUrl,
         thumbnailHqUrl: lv.thumbnailHqUrl ?? existing.thumbnailHqUrl,
         thumbnailMaxUrl: lv.thumbnailMaxUrl ?? existing.thumbnailMaxUrl,
+        order: i + 1,
       });
     } else {
-      byId.set(lv.videoId, {
+      ordered.push({
         id: `tmack48-${lv.videoId}`,
         videoId: lv.videoId,
-        title: lv.title ?? "New Drop",
-        embedUrl: youtubeNocookieEmbedUrl(lv.videoId),
+        title,
+        embedUrl: youtubeEmbedUrl(lv.videoId),
         watchUrl: youtubeWatchUrl(lv.videoId),
         thumbnailUrl: lv.thumbnailUrl ?? youtubeThumbnailUrl(lv.videoId, "mq"),
         thumbnailHqUrl: lv.thumbnailHqUrl ?? youtubeThumbnailUrl(lv.videoId, "hq"),
         thumbnailMaxUrl: lv.thumbnailMaxUrl ?? youtubeThumbnailUrl(lv.videoId, "max"),
         category: "single",
         tags: ["latest"],
-        featured: false,
-        order: 999,
+        featured: i < 6,
+        order: i + 1,
       });
     }
+  });
+
+  // Append any static-only entries not returned live
+  for (const v of staticVideos) {
+    if (seen.has(v.videoId) || !isAllowedVideo(v.videoId, v.title)) continue;
+    seen.add(v.videoId);
+    ordered.push({ ...v, order: ordered.length + 1 });
   }
-  return Array.from(byId.values())
-    .filter((v) => isAllowedVideo(v.videoId, v.title))
-    .sort((a, b) => a.order - b.order);
+
+  return ordered;
 }
 
 function isAllowedVideo(videoId: string, title?: string): boolean {
@@ -141,7 +152,6 @@ function isAllowedVideo(videoId: string, title?: string): boolean {
   if (title && BLOCKED_TITLE_PATTERNS.some((p) => p.test(title))) return false;
   return true;
 }
-
 
 export function buildEmbedUrl(
   videoId: string,
@@ -151,39 +161,37 @@ export function buildEmbedUrl(
     loop?: boolean;
     controls?: boolean;
     start?: number;
-    /** When true (default with autoplay), adds enablejsapi + origin for postMessage control */
+    /** Enable IFrame API only when postMessage control is required */
     enableJsApi?: boolean;
-    /** Parent origin for IFrame API (defaults to site URL or current window) */
     origin?: string;
   } = {}
 ): string {
-  const u = new URL(youtubeNocookieEmbedUrl(videoId));
+  const u = new URL(youtubeEmbedUrl(videoId));
+  // Keep related videos on-channel; avoid extras that can trip consent walls
   u.searchParams.set("rel", "0");
   u.searchParams.set("modestbranding", "1");
   u.searchParams.set("playsinline", "1");
+  u.searchParams.set("iv_load_policy", "3");
+  u.searchParams.set("fs", "1");
 
   const autoplay = Boolean(opts.autoplay);
   if (autoplay) u.searchParams.set("autoplay", "1");
 
-  // Browsers block most autoplay with sound — default mute when autoplay unless explicitly overridden.
-  const mute =
-    opts.mute !== undefined ? opts.mute : autoplay ? true : false;
-  if (mute) {
-    u.searchParams.set("mute", "1");
-  } else if (opts.mute !== undefined) {
-    // Set explicit unmute for gesture-triggered autoplay flows.
-    u.searchParams.set("mute", "0");
-  }
+  // Autoplay requires mute in modern browsers
+  const mute = opts.mute !== undefined ? opts.mute : autoplay ? true : false;
+  u.searchParams.set("mute", mute ? "1" : "0");
 
   if (opts.controls === false) u.searchParams.set("controls", "0");
+  else u.searchParams.set("controls", "1");
+
   if (opts.loop) {
     u.searchParams.set("loop", "1");
     u.searchParams.set("playlist", videoId);
   }
   if (opts.start) u.searchParams.set("start", String(opts.start));
 
-  const useJsApi = opts.enableJsApi ?? autoplay;
-  if (useJsApi) {
+  // Only attach JS API when explicitly needed — origin mismatches worsen auth walls
+  if (opts.enableJsApi) {
     u.searchParams.set("enablejsapi", "1");
     const origin =
       opts.origin ??
@@ -196,5 +204,5 @@ export function buildEmbedUrl(
   return u.toString();
 }
 
-/** Target origin for postMessage to nocookie YouTube embeds */
-export const YOUTUBE_EMBED_MESSAGE_ORIGIN = "https://www.youtube-nocookie.com";
+/** Target origin for postMessage to YouTube embeds */
+export const YOUTUBE_EMBED_MESSAGE_ORIGIN = "https://www.youtube.com";

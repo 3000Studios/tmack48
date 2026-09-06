@@ -108,25 +108,73 @@ function TmackMark({
   );
 }
 
+function VortexRings({ accent, chill }: { accent: string; chill: string }) {
+  const group = useRef<Group>(null);
+  useFrame((_, delta) => {
+    if (!group.current) return;
+    group.current.rotation.z += delta * 0.12;
+    group.current.rotation.y += delta * 0.04;
+  });
+
+  return (
+    <group ref={group} position={[0, 0, -1.2]}>
+      {Array.from({ length: 8 }).map((_, i) => {
+        const t = i / 8;
+        const r = 1.35 + i * 0.42;
+        return (
+          <mesh key={i} rotation={[Math.PI / 2.15, 0, t * Math.PI * 0.35]} position={[0, 0, -i * 0.18]}>
+            <torusGeometry args={[r, 0.018 + i * 0.004, 12, 96]} />
+            <meshStandardMaterial
+              color={i % 2 === 0 ? accent : chill}
+              metalness={0.95}
+              roughness={0.22}
+              emissive={i % 2 === 0 ? accent : chill}
+              emissiveIntensity={0.22}
+              transparent
+              opacity={0.55 - t * 0.28}
+            />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+function VortexParticles({ color }: { color: string }) {
+  const ref = useRef<Group>(null);
+  useFrame((state) => {
+    if (!ref.current) return;
+    ref.current.rotation.z = state.clock.elapsedTime * 0.18;
+    ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.12) * 0.15;
+  });
+  return (
+    <group ref={ref}>
+      <Sparkles count={120} scale={[14, 10, 14]} size={2.4} speed={0.55} color={color} opacity={0.9} />
+      <Sparkles count={80} scale={[10, 8, 10]} size={1.2} speed={0.85} color="#ffffff" opacity={0.35} />
+    </group>
+  );
+}
+
 function Scene({ variant }: { variant: PageBackdropVariant }) {
   const preset = BACKDROP_PRESETS[variant];
 
   return (
     <>
       <color attach="background" args={["#000000"]} />
-      <fog attach="fog" args={[preset.fogFar, 6, 18]} />
-      <ambientLight intensity={0.14} />
-      <directionalLight position={[4, 5, 3]} intensity={2.2} color={preset.accent} />
-      <directionalLight position={[-4, 2, -2]} intensity={1.05} color={preset.chill} />
-      <pointLight position={[0, 0, 3]} intensity={1.45} color={preset.rim} />
+      <fog attach="fog" args={[preset.fogFar, 5, 20]} />
+      <ambientLight intensity={0.12} />
+      <directionalLight position={[4, 5, 3]} intensity={2.0} color={preset.accent} />
+      <directionalLight position={[-4, 2, -2]} intensity={0.95} color={preset.chill} />
+      <pointLight position={[0, 0, 3]} intensity={1.35} color={preset.rim} />
       <Suspense fallback={null}>
-        <Float speed={1.6} rotationIntensity={0.35} floatIntensity={1.05}>
+        <VortexRings accent={preset.accent} chill={preset.chill} />
+        <Float speed={1.4} rotationIntensity={0.28} floatIntensity={0.9}>
           <ParallaxRig>
             <TmackMark accent={preset.accent} rim={preset.rim} chill={preset.chill} />
           </ParallaxRig>
         </Float>
-        <Sparkles count={72} scale={[10, 6, 10]} size={2} speed={0.38} color={preset.rim} opacity={0.85} />
-        <Sparkles count={36} scale={[10, 6, 10]} size={1.35} speed={0.28} color={preset.chill} opacity={0.65} />
+        <VortexParticles color={preset.rim} />
+        <Sparkles count={48} scale={[12, 7, 12]} size={1.5} speed={0.32} color={preset.chill} opacity={0.7} />
         <Environment preset="studio" />
       </Suspense>
     </>
@@ -136,11 +184,17 @@ function Scene({ variant }: { variant: PageBackdropVariant }) {
 function LowPowerFallback({ variant }: { variant: PageBackdropVariant }) {
   const preset = BACKDROP_PRESETS[variant];
   return (
-    <div className="absolute inset-0">
+    <div className="absolute inset-0 overflow-hidden">
       <div
         className="absolute inset-0 opacity-90"
         style={{
           background: `radial-gradient(ellipse at center, ${preset.accent}33 0%, transparent 62%)`,
+        }}
+      />
+      <div
+        className="vortex-spin absolute left-1/2 top-1/2 h-[140vmax] w-[140vmax] -translate-x-1/2 -translate-y-1/2 opacity-50"
+        style={{
+          background: `conic-gradient(from 0deg, transparent, ${preset.accent}55, transparent 28%, ${preset.chill}40, transparent 55%, ${preset.rim}50, transparent 80%)`,
         }}
       />
       <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-grad blur-3xl opacity-35" />

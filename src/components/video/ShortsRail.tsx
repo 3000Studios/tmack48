@@ -22,7 +22,7 @@ export default function ShortsRail({
             <span className="diamond-text">Quick Hits</span>
           </h2>
         </div>
-        <Link to="/shorts" className="btn-ghost text-sm">
+        <Link to="/videos#shorts" className="btn-ghost text-sm">
           All Shorts →
         </Link>
       </div>

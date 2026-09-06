@@ -18,6 +18,7 @@ import type { Video } from "@/data/videos";
 import { artistSchema, siteSchema } from "@/lib/seo";
 import { gallery } from "@/data/gallery";
 import { siteConfig } from "@/data/siteConfig";
+import LatestDaily from "@/components/home/LatestDaily";
 import { ArrowRightIcon, HeartIcon, MailIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
 
@@ -75,9 +76,12 @@ export default function Home() {
 
       {heroVideo && <Hero video={heroVideo} playlist={videos} />}
 
+      {/* Daily auto-populated latest content from the site catalog */}
+      <LatestDaily videos={videos} onOpenVideo={setActive} />
+
       <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} />
 
-      {/* Marquees */}
+      {/* Marquees — thumbnails only (click opens modal player) */}
       <section aria-label="Video marquees" className="container-lux overflow-hidden py-8 space-y-5">
         <VideoMarquee videos={marqueeA} direction="left" onOpen={setActive} />
         <VideoMarquee videos={marqueeB} direction="right" speed={55} onOpen={setActive} />
@@ -179,11 +183,11 @@ export default function Home() {
                 <MailIcon className="h-10 w-10 text-gold-300" />
                 <div className="flex-1">
                   <p className="text-sm text-platinum/70">Booking / press inquiries</p>
-                  <Link to="/contact" className="font-semibold text-platinum hover:text-gold-200">
+                  <Link to="/support#contact" className="font-semibold text-platinum hover:text-gold-200">
                     Use contact form
                   </Link>
                 </div>
-                <Link to="/contact" className="btn-ghost !py-2 text-xs">
+                <Link to="/support#contact" className="btn-ghost !py-2 text-xs">
                   <HeartIcon className="h-4 w-4" /> Contact
                 </Link>
               </div>
@@ -215,7 +219,7 @@ export default function Home() {
                   </p>
                 </div>
                 <Link
-                  to="/request"
+                  to="/community#request"
                   onClick={() => trackCta("home_request_song")}
                   className="btn-gold mt-6 self-start"
                 >

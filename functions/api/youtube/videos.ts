@@ -33,7 +33,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
     url.searchParams.set("channelId", channelId);
     url.searchParams.set("part", "snippet");
     url.searchParams.set("order", "date");
-    url.searchParams.set("maxResults", "30");
+    url.searchParams.set("maxResults", "50");
     url.searchParams.set("type", "video");
 
     const res = await fetch(url.toString(), {

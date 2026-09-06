@@ -12,7 +12,6 @@ import { trackPageView } from "@/lib/analytics";
 
 export default function Layout() {
   const loc = useLocation();
-  const isHome = loc.pathname === "/";
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
@@ -22,7 +21,8 @@ export default function Layout() {
   return (
     <div className="relative flex min-h-dvh flex-col overflow-x-clip">
       <PageBackdrop />
-      <CursorTrail enabled={isHome} />
+      {/* Diamond trail on every page; system cursor stays visible */}
+      <CursorTrail enabled />
       <Navbar />
       <main id="main" className="relative z-10 flex-1 overflow-x-clip pt-16 md:pt-20">
         <Outlet />
