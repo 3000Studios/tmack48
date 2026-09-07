@@ -36,10 +36,30 @@ export default function Privacy() {
           applies. We use privacy-enhanced mode (<em>youtube-nocookie.com</em>) where possible.
         </p>
 
-        <h2 className="display-title text-2xl font-bold text-platinum mt-8">Cookies</h2>
+        <h2 className="display-title text-2xl font-bold text-platinum mt-8">Cookies & Google AdSense</h2>
         <p>
-          The site uses minimal cookies, mostly for performance and optional analytics. Disabling cookies will
+          The site uses minimal cookies, mostly for performance and advertising. Disabling cookies will
           not break core functionality.
+        </p>
+        <p className="mt-3">
+          <strong>Google AdSense & Third-Party Cookies:</strong> Google, as a third-party vendor, uses cookies to serve ads on our site. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our sites and/or other sites on the Internet. Users may opt out of personalized advertising by visiting{" "}
+          <a
+            href="https://www.google.com/settings/ads"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold-300 link-rise"
+          >
+            Google Ad Settings
+          </a>{" "}
+          or by visiting the{" "}
+          <a
+            href="https://policies.google.com/technologies/ads"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gold-300 link-rise"
+          >
+            Google Privacy & Terms for Advertising
+          </a>.
         </p>
 
         <h2 className="display-title text-2xl font-bold text-platinum mt-8">Contact</h2>
