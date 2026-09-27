@@ -31,9 +31,22 @@ export default function About() {
               <span className="gold-text">Meet TMACK48</span>
             </h1>
             <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
-              TMACK48 is an artist, a mood, and a movement. Born from late-night studios, chrome dreams, and a
-              relentless refusal to be ignored, the catalog blends street authenticity with cinematic presentation.
-              Every drop is a statement — every visual a flex of discipline and detail.
+              TMACK48 is a recording artist out of the 3000 Studios camp — a high-output rapper and songwriter whose records hit with zero warm-up. No long intros, no slow build. The music comes on and it's already moving, which is exactly how his fans like it.
+            </p>
+            <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
+              Raised on Southern rap and shaped by years of writing, recording, and re-recording until every bar landed right, TMACK48 built his sound the old-fashioned way: repetition, pressure, and honesty. His style sits somewhere between street-ready trap and motivational anthems — heavy drums, direct lyrics, hooks that stick after one listen. The subject matter stays close to real life: grinding through the 9-to-5, staying disciplined when nobody's watching, loyalty, setbacks, and the moments where you either level up or fold.
+            </p>
+            <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
+              The sound: A TMACK48 record is built for motion. The beats are hard and percussive, engineered to carry through big speakers — car-audio culture runs deep in the 3000 Studios family, and these mixes are tuned with that in mind. The vocal delivery is aggressive but controlled: clear diction, stacked ad-libs, and hooks written to be shouted back. Songs typically run short and punchy, cutting the fat and getting to the point.
+            </p>
+            <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
+              Releases and videos: TMACK48 releases through 3000 Studios with distribution across the major streaming platforms. His catalog spans solo singles, concept tracks, and high-energy anthems, each paired with official music videos published to the 3000 Studios YouTube channel. New music lands on a steady schedule, and every release ships with the full treatment: mixed and mastered audio, cover art, and a video.
+            </p>
+            <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
+              The work ethic behind the catalog: Sessions run long, revisions run deep, and no record gets released until it clears every check — the mix, the master, the car test, and the gut test. Fans know that when a new TMACK48 single drops, it's going to be finished, polished, and ready to play loud.
+            </p>
+            <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
+              Where to listen: The full catalog is streaming on Spotify, Apple Music, and every major platform, with official videos on the 3000 Studios YouTube channel.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
