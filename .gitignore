@@ -23,3 +23,6 @@ firebase-service-account*.json
 .gitleaks-report.json
 .trivy-report.json
 .semgrep/
+
+# Build artifacts
+*.tsbuildinfo
