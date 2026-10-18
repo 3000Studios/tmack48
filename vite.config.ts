@@ -17,7 +17,10 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
-          if (/[\\/]node_modules[\\/](three|@react-three)[\\/]/.test(id)) return "three";
+          // @babel/runtime helpers are imported by the entry graph AND the three
+          // ecosystem; if they land in the "three" chunk they statically chain the
+          // entry to the ~950 KB three chunk. Pin them to the react chunk.
+          if (id.includes("@babel/runtime")) return "react";
           if (/[\\/]node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/.test(id))
             return "motion";
           if (/[\\/]node_modules[\\/](react|react-dom|react-router|react-router-dom|scheduler)[\\/]/.test(id))

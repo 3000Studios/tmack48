@@ -5,8 +5,9 @@ import { YoutubeIcon } from "@/components/ui/Icon";
 import { isSupportedLink } from "@/lib/utils";
 import { trackOutbound } from "@/lib/analytics";
 import { subscribeAcornLandingCount } from "@/lib/acornBus";
-import { useEffect, useState } from "react";
-import FooterAcornObject from "@/components/effects/FooterAcornObject";
+import { lazy, Suspense, useEffect, useState } from "react";
+// Decorative Three.js object — lazy so the ~950 KB three chunk stays off the initial-load graph.
+const FooterAcornObject = lazy(() => import("@/components/effects/FooterAcornObject"));
 
 function SiteDevMark() {
   const text = "Site dev 3000 Studios";
@@ -78,7 +79,9 @@ export default function Footer() {
 
       {/* 3D layer: behind footer content but above wallpaper */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <FooterAcornObject />
+        <Suspense fallback={null}>
+          <FooterAcornObject />
+        </Suspense>
       </div>
 
       <div className="container-lux relative z-10 py-12 grid gap-10 md:grid-cols-3">

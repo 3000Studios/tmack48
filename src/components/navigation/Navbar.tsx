@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/ui/Logo";
@@ -7,7 +7,8 @@ import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { YoutubeIcon } from "@/components/ui/Icon";
 import { cn, isSupportedLink } from "@/lib/utils";
 import { trackCta } from "@/lib/analytics";
-import HeaderAcorns from "@/components/effects/HeaderAcorns";
+// Decorative Three.js ornaments — lazy so the ~950 KB three chunk stays off the initial-load graph.
+const HeaderAcorns = lazy(() => import("@/components/effects/HeaderAcorns"));
 import NavIdleLink, { IDLE_FX, type IdleFx } from "@/components/navigation/NavIdleLink";
 import MobileMenuWallpaper from "@/components/navigation/MobileMenuWallpaper";
 
@@ -96,7 +97,9 @@ export default function Navbar() {
         )}
         style={{ zIndex: 60 }}
       >
-        <HeaderAcorns />
+        <Suspense fallback={null}>
+          <HeaderAcorns />
+        </Suspense>
         <div className="container-lux flex h-16 md:h-20 items-center justify-between gap-3 md:gap-4">
           <Logo />
 
