@@ -57,9 +57,22 @@ export default function CursorTrail({ enabled = true }: Props) {
     let ly = my;
     let spawnAccum = 0;
 
+    // PERF: the rAF loop only runs while there are live diamonds / recent
+    // pointer movement. It stops itself when idle and restarts on the next
+    // mousemove — previously it redrew a full-screen canvas forever, even
+    // with nothing on it.
+    let raf = 0;
+    let running = false;
+    const startLoop = () => {
+      if (running) return;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    };
+
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
+      startLoop();
     };
     window.addEventListener("mousemove", onMove, { passive: true });
 
@@ -98,7 +111,6 @@ export default function CursorTrail({ enabled = true }: Props) {
       ctx.restore();
     };
 
-    let raf = 0;
     const loop = () => {
       const dx = mx - lx;
       const dy = my - ly;
@@ -152,11 +164,18 @@ export default function CursorTrail({ enabled = true }: Props) {
         drawDiamond(d.x, d.y, size, d.rot, alpha, d.hue);
       }
 
+      // Idle stop: nothing left to draw and the pointer has settled.
+      if (diamonds.length === 0 && dist < 0.5) {
+        ctx.clearRect(0, 0, w, h);
+        running = false;
+        return;
+      }
       raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(loop);
+    startLoop();
 
     return () => {
+      running = false;
       document.body.classList.remove("cursor-trail-active");
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("resize", resize);

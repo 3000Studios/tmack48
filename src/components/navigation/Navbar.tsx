@@ -7,7 +7,7 @@ import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { YoutubeIcon } from "@/components/ui/Icon";
 import { cn, isSupportedLink } from "@/lib/utils";
 import { trackCta } from "@/lib/analytics";
-// Decorative Three.js ornaments — lazy so the ~950 KB three chunk stays off the initial-load graph.
+// Decorative acorn ornaments (2D canvas) — lazy, zero WebGL.
 const HeaderAcorns = lazy(() => import("@/components/effects/HeaderAcorns"));
 import NavIdleLink, { IDLE_FX, type IdleFx } from "@/components/navigation/NavIdleLink";
 import MobileMenuWallpaper from "@/components/navigation/MobileMenuWallpaper";

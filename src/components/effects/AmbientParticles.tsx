@@ -39,8 +39,20 @@ export default function AmbientParticles({
     };
     window.addEventListener("resize", resize);
 
+    // PERF: do zero canvas work while the canvas is off-screen.
+    let visible = true;
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries.some((e) => e.isIntersecting);
+      },
+      { rootMargin: "100px 0px" }
+    );
+    io.observe(c);
+
     let raf = 0;
     const loop = () => {
+      raf = requestAnimationFrame(loop);
+      if (!visible) return;
       ctx.clearRect(0, 0, w / dpr, h / dpr);
       for (const d of dots) {
         d.y -= d.v;
@@ -61,11 +73,11 @@ export default function AmbientParticles({
         ctx.arc(d.x, d.y, d.r * 6, 0, Math.PI * 2);
         ctx.fill();
       }
-      raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("resize", resize);
     };
   }, [count, reduced]);

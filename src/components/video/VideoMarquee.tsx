@@ -20,21 +20,20 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
   const hostRef = useRef<HTMLUListElement | null>(null);
   const [inView, setInView] = useState(false);
 
+  // PERF: track visibility continuously — the marquee's CSS animation is
+  // paused while off-screen instead of compositing 20 large cards forever.
   useEffect(() => {
     const el = hostRef.current;
-    if (!el || inView) return;
+    if (!el) return;
     const obs = new IntersectionObserver(
       (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setInView(true);
-          obs.disconnect();
-        }
+        setInView(entries.some((e) => e.isIntersecting));
       },
       { rootMargin: "300px 0px" }
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, [inView]);
+  }, []);
 
   return (
     <div className="relative mask-fade-both overflow-hidden">
@@ -45,7 +44,7 @@ export default function VideoMarquee({ videos, direction = "left", speed = 50, o
         className="flex w-max gap-6 py-2 will-change-transform"
         style={{
           animation: reduced ? undefined : `${anim} ${speed}s linear infinite`,
-          animationPlayState: reduced || !interacting ? "running" : "paused",
+          animationPlayState: reduced || interacting || !inView ? "paused" : "running",
         }}
         onMouseEnter={() => {
           if (!reduced) setInteracting(true);

@@ -248,6 +248,27 @@ body.cursor-trail-active {
   animation: vortexSpin 48s linear infinite;
 }
 
+@keyframes acornSway {
+  0%,
+  100% {
+    transform: rotate(-7deg) translateY(0);
+  }
+  50% {
+    transform: rotate(7deg) translateY(-6px);
+  }
+}
+
+.acorn-sway {
+  animation: acornSway 7s ease-in-out infinite;
+  transform-origin: 50% 12%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .acorn-sway {
+    animation: none !important;
+  }
+}
+
 .vortex-layer {
   background:
     radial-gradient(circle at 50% 48%, rgba(212, 175, 55, 0.12), transparent 42%),

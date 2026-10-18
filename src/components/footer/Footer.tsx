@@ -6,7 +6,7 @@ import { isSupportedLink } from "@/lib/utils";
 import { trackOutbound } from "@/lib/analytics";
 import { subscribeAcornLandingCount } from "@/lib/acornBus";
 import { lazy, Suspense, useEffect, useState } from "react";
-// Decorative Three.js object — lazy so the ~950 KB three chunk stays off the initial-load graph.
+// Decorative acorn (SVG + CSS sway) — lazy, zero WebGL.
 const FooterAcornObject = lazy(() => import("@/components/effects/FooterAcornObject"));
 
 function SiteDevMark() {

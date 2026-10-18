@@ -17,8 +17,19 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
   // Start muted so autoplay works without sign-in / browser blocks
   const [muted, setMuted] = useState(true);
   const [showPlayer, setShowPlayer] = useState(false);
-  const [spot, setSpot] = useState({ x: 50, y: 18 });
+  // PERF: spotlight position lives in a ref + direct DOM style write.
+  // It used to be React state updated on every mousemove, re-rendering
+  // the entire hero (incl. the player) dozens of times per second.
+  const spotRef = useRef<HTMLDivElement | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+
+  const moveSpot = useCallback((clientX: number, clientY: number, rect: DOMRect) => {
+    const el = spotRef.current;
+    if (!el) return;
+    const x = ((clientX - rect.left) / rect.width) * 100;
+    const y = ((clientY - rect.top) / rect.height) * 100;
+    el.style.background = `radial-gradient(420px 420px at ${x}% ${y}%, rgba(212,175,55,0.5), rgba(212,175,55,0.1) 40%, transparent 72%)`;
+  }, []);
 
   useEffect(() => {
     // Delay iframe mount so the page paints first; user can unmute after load
@@ -122,27 +133,22 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
       aria-label="TMACK48 hero"
       className="relative isolate overflow-hidden lg:min-h-[100dvh] lg:flex lg:items-center"
       onMouseMove={(e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        setSpot({ x, y });
+        moveSpot(e.clientX, e.clientY, e.currentTarget.getBoundingClientRect());
       }}
       onTouchMove={(e) => {
         const t = e.touches[0];
         if (!t) return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = ((t.clientX - rect.left) / rect.width) * 100;
-        const y = ((t.clientY - rect.top) / rect.height) * 100;
-        setSpot({ x, y });
+        moveSpot(t.clientX, t.clientY, e.currentTarget.getBoundingClientRect());
       }}
     >
-      <AmbientParticles className="opacity-60" count={80} />
+      <AmbientParticles className="opacity-60" count={40} />
 
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.65)_100%)]" />
       <div
-        className="pointer-events-none absolute inset-0 transition-[background] duration-150"
+        ref={spotRef}
+        className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(420px 420px at ${spot.x}% ${spot.y}%, rgba(212,175,55,0.5), rgba(212,175,55,0.1) 40%, transparent 72%)`,
+          background: `radial-gradient(420px 420px at 50% 18%, rgba(212,175,55,0.5), rgba(212,175,55,0.1) 40%, transparent 72%)`,
         }}
       />
       <div className="noise-overlay" />
