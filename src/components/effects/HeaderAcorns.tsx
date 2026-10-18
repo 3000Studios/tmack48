@@ -145,16 +145,30 @@ export default function HeaderAcorns() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
+    // PERF: cache layout rects. Reading getBoundingClientRect() every frame
+    // (plus a querySelector('footer') per frame) forces synchronous layout
+    // 60x/sec — Lighthouse flagged this 2.5 KB file as a top CPU consumer
+    // for exactly that reason. Rects now refresh on resize/scroll only,
+    // plus a slow safety refresh while acorns are falling.
+    let hostRect = host.getBoundingClientRect();
+    let footerRect: DOMRect | null = null;
+    const refreshRects = () => {
+      hostRect = host.getBoundingClientRect();
+      const footer = document.querySelector("footer");
+      footerRect = footer ? footer.getBoundingClientRect() : null;
+    };
     const resize = () => {
-      const r = host.getBoundingClientRect();
-      canvas.width = Math.max(1, Math.floor(r.width * dpr));
-      canvas.height = Math.max(1, Math.floor(r.height * dpr));
+      refreshRects();
+      canvas.width = Math.max(1, Math.floor(hostRect.width * dpr));
+      canvas.height = Math.max(1, Math.floor(hostRect.height * dpr));
     };
     const ro = new ResizeObserver(resize);
     ro.observe(host);
     resize();
+    window.addEventListener("scroll", refreshRects, { passive: true });
+    window.addEventListener("resize", refreshRects);
 
     triggerDropRef.current = () => {
       const rect = host.getBoundingClientRect();
@@ -177,13 +191,16 @@ export default function HeaderAcorns() {
     let raf = 0;
     let last = 0;
     let running = true;
+    let frame = 0;
 
     const tick = (t: number) => {
       if (!running) return;
       raf = window.requestAnimationFrame(tick);
+      frame += 1;
+      // Safety: while acorns are falling, refresh cached rects ~1x/sec in
+      // case layout moved without a scroll/resize event.
+      if (fallersRef.current.length && frame % 60 === 0) refreshRects();
 
-      const footer = document.querySelector("footer");
-      const hostRect = host.getBoundingClientRect();
       const w = hostRect.width || 1;
       const h = hostRect.height || 1;
       const dt = last ? Math.min(32, t - last) : 16;
@@ -215,7 +232,6 @@ export default function HeaderAcorns() {
 
       // --- physics: fallers (viewport px) ---
       if (fallersRef.current.length) {
-        const footerRect = footer?.getBoundingClientRect();
         const gravity = 0.75 * step;
         const wind = tilt.ax * 0.22 * step;
         const keep: Faller[] = [];
@@ -259,6 +275,8 @@ export default function HeaderAcorns() {
       running = false;
       window.cancelAnimationFrame(raf);
       ro.disconnect();
+      window.removeEventListener("scroll", refreshRects);
+      window.removeEventListener("resize", refreshRects);
     };
   }, []);
 

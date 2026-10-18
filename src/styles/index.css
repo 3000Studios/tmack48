@@ -233,14 +233,14 @@ body.cursor-trail-active {
 }
 
 @keyframes vortexPulse {
+  /* PERF: opacity only. Animating `filter: blur()` on these viewport-size
+     layers forced a full-screen repaint every frame. */
   0%,
   100% {
     opacity: 0.35;
-    filter: blur(0px);
   }
   50% {
     opacity: 0.55;
-    filter: blur(0.5px);
   }
 }
 
