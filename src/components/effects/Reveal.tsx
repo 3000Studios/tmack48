@@ -1,17 +1,15 @@
-import { motion, type Variants } from "framer-motion";
-import { type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const variants: Variants = {
-  hidden: { opacity: 0, y: 40, filter: "blur(8px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.85, ease: [0.22, 1, 0.36, 1] as const },
-  },
-};
-
+/**
+ * Scroll-reveal wrapper. PERF (2026-10-24): this used to be built on
+ * framer-motion, which pulled the ~133 KB motion chunk into the eager
+ * bundle of every page that used a Reveal (21 files) and animated
+ * `filter: blur(8px)` over whole sections while they entered — a
+ * per-frame repaint of very large layers. It is now an
+ * IntersectionObserver + CSS transition (classes in styles/index.css):
+ * same fade/rise feel, compositor-only properties, no library.
+ */
 export default function Reveal({
   children,
   className = "",
@@ -24,21 +22,39 @@ export default function Reveal({
   as?: "div" | "section" | "article" | "header" | "footer";
 }) {
   const reduced = useReducedMotion();
-  const Cmp = motion[as];
+  const ref = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (reduced) return;
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            el.classList.add("rv-in");
+            io.disconnect();
+          }
+        });
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [reduced]);
+
+  const Tag = as;
   if (reduced) {
-    const Tag = as;
     return <Tag className={className}>{children}</Tag>;
   }
   return (
-    <Cmp
-      className={className}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={variants}
-      transition={{ delay }}
+    <Tag
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ref={ref as any}
+      className={`rv ${className}`}
+      style={delay ? { transitionDelay: `${delay}s` } : undefined}
     >
       {children}
-    </Cmp>
+    </Tag>
   );
 }

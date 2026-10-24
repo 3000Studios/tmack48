@@ -4,7 +4,6 @@ import Reveal from "@/components/effects/Reveal";
 import { ArrowRightIcon, HeartIcon, PlayIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta, trackVideo } from "@/lib/analytics";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 
 export default function FeaturedSpotlight({
   pool,
@@ -19,7 +18,11 @@ export default function FeaturedSpotlight({
   const dragRef = useMemo(() => ({ x0: 0, t0: 0, active: false }), []);
 
   useEffect(() => {
+    // PERF/a11y: don't burn a re-render every 8s in a hidden tab, and
+    // don't auto-rotate at all for reduced-motion visitors.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setInterval(() => {
+      if (document.hidden) return;
       setIdx((v) => v + 1);
     }, 8000);
     return () => window.clearInterval(id);
@@ -71,26 +74,28 @@ export default function FeaturedSpotlight({
                     const card = source[cardIndex];
                     const isCenter = offset === 0;
                     return (
-                      <motion.button
+                      <button
                         key={`${card.videoId}-${offset}`}
                         type="button"
                         onClick={() => {
                           setIdx(cardIndex);
                         }}
                         className="absolute h-32 w-[min(58vw,260px)] sm:w-[min(420px,60vw)] overflow-hidden rounded-2xl border border-gold-300/30 bg-black/60 shadow-[0_18px_55px_-28px_rgba(212,175,55,0.65)]"
-                        animate={{
-                          x: offset * 192,
-                          rotateY: offset * -42,
-                          rotateX: isCenter ? 0 : 6,
-                          scale: isCenter ? 1.15 : 0.92,
+                        style={{
+                          // PERF: was framer-motion animate() — a plain CSS
+                          // transition to the same computed transform is
+                          // equivalent and keeps motion out of the bundle.
+                          transform: `translateX(${offset * 192}px) rotateY(${offset * -42}deg) rotateX(${isCenter ? 0 : 6}deg) scale(${isCenter ? 1.15 : 0.92})`,
                           opacity: isCenter ? 1 : 0.42,
                           zIndex: isCenter ? 3 : 1,
+                          transition: "transform 0.35s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease",
                         }}
-                        transition={{ duration: 0.35 }}
                       >
                         <img
                           src={card.thumbnailHqUrl}
                           alt={card.title}
+                          loading="lazy"
+                          decoding="async"
                           className={`h-full w-full object-cover transition-[filter,transform,opacity] duration-300 ${
                             isCenter ? "scale-[1.02]" : "scale-[0.98] blur-[0.6px] brightness-75 saturate-75"
                           }`}
@@ -98,7 +103,7 @@ export default function FeaturedSpotlight({
                         {!isCenter && (
                           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                         )}
-                      </motion.button>
+                      </button>
                     );
                   })}
                 </div>

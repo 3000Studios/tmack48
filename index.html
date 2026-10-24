@@ -22,9 +22,14 @@
 
     <link rel="dns-prefetch" href="https://www.youtube-nocookie.com" />
 
-    <!-- Premium typography: Playfair Display headings, Source Sans 3 body, Unbounded display accents, JetBrains Mono code -->
+    <!-- Premium typography: Playfair Display (footer credit, 700 only),
+         Source Sans 3 body, Unbounded display accents.
+         PERF (2026-10-24): trimmed to the weights the code actually uses
+         (font classes in src: 400/500/600/700/900; Playfair only at 700).
+         JetBrains Mono was loaded on every page but never used anywhere
+         in src — removed. display=swap was already set and is kept. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@300;400;500;600;700;800;900&family=Unbounded:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;500;600;700;900&family=Unbounded:wght@500;700;900&display=swap"
       rel="stylesheet"
     />
 

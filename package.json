@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "TMACK48 \u2014 official luxury artist universe. Cinematic promotional site for the TMACK48 YouTube brand.",
+  "description": "TMACK48 — official luxury artist universe. Cinematic promotional site for the TMACK48 YouTube brand.",
   "scripts": {
     "dev": "vite",
     "prebuild": "node scripts/generate-sitemap.mjs",
@@ -24,7 +24,6 @@
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
-    "framer-motion": "^12.40.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-helmet-async": "^2.0.5",

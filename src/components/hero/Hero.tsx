@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import AmbientParticles from "@/components/effects/AmbientParticles";
 import type { Video } from "@/data/videos";
@@ -155,44 +154,36 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
 
       <div className="relative container-lux grid gap-7 lg:gap-8 lg:grid-cols-12 items-center py-8 sm:py-12 lg:py-20">
         <div className="lg:col-span-6 relative z-10 max-w-2xl min-w-0">
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }}
-            className="eyebrow flex items-center gap-2"
-          >
+          {/* PERF: entrance animations are CSS (.hero-in) — same easing,
+              delays and rise; only the h1's blur-in is dropped (animating
+              blur on the largest text on the page = full-layer repaints). */}
+          <p className="hero-in eyebrow flex items-center gap-2" style={{ animationDuration: "0.8s" }}>
             <SparkleIcon className="h-4 w-4 text-gold-300" />
             Official Artist Universe
-          </motion.p>
+          </p>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] as const }}
-            className="mt-4 display-title font-black text-4xl sm:text-5xl lg:text-[6.5rem] leading-[0.9] tracking-tight"
+          <h1
+            className="hero-in mt-4 display-title font-black text-4xl sm:text-5xl lg:text-[6.5rem] leading-[0.9] tracking-tight"
+            style={{ animationDuration: "1s", animationDelay: "0.1s" }}
           >
             <span className="gold-text">TMACK</span>
             <span className="platinum-text">48</span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.3 }}
-            className="mt-5 max-w-xl text-lg sm:text-xl text-white font-semibold drop-shadow-md leading-relaxed text-balance"
+          <p
+            className="hero-in mt-5 max-w-xl text-lg sm:text-xl text-white font-semibold drop-shadow-md leading-relaxed text-balance"
+            style={{ animationDuration: "0.9s", animationDelay: "0.3s" }}
           >
             Luxury-flashy music, cinematic visuals, and relentless energy. Press play, feel the grind,
             and watch the movement take over.
-          </motion.p>
+          </p>
 
           {/* Text scroll removed per mobile layout request */}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.35, ease: [0.22, 1, 0.36, 1] as const }}
-          className="lg:col-span-6 relative z-10 w-full max-w-[min(100%,560px)] mx-auto lg:ml-auto lg:mr-0 self-center"
+        <div
+          className="hero-in lg:col-span-6 relative z-10 w-full max-w-[min(100%,560px)] mx-auto lg:ml-auto lg:mr-0 self-center"
+          style={{ animationDuration: "1s", animationDelay: "0.35s" }}
         >
           <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
             <div className="aspect-video-frame w-full max-h-[min(28svh,260px)] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black flex items-center justify-center">
@@ -251,7 +242,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
               <HeartIcon className="h-5 w-5" /> Support the Artist
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-[10px] uppercase tracking-[0.4em] text-platinum/60">

@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import type { Video } from "@/data/videos";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useInViewport } from "@/hooks/useInViewport";
@@ -14,51 +13,24 @@ interface Props {
   index: number;
 }
 
+/**
+ * PERF (2026-10-24): the entrance animations were framer-motion variants;
+ * they are now the .drop-card / .drop-copy CSS transitions in
+ * styles/index.css, driven by the same useInViewport hook — identical
+ * hinge-drop and slide-in values, no motion library in the bundle.
+ */
 export default function DropSection({ video, title, copy, side, onOpen, index }: Props) {
   const reduced = useReducedMotion();
   const [ref, inView] = useInViewport<HTMLDivElement>();
 
-  const dropVariant = reduced
-    ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
-    : {
-        hidden: {
-          opacity: 0,
-          y: 80,
-          rotateX: 78,
-          transformPerspective: 1000,
-          transformOrigin: "bottom center",
-          scale: 0.94,
-        },
-        show: {
-          opacity: 1,
-          y: 0,
-          rotateX: 0,
-          scale: 1,
-          transition: { duration: 0.9, ease: [0.22, 1, 0.36, 1] as const },
-        },
-      };
-
-  const copyVariant = reduced
-    ? { hidden: { opacity: 1 }, show: { opacity: 1 } }
-    : {
-        hidden: { opacity: 0, x: side === "left" ? 40 : -40 },
-        show: {
-          opacity: 1,
-          x: 0,
-          transition: { duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] as const },
-        },
-      };
-
   const order = side === "left" ? "" : "lg:[&>div:first-child]:order-2";
+  const shown = reduced || inView;
 
   return (
     <section ref={ref} className="section">
       <div className={`grid gap-10 lg:grid-cols-12 items-center ${order}`}>
-        <motion.div
-          variants={dropVariant}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className={`lg:col-span-7 ${side === "right" ? "lg:col-start-6" : ""}`}
+        <div
+          className={`${reduced ? "" : "drop-card"} ${shown ? "in" : ""} lg:col-span-7 ${side === "right" ? "lg:col-start-6" : ""}`}
         >
           <button
             type="button"
@@ -72,6 +44,8 @@ export default function DropSection({ video, title, copy, side, onOpen, index }:
                 e.currentTarget.src = video.thumbnailHqUrl;
               }}
               alt={video.title}
+              loading="lazy"
+              decoding="async"
               className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
@@ -87,13 +61,11 @@ export default function DropSection({ video, title, copy, side, onOpen, index }:
               </p>
             </div>
           </button>
-        </motion.div>
+        </div>
 
-        <motion.div
-          variants={copyVariant}
-          initial="hidden"
-          animate={inView ? "show" : "hidden"}
-          className={`lg:col-span-5 ${side === "right" ? "lg:col-start-1 lg:row-start-1" : ""}`}
+        <div
+          className={`${reduced ? "" : "drop-copy"} ${shown ? "in" : ""} lg:col-span-5 ${side === "right" ? "lg:col-start-1 lg:row-start-1" : ""}`}
+          style={reduced ? undefined : ({ "--drop-x": side === "left" ? "40px" : "-40px" } as React.CSSProperties)}
         >
           <span className="eyebrow">Drop {String(index + 1).padStart(2, "0")}</span>
           <h2 className="mt-2 section-title">
@@ -115,7 +87,7 @@ export default function DropSection({ video, title, copy, side, onOpen, index }:
               <ArrowRightIcon className="h-4 w-4" />
             </a>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

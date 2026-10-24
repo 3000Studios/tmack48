@@ -329,6 +329,83 @@ body.cursor-trail-active {
 }
 
 /* ===========================
+   PERF — CSS animation kit (replaces framer-motion, 2026-10-24)
+   Same easing curve and near-identical motion as the motion components
+   they replace; transform/opacity only, so everything stays on the
+   compositor. The old Reveal also animated `filter: blur(8px)` on whole
+   sections — a per-frame full-section repaint — that part is dropped.
+   =========================== */
+@keyframes tmFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes tmFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes tmHeroIn {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes tmMenuPanelIn {
+  from { opacity: 0; transform: translateY(28px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes tmMenuItemIn {
+  from { opacity: 0; transform: perspective(900px) rotateX(40deg) translateX(-28px); }
+  to { opacity: 1; transform: perspective(900px) rotateX(0deg) translateX(0); }
+}
+@keyframes tmPopIn {
+  from { opacity: 0; transform: scale(0.94) translateY(14px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.anim-fade-in { animation: tmFadeIn 0.28s ease both; }
+.anim-fade-out { animation: tmFadeOut 0.16s ease both; }
+.hero-in { animation: tmHeroIn 0.9s var(--ease-luxe) both; }
+.mmenu-panel { animation: tmMenuPanelIn 0.45s var(--ease-luxe) both; }
+.mmenu-item { animation: tmMenuItemIn 0.5s var(--ease-luxe) both; }
+.modal-panel { animation: tmPopIn 0.32s var(--ease-luxe) both; }
+
+/* Scroll reveal (Reveal.tsx) */
+.rv { opacity: 0; transform: translateY(40px); }
+.rv.rv-in {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.85s var(--ease-luxe), transform 0.85s var(--ease-luxe);
+}
+
+/* Drop sections (DropSection.tsx) */
+.drop-card {
+  opacity: 0;
+  transform: perspective(1000px) rotateX(78deg) translateY(80px) scale(0.94);
+  transform-origin: bottom center;
+  transition: opacity 0.9s var(--ease-luxe), transform 0.9s var(--ease-luxe);
+}
+.drop-card.in { opacity: 1; transform: none; }
+.drop-copy {
+  opacity: 0;
+  transform: translateX(var(--drop-x, 40px));
+  transition: opacity 0.8s var(--ease-luxe) 0.2s, transform 0.8s var(--ease-luxe) 0.2s;
+}
+.drop-copy.in { opacity: 1; transform: none; }
+
+/* Shorts rail cards (ShortsRail.tsx) */
+.rail-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s var(--ease-luxe), transform 0.6s var(--ease-luxe);
+}
+.rail-card.in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rv, .drop-card, .drop-copy, .rail-card {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ===========================
    Components
    =========================== */
 @layer components {
@@ -387,9 +464,9 @@ body.cursor-trail-active {
     width: 0.35em;
   }
 
-  .video-title {
-    will-change: transform, filter, opacity, letter-spacing;
-  }
+  /* PERF: no permanent will-change here — it pinned a compositor layer for
+     every video title on the page for the sake of a one-shot entrance
+     animation that runs fine without the hint. */
 
   .video-title-fx-0 {
     animation: vTitleRise 900ms var(--ease-luxe) both;
@@ -620,7 +697,9 @@ body.cursor-trail-active {
       linear-gradient(160deg, rgba(255, 255, 255, 0.04), transparent 40%),
       linear-gradient(-45deg, #050505, #151105, #1a1205, #000000);
     background-size: auto, 300% 300%;
-    animation: gradientShift 14s ease infinite;
+    /* PERF: the 14s infinite gradientShift animation that used to run here
+       forced a repaint of every card on the page, forever. The gradient is
+       kept (identical colors/stops); it is simply static now. */
     transition: transform 0.4s var(--ease-luxe), box-shadow 0.4s var(--ease-luxe), border-color 0.4s;
     box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }

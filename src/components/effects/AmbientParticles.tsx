@@ -39,20 +39,26 @@ export default function AmbientParticles({
     };
     window.addEventListener("resize", resize);
 
-    // PERF: do zero canvas work while the canvas is off-screen.
+    // PERF: do zero canvas work while the canvas is off-screen — the
+    // loop now stops scheduling frames entirely instead of spinning an
+    // empty rAF (the IntersectionObserver restarts it on re-entry).
     let visible = true;
+    let raf = 0;
+    let running = false;
     const io = new IntersectionObserver(
       (entries) => {
         visible = entries.some((e) => e.isIntersecting);
+        if (visible) start();
       },
       { rootMargin: "100px 0px" }
     );
     io.observe(c);
 
-    let raf = 0;
     const loop = () => {
-      raf = requestAnimationFrame(loop);
-      if (!visible) return;
+      if (!visible) {
+        running = false;
+        return;
+      }
       ctx.clearRect(0, 0, w / dpr, h / dpr);
       for (const d of dots) {
         d.y -= d.v;
@@ -73,9 +79,16 @@ export default function AmbientParticles({
         ctx.arc(d.x, d.y, d.r * 6, 0, Math.PI * 2);
         ctx.fill();
       }
+      raf = requestAnimationFrame(loop);
     };
-    raf = requestAnimationFrame(loop);
+    const start = () => {
+      if (running) return;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    };
+    start();
     return () => {
+      running = false;
       cancelAnimationFrame(raf);
       io.disconnect();
       window.removeEventListener("resize", resize);

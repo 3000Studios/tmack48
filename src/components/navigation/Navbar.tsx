@@ -1,6 +1,5 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import Logo from "@/components/ui/Logo";
 import { navPrimaryPublic, siteConfig } from "@/data/siteConfig";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -14,6 +13,30 @@ import MobileMenuWallpaper from "@/components/navigation/MobileMenuWallpaper";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  // PERF (2026-10-24): the mobile menu was framer-motion AnimatePresence,
+  // which kept the ~133 KB motion chunk in the eager bundle of EVERY page
+  // (Navbar lives in the Layout). It is now CSS (.mmenu-*) with a 180 ms
+  // closing fade preserved through menuMounted/menuClosing state.
+  const [menuMounted, setMenuMounted] = useState(false);
+  const [menuClosing, setMenuClosing] = useState(false);
+  const menuGen = useRef(0);
+  const openMenu = () => {
+    menuGen.current++;
+    setMenuMounted(true);
+    setMenuClosing(false);
+    setOpen(true);
+  };
+  const closeMenu = () => {
+    const g = ++menuGen.current;
+    setOpen(false);
+    setMenuClosing(true);
+    window.setTimeout(() => {
+      if (menuGen.current === g) {
+        setMenuMounted(false);
+        setMenuClosing(false);
+      }
+    }, 180);
+  };
   const [idleMap, setIdleMap] = useState<Record<string, IdleFx>>({});
   const { y, dir } = useScrollDirection();
   const loc = useLocation();
@@ -26,20 +49,26 @@ export default function Navbar() {
     []
   );
 
-  useEffect(() => setOpen(false), [loc.pathname]);
+  useEffect(() => {
+    // Route change: close instantly (no exit fade while navigating).
+    menuGen.current++;
+    setOpen(false);
+    setMenuMounted(false);
+    setMenuClosing(false);
+  }, [loc.pathname]);
 
   useEffect(() => {
-    if (!open) return;
+    if (!menuMounted) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [open]);
+  }, [menuMounted]);
 
   useEffect(() => {
-    document.body.dataset.mobileMenuOpen = open ? "true" : "false";
-  }, [open]);
+    document.body.dataset.mobileMenuOpen = menuMounted ? "true" : "false";
+  }, [menuMounted]);
 
   useEffect(() => {
     return () => {
@@ -53,7 +82,7 @@ export default function Navbar() {
       if (!items.length) return;
       const link = items[Math.floor(Math.random() * items.length)];
       const fx = IDLE_FX[Math.floor(Math.random() * IDLE_FX.length)];
-      setIdleMap((prev) => {
+      setIdleMap(() => {
         const cleared: Record<string, IdleFx> = {};
         // Keep only the new one so only one link animates at a time
         cleared[link.href] = fx;
@@ -152,7 +181,7 @@ export default function Navbar() {
               "transition-transform active:scale-90",
               open && "text-gold-200 ring-1 ring-gold-300/50"
             )}
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => (open ? closeMenu() : openMenu())}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
           >
@@ -166,112 +195,87 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile full-screen menu — same links as desktop */}
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            key="mobile-menu"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Site menu"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.28 }}
-            className="lg:hidden fixed inset-0 z-[58] overflow-hidden"
-          >
-            <MobileMenuWallpaper />
+      {/* Mobile full-screen menu — same links as desktop.
+          PERF: CSS animations (.anim-fade-in/.mmenu-panel/.mmenu-item)
+          replace framer-motion; close keeps a 180 ms fade via menuClosing. */}
+      {menuMounted && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          className={`lg:hidden fixed inset-0 z-[58] overflow-hidden ${menuClosing ? "anim-fade-out" : "anim-fade-in"}`}
+        >
+          <MobileMenuWallpaper />
 
-            <motion.div
-              className="pointer-events-none absolute inset-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              style={{
-                background:
-                  "radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.12), transparent 50%)",
-              }}
-            />
+          <div
+            className="anim-fade-in pointer-events-none absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 20%, rgba(212,175,55,0.12), transparent 50%)",
+            }}
+          />
 
-            <div className="relative z-10 flex h-full flex-col pt-16 md:pt-20">
-              <motion.div
-                initial={{ y: 28, opacity: 0, scale: 0.98 }}
-                animate={{ y: 0, opacity: 1, scale: 1 }}
-                exit={{ y: 16, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 320, damping: 28, mass: 0.9 }}
-                className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 pb-10"
-              >
-                <div className="mx-auto w-full max-w-lg py-5 flex flex-col gap-2.5">
-                  <motion.p
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.05 }}
-                    className="eyebrow mb-2 px-1"
+          <div className="relative z-10 flex h-full flex-col pt-16 md:pt-20">
+            <div className="mmenu-panel flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 pb-10">
+              <div className="mx-auto w-full max-w-lg py-5 flex flex-col gap-2.5">
+                <p
+                  className="mmenu-item eyebrow mb-2 px-1"
+                  style={{ animationDelay: "0.05s" }}
+                >
+                  Navigate the universe
+                </p>
+
+                {items.map((it, i) => (
+                  <div
+                    key={it.href}
+                    className="mmenu-item"
+                    style={{ animationDelay: `${0.06 + i * 0.045}s` }}
                   >
-                    Navigate the universe
-                  </motion.p>
+                    <NavIdleLink
+                      href={it.href}
+                      label={it.label}
+                      index={i}
+                      idleFx={idleMap[it.href] ?? null}
+                      variant="mobile"
+                      onActivate={closeMenu}
+                    />
+                  </div>
+                ))}
 
-                  {items.map((it, i) => (
-                    <motion.div
-                      key={it.href}
-                      initial={{ opacity: 0, x: -28, rotateX: 40 }}
-                      animate={{ opacity: 1, x: 0, rotateX: 0 }}
-                      exit={{ opacity: 0, x: 20 }}
-                      transition={{
-                        delay: 0.06 + i * 0.045,
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 24,
-                      }}
-                      style={{ transformPerspective: 900 }}
-                    >
-                      <NavIdleLink
-                        href={it.href}
-                        label={it.label}
-                        index={i}
-                        idleFx={idleMap[it.href] ?? null}
-                        variant="mobile"
-                        onActivate={() => setOpen(false)}
-                      />
-                    </motion.div>
-                  ))}
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.08 + items.length * 0.045 }}
-                    className="mt-3 grid gap-3"
+                <div
+                  className="mmenu-item mt-3 grid gap-3"
+                  style={{ animationDelay: `${0.08 + items.length * 0.045}s` }}
+                >
+                  <Link
+                    to="/admin"
+                    onClick={closeMenu}
+                    className="nav-link-mobile flex items-center justify-center rounded-2xl btn-gold px-5 py-4 text-base font-black uppercase tracking-widest shadow-gold-xl active:scale-[0.98]"
                   >
-                    <Link
-                      to="/admin"
-                      onClick={() => setOpen(false)}
-                      className="nav-link-mobile flex items-center justify-center rounded-2xl btn-gold px-5 py-4 text-base font-black uppercase tracking-widest shadow-gold-xl active:scale-[0.98]"
-                    >
-                      Admin
-                    </Link>
-                    <a
-                      href={siteConfig.channel.subscribeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={() => trackCta("nav_subscribe_mobile")}
-                      className="btn-gold justify-center py-3.5 active:scale-[0.98]"
-                    >
-                      <YoutubeIcon className="h-5 w-5" />
-                      Subscribe on YouTube
-                    </a>
-                    <Link
-                      to="/support"
-                      className="btn-ghost justify-center py-3.5 active:scale-[0.98]"
-                      onClick={() => setOpen(false)}
-                    >
-                      Support & Contact
-                    </Link>
-                  </motion.div>
+                    Admin
+                  </Link>
+                  <a
+                    href={siteConfig.channel.subscribeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackCta("nav_subscribe_mobile")}
+                    className="btn-gold justify-center py-3.5 active:scale-[0.98]"
+                  >
+                    <YoutubeIcon className="h-5 w-5" />
+                    Subscribe on YouTube
+                  </a>
+                  <Link
+                    to="/support"
+                    className="btn-ghost justify-center py-3.5 active:scale-[0.98]"
+                    onClick={closeMenu}
+                  >
+                    Support & Contact
+                  </Link>
                 </div>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
     </>
   );
 }

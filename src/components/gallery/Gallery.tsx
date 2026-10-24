@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { gallery as defaultGallery, type GalleryItem } from "@/data/gallery";
 import { CloseIcon } from "@/components/ui/Icon";
 import TiltCard from "@/components/effects/TiltCard";
 
+/**
+ * PERF (2026-10-24): lightbox was framer-motion AnimatePresence; now CSS
+ * (.anim-fade-in / .modal-panel / .anim-fade-out) with a 160 ms closing
+ * fade kept via local state — same open/close feel, no motion library.
+ */
 export default function Gallery({ items = defaultGallery }: { items?: GalleryItem[] }) {
   const [active, setActive] = useState<GalleryItem | null>(null);
+  const [closing, setClosing] = useState(false);
   const [deadIds, setDeadIds] = useState<Set<string>>(new Set());
+
+  const closeLightbox = () => {
+    setClosing(true);
+    window.setTimeout(() => {
+      setActive(null);
+      setClosing(false);
+    }, 160);
+  };
 
   useEffect(() => {
     if (!active) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setActive(null);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && closeLightbox();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [active]);
@@ -54,52 +67,43 @@ export default function Gallery({ items = defaultGallery }: { items?: GalleryIte
         })}
       </div>
 
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-label={active.alt}
-            className="fixed inset-0 z-[70] grid place-items-center bg-black/85 backdrop-blur-md p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setActive(null)}
+      {active && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={active.alt}
+          className={`fixed inset-0 z-[70] grid place-items-center bg-black/85 backdrop-blur-md p-4 ${closing ? "anim-fade-out" : "anim-fade-in"}`}
+          onClick={closeLightbox}
+        >
+          <figure
+            className={`relative max-h-[90dvh] max-w-5xl w-full rounded-3xl overflow-hidden metal-border glass ${closing ? "" : "modal-panel"}`}
+            onClick={(e) => e.stopPropagation()}
           >
-            <motion.figure
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] as const }}
-              className="relative max-h-[90dvh] max-w-5xl w-full rounded-3xl overflow-hidden metal-border glass"
-              onClick={(e) => e.stopPropagation()}
+            <button
+              type="button"
+              onClick={closeLightbox}
+              className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full bg-black/60 text-platinum hover:text-gold-200"
+              aria-label="Close"
             >
-              <button
-                type="button"
-                onClick={() => setActive(null)}
-                className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full bg-black/60 text-platinum hover:text-gold-200"
-                aria-label="Close"
-              >
-                <CloseIcon className="h-5 w-5" />
-              </button>
-              <img src={active.src} alt={active.alt} className="h-auto w-full object-contain" />
-              <figcaption className="p-5">
-                <p className="display-title text-xl text-platinum">{active.caption}</p>
-                {active.href && (
-                  <a
-                    href={active.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-2 inline-flex text-sm uppercase tracking-[0.3em] text-gold-300 hover:text-gold-200"
-                  >
-                    Watch on YouTube →
-                  </a>
-                )}
-              </figcaption>
-            </motion.figure>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <CloseIcon className="h-5 w-5" />
+            </button>
+            <img src={active.src} alt={active.alt} className="h-auto w-full object-contain" />
+            <figcaption className="p-5">
+              <p className="display-title text-xl text-platinum">{active.caption}</p>
+              {active.href && (
+                <a
+                  href={active.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-2 inline-flex text-sm uppercase tracking-[0.3em] text-gold-300 hover:text-gold-200"
+                >
+                  Watch on YouTube →
+                </a>
+              )}
+            </figcaption>
+          </figure>
+        </div>
+      )}
     </>
   );
 }

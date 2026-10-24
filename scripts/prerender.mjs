@@ -374,13 +374,32 @@ ${eventsHtml}
 }
 
 // /contact is a client-side redirect to /support#contact in the app —
-// mirror that behavior with a real link for crawlers and no-JS visitors.
+// mirror that behavior for crawlers and no-JS visitors, fleshed out with
+// the Connect page's own facts (Support.tsx FAQ + lede, and the
+// ContactForm's fields, inquiry types, and confirmation copy — nothing
+// invented here).
 builders['/contact'] = () => ({
   title: 'Contact — TMACK48',
   description: 'Contact TMACK48 — booking, features, and business inquiries via the Connect page.',
   inner: `<main>
       <h1>Contact</h1>
-      <p>Contact TMACK48 through the Connect page — booking, features, press, and business inquiries.</p>
+      <p>Contact TMACK48 through the Connect page — booking, features, press, and business inquiries. Back the movement, shop the vibe, or send a booking / press note — all in one place.</p>
+      <section>
+        <h2>What to reach out about</h2>
+        <p>The contact form on the Connect page takes these inquiry types: Booking, Press, Feature / Collaboration, Partnership, Fan Mail, and Other. Booking, press, features, partnerships — send it straight.</p>
+      </section>
+      <section>
+        <h2>Can I book TMACK48?</h2>
+        <p>Absolutely. Use the contact form on the Connect page — bookings and partnerships are read personally.</p>
+      </section>
+      <section>
+        <h2>What to include</h2>
+        <p>The form asks for your name, your email, an inquiry type, a subject, and your message — all four written fields are required, so the note arrives with everything needed to answer it.</p>
+      </section>
+      <section>
+        <h2>What happens next</h2>
+        <p>When a message is sent, the form confirms: “Message received — thank you. We'll respond as soon as possible.”</p>
+      </section>
       <p><a href="/support">Go to the Connect page</a> · <a href="${esc(siteConfig.channel.subscribeUrl)}">Subscribe on YouTube</a></p>
     </main>`,
 })
@@ -421,6 +440,11 @@ ${rows
 }
 
 // /request is a form page — mirror the form's own labels and guidance.
+// The two sections appended in the builder below are the Fans hub's own
+// copy (Community.tsx "How it works" steps + "Every request is read…"
+// card, and SongRequestForm's vibe list, field labels, and confirmation
+// message) — the live app serves this same content at /community#request,
+// which is where /request redirects. No facts are invented.
 builders['/request'] = () => {
   const pageFile = path.join(srcRoot, 'pages', 'SongRequest.tsx')
   const formFile = path.join(srcRoot, 'components', 'forms', 'SongRequestForm.tsx')
@@ -433,6 +457,16 @@ builders['/request'] = () => {
     description: seo.description ?? 'Request a custom song from TMACK48.',
     inner: `<main>
 ${renderBlocks(unique)}
+      <section>
+        <h2>How it works</h2>
+        <p>1. Pick a vibe and describe the idea. 2. The best ideas get pulled into the studio. 3. New drops land on the channel — subscribe so you don't miss yours.</p>
+        <p>Every request is read. No promises on timing — but the wildest ideas tend to win.</p>
+      </section>
+      <section>
+        <h2>What to include in a request</h2>
+        <p>Pick a vibe: Anthem / hype, Smooth / late night, Street / hard, Love song, Cinematic / emotional, Party / club, or Surprise me. Then describe your idea — the form's own prompt is “A track about… the energy of… a hook that says…”. Your name and email are optional.</p>
+        <p>When a request is sent, the form confirms: “Request received — the studio's listening. Keep an eye on the channel.”</p>
+      </section>
       <p><a href="/support">Questions? Connect with TMACK48</a> · <a href="/music">Browse the catalog</a></p>
     </main>`,
   }
