@@ -73,7 +73,7 @@ export default function News() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {rest.map((p, i) => (
               <Reveal key={p.slug} delay={Math.min(i * 0.05, 0.3)}>
-                <Link to={`/news/${p.slug}`} className="group card-premium flex h-full flex-col p-6 hover-lift">
+                <Link to={`/news/${p.slug}`} className="group card-premium acss-lift acss-press flex h-full flex-col p-6 hover-lift">
                   <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-gold-300">
                     <span>{p.category}</span>
                     <span className="text-platinum/40">· {p.readMinutes} min</span>

@@ -41,7 +41,7 @@ export default function Music() {
             <Reveal key={t.slug} delay={Math.min(i * 0.03, 0.3)}>
               <Link
                 to={`/music/${t.slug}`}
-                className="group card-premium block overflow-hidden hover-lift"
+                className="group card-premium acss-lift acss-press block overflow-hidden hover-lift"
               >
                 <div className="relative aspect-video overflow-hidden">
                   <img
