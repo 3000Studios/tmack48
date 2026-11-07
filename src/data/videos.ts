@@ -643,6 +643,16 @@ const SEED: SeedEntry[] = [
   },
 ];
 
+// Probed live 2026-11-07: these videos have NO maxres thumbnail on YouTube
+// (i.ytimg returns 404), so a maxres URL renders as a broken/blank card.
+// Their thumbnailMaxUrl falls back to the hq thumbnail, which always exists.
+const NO_MAXRES_THUMB = new Set([
+  "-nwt-T1B5V8", "7Sy9JYqqcLg", "8fi6HMaYZL0", "BD-cOfBMjXk",
+  "J5YzZ1h3o9s", "KRLF3zsnia8", "OVzbZp4B2AE", "Pnb2fYgRwHc",
+  "QgfNpCJSKp8", "RFFlWGKg9Y0", "RWKxL2SxM-I", "jXmTY2rq2Vk",
+  "km2ZVstvcdM", "sZCfeTn_yS0", "ypCZQ4e81Fo", "z0bAIMtrjOQ",
+]);
+
 export const videos: Video[] = SEED.map((v, i) => ({
   id: `taylormade-${v.videoId}`,
   videoId: v.videoId,
@@ -651,7 +661,9 @@ export const videos: Video[] = SEED.map((v, i) => ({
   watchUrl: v.category === "short" ? youtubeShortsUrl(v.videoId) : youtubeWatchUrl(v.videoId),
   thumbnailUrl: youtubeThumbnailUrl(v.videoId, "mq"),
   thumbnailHqUrl: youtubeThumbnailUrl(v.videoId, "hq"),
-  thumbnailMaxUrl: youtubeThumbnailUrl(v.videoId, "max"),
+  thumbnailMaxUrl: NO_MAXRES_THUMB.has(v.videoId)
+    ? youtubeThumbnailUrl(v.videoId, "hq")
+    : youtubeThumbnailUrl(v.videoId, "max"),
   category: v.category,
   tags: v.tags,
   featured: v.featured,

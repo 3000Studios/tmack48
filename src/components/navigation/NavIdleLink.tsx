@@ -1,16 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
 
-const IDLE_FX = [
-  "nav-idle-glow",
-  "nav-idle-bounce",
-  "nav-idle-shimmer",
-  "nav-idle-float",
-  "nav-idle-pulse",
-  "nav-idle-wiggle",
-  "nav-idle-spin",
-  "nav-idle-spark",
-] as const;
+// "Wet gold" idle language (Boss order 2026-11-07): only two subtle,
+// scene-blending effects remain — a soft gold glow (like the alley sign
+// warming up) and a single shine sweep. The old bounce/float/pulse/
+// wiggle/spin/spark set fought the site's mood and is retired.
+const IDLE_FX = ["nav-idle-glow", "nav-idle-shimmer"] as const;
 
 export type IdleFx = (typeof IDLE_FX)[number] | null;
 
@@ -68,8 +63,8 @@ export default function NavIdleLink({
       onClick={onActivate}
       className={({ isActive }) =>
         cn(
-          "nav-link-desktop group relative whitespace-nowrap rounded-lg px-2 py-1.5 text-[11px] xl:text-sm uppercase tracking-[0.16em] xl:tracking-[0.2em] font-medium transition-all duration-300",
-          "hover:text-gold-100 hover:scale-[1.06]",
+          "nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium transition-all duration-300",
+          "hover:text-gold-100 hover:scale-[1.04]",
           "active:scale-95 active:text-gold-50",
           isActive ? "text-gold-300" : "text-platinum/80",
           idleFx

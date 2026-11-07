@@ -179,11 +179,13 @@ svg {
   max-width: 100%;
 }
 
-/* Requested mobile density pass: shrink major UI ~20% for handheld viewport */
-@media (max-width: 640px) {
-  html {
-    font-size: 80%;
-  }
+/* Viewport true-size (Boss order 2026-11-07): the old 80% mobile shrink is
+   retired — the site renders at the size the device asks for. text-size-adjust
+   stops iOS from inflating text in landscape, so the layout the viewport meta
+   promises is the layout that renders. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body[data-mobile-menu-open="true"] .mobile-floating-ui {
@@ -957,29 +959,11 @@ body.cursor-trail-active {
   .nav-idle-glow {
     animation: navIdleGlow 1.8s ease-in-out 1 !important;
   }
-  .nav-idle-bounce {
-    animation: navIdleBounce 1.6s cubic-bezier(0.22, 1, 0.36, 1) 1 !important;
-  }
   .nav-idle-shimmer .nav-shine {
     opacity: 1 !important;
   }
   .nav-idle-shimmer .nav-shine::after {
     animation: navShineSweep 1.2s ease-in-out 2 !important;
-  }
-  .nav-idle-float {
-    animation: navIdleFloat 1.8s ease-in-out 1 !important;
-  }
-  .nav-idle-pulse {
-    animation: navIdlePulse 1.6s ease-in-out 2 !important;
-  }
-  .nav-idle-wiggle {
-    animation: navIdleWiggle 0.9s ease-in-out 2 !important;
-  }
-  .nav-idle-spin {
-    animation: navIdleSpin 1.4s cubic-bezier(0.22, 1, 0.36, 1) 1 !important;
-  }
-  .nav-idle-spark {
-    animation: navIdleSpark 1.5s ease-out 1 !important;
   }
 
   @keyframes navIdleGlow {
@@ -991,79 +975,8 @@ body.cursor-trail-active {
     50% {
       text-shadow:
         0 0 14px rgba(212, 175, 55, 0.85),
-        0 0 36px rgba(185, 242, 255, 0.35);
+        0 0 36px rgba(212, 175, 55, 0.3);
       box-shadow: 0 0 24px -6px rgba(212, 175, 55, 0.55);
-    }
-  }
-  @keyframes navIdleBounce {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    30% {
-      transform: translateY(-6px);
-    }
-    55% {
-      transform: translateY(2px);
-    }
-    75% {
-      transform: translateY(-3px);
-    }
-  }
-  @keyframes navIdleFloat {
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
-    }
-    50% {
-      transform: translateY(-5px) scale(1.04);
-    }
-  }
-  @keyframes navIdlePulse {
-    0%,
-    100% {
-      filter: brightness(1);
-      letter-spacing: inherit;
-    }
-    50% {
-      filter: brightness(1.35);
-      color: #ffe29a;
-    }
-  }
-  @keyframes navIdleWiggle {
-    0%,
-    100% {
-      transform: rotate(0deg);
-    }
-    25% {
-      transform: rotate(-4deg);
-    }
-    75% {
-      transform: rotate(4deg);
-    }
-  }
-  @keyframes navIdleSpin {
-    0% {
-      transform: rotate(0deg) scale(1);
-    }
-    40% {
-      transform: rotate(8deg) scale(1.08);
-    }
-    100% {
-      transform: rotate(0deg) scale(1);
-    }
-  }
-  @keyframes navIdleSpark {
-    0% {
-      filter: drop-shadow(0 0 0 transparent);
-      color: inherit;
-    }
-    40% {
-      filter: drop-shadow(0 0 12px rgba(185, 242, 255, 0.9));
-      color: #b9f2ff;
-    }
-    100% {
-      filter: drop-shadow(0 0 0 transparent);
     }
   }
 }
@@ -1099,6 +1012,8 @@ body.cursor-trail-active {
 .card-premium:hover::after, .card-premium:active::after, .rail-card:hover::after, .rail-card:active::after, .rail-card:focus-visible::after {
   opacity:1; animation: goldShimmerSweep .85s cubic-bezier(.22,1,.36,1) both; }
 .card-premium:hover, .rail-card:hover { border-color: rgba(255,226,154,.65); }
+/* Wet-gold nav hover (2026-11-07): soft sign-like glow joins the underline sweep */
+.nav-link-desktop:hover { text-shadow: 0 0 16px rgba(212,175,55,.5); }
 .card-premium:active, .rail-card:active { transform: translateY(-2px) scale(.99); }
 
 /* Smooth-as-glass global transitions */

@@ -77,25 +77,15 @@ export default function Navbar() {
     };
   }, []);
 
-  // Every 5s: pick a random link and random idle effect
+  // Every 6.5s: one random link gets one subtle gold idle effect
+  // (glow or shine sweep — the "wet gold" set in NavIdleLink).
   useEffect(() => {
     const tick = () => {
       if (!items.length) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const link = items[Math.floor(Math.random() * items.length)];
       const fx = IDLE_FX[Math.floor(Math.random() * IDLE_FX.length)];
-      setIdleMap(() => {
-        const cleared: Record<string, IdleFx> = {};
-        // Keep only the new one so only one link animates at a time
-        cleared[link.href] = fx;
-        // Occasionally fire a second simultaneous effect
-        if (Math.random() > 0.55 && items.length > 1) {
-          const other = items[Math.floor(Math.random() * items.length)];
-          if (other.href !== link.href) {
-            cleared[other.href] = IDLE_FX[Math.floor(Math.random() * IDLE_FX.length)];
-          }
-        }
-        return cleared;
-      });
+      setIdleMap({ [link.href]: fx });
       // Clear after animation window so idle resets
       window.setTimeout(() => {
         setIdleMap((prev) => {
@@ -103,9 +93,9 @@ export default function Navbar() {
           delete next[link.href];
           return next;
         });
-      }, 2200);
+      }, 1500);
     };
-    const id = window.setInterval(tick, 5000);
+    const id = window.setInterval(tick, 6500);
     // first fire soon after mount
     const first = window.setTimeout(tick, 1800);
     return () => {
@@ -134,12 +124,12 @@ export default function Navbar() {
           <HeaderAcorns />
         </Suspense>
         <div className="container-lux relative z-10 flex h-16 md:h-20 items-center justify-between gap-3 md:gap-4">
-          <Logo />
+          <Logo className="shrink-0 origin-left lg:scale-90 xl:scale-100" />
 
           {/* Desktop — same primary set as mobile */}
           <nav
             aria-label="Primary"
-            className="hidden lg:flex flex-1 min-w-0 items-center justify-center gap-1 xl:gap-3 overflow-x-auto px-2"
+            className="hidden lg:flex flex-1 min-w-0 flex-nowrap items-center justify-center gap-0.5 xl:gap-2 px-1"
           >
             {items.map((it, i) => (
               <NavIdleLink
