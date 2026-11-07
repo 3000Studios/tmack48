@@ -178,7 +178,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
           </div>
 
           <h1
-            className="hero-in mt-4 display-title font-black text-4xl sm:text-5xl lg:text-[6.5rem] leading-[0.9] tracking-tight"
+            className="hero-in mt-4 display-title font-black text-[clamp(3rem,9vw,6.25rem)] leading-[0.92] tracking-tight"
             style={{ animationDuration: "1s", animationDelay: "0.1s" }}
           >
             <span className="gold-text">TMACK</span>

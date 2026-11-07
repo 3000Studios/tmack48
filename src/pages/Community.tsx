@@ -96,7 +96,7 @@ export default function Community() {
 
       <header className="page-header">
         <span className="eyebrow">Fans Hub</span>
-        <h1 className="mt-2 display-title text-5xl sm:text-6xl lg:text-7xl font-black">
+        <h1 className="mt-2 page-title">
           <span className="platinum-text">Community</span>
           <span className="gold-text"> &amp; Requests</span>
         </h1>

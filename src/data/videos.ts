@@ -53,7 +53,6 @@ const SEED: SeedEntry[] = [
     category: "featured",
     tags: ["official", "music video", "taylormade-hits"],
     featured: true,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "sZCfeTn_yS0",
@@ -61,7 +60,6 @@ const SEED: SeedEntry[] = [
     category: "featured",
     tags: ["official", "music video", "taylormade-hits"],
     featured: true,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "RWKxL2SxM-I",
@@ -69,7 +67,6 @@ const SEED: SeedEntry[] = [
     category: "featured",
     tags: ["official", "music video", "taylormade-hits"],
     featured: true,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "BzYNS9XtuZI",
@@ -77,7 +74,6 @@ const SEED: SeedEntry[] = [
     category: "featured",
     tags: ["official", "music video", "taylormade-hits"],
     featured: true,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "ypCZQ4e81Fo",
@@ -85,7 +81,6 @@ const SEED: SeedEntry[] = [
     category: "featured",
     tags: ["official", "music video", "taylormade-hits"],
     featured: true,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "-nwt-T1B5V8",
@@ -93,7 +88,6 @@ const SEED: SeedEntry[] = [
     category: "featured",
     tags: ["official", "music video", "taylormade-hits"],
     featured: true,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "J5YzZ1h3o9s",
@@ -101,7 +95,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "8fi6HMaYZL0",
@@ -109,7 +102,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "RFFlWGKg9Y0",
@@ -117,7 +109,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "OVzbZp4B2AE",
@@ -125,7 +116,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "km2ZVstvcdM",
@@ -133,7 +123,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "4BqOZfMuC6U",
@@ -141,7 +130,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "Pnb2fYgRwHc",
@@ -149,7 +137,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "jjhxAU7wueA",
@@ -157,7 +144,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "gY3hpMhbt4g",
@@ -165,7 +151,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "KRLF3zsnia8",
@@ -173,7 +158,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "8g7IzNorG5k",
@@ -181,7 +165,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "JV2WosPwm6c",
@@ -189,7 +172,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "jXmTY2rq2Vk",
@@ -197,7 +179,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "QgfNpCJSKp8",
@@ -205,7 +186,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "7Sy9JYqqcLg",
@@ -213,7 +193,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "BD-cOfBMjXk",
@@ -221,7 +200,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "I8Z8BPd1DaQ",
@@ -229,7 +207,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "McttTHez6nE",
@@ -237,7 +214,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "6K-DXJgXpNo",
@@ -245,7 +221,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "MAlbdUnZ4qU",
@@ -253,7 +228,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "QMSTouwZxBs",
@@ -261,7 +235,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "da1kpiC6fPQ",
@@ -269,7 +242,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "a17mLxWD3b4",
@@ -277,7 +249,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "_V9bGFT3dyQ",
@@ -285,7 +256,6 @@ const SEED: SeedEntry[] = [
     category: "official",
     tags: ["official", "music video", "taylormade-hits"],
     featured: false,
-    blurb: "From TaylorMade Hits on YouTube — tap play or watch on the channel.",
   },
   {
     videoId: "Zs8fSkDUM1k",

@@ -257,7 +257,7 @@ const postCard = (p) => `        <article>
 
 const builders = {
   '/': () => ({
-    title: 'TMACK48 — Official Artist Universe',
+    title: 'TMACK48 — TaylorMade Hits | Official Artist Universe',
     description: siteConfig.description,
     inner: `<main>
       <h1>JUST BUSTED 1,000 SUBSCRIBERS ON YOUTUBE</h1>
@@ -277,7 +277,7 @@ ${posts.slice(0, 3).map((p) => postCard(p)).join('\n')}
   }),
 
   '/videos': () => ({
-    title: 'Videos — TMACK48',
+    title: 'Videos — TMACK48 · TaylorMade Hits',
     description: `Watch the official TMACK48 video catalog: ${longs.length} music videos and drops, direct from the @TaylorMadeHits YouTube channel.`,
     inner: `<main>
       <h1>Videos</h1>
@@ -297,7 +297,7 @@ ${items.map((v) => videoCard(v)).join('\n')}
   }),
 
   '/shorts': () => ({
-    title: 'Shorts — TMACK48',
+    title: 'Shorts — TMACK48 · TaylorMade Hits',
     description: `TMACK48 YouTube Shorts: ${shorts.length} quick hits from the universe.`,
     inner: `<main>
       <h1>Shorts</h1>
@@ -307,7 +307,7 @@ ${shorts.map((v) => videoCard(v)).join('\n')}
   }),
 
   '/music': () => ({
-    title: 'Music — TMACK48',
+    title: 'Music — TMACK48 · TaylorMade Hits',
     description: `The TMACK48 catalog: ${tracks.length} tracks with track pages, videos, and updates.`,
     inner: `<main>
       <h1>Music</h1>
@@ -325,7 +325,7 @@ ${tracks
   }),
 
   '/news': () => ({
-    title: 'News — TMACK48',
+    title: 'News — TMACK48 · TaylorMade Hits',
     description: 'Announcements, release notes, and updates from the TMACK48 universe.',
     inner: `<main>
       <h1>News</h1>
@@ -335,7 +335,7 @@ ${posts.map((p) => postCard(p)).join('\n')}
   }),
 
   '/gallery': () => ({
-    title: 'Gallery — TMACK48',
+    title: 'Gallery — TMACK48 · TaylorMade Hits',
     description: 'Visual moments from the TMACK48 universe — artwork and stills from the catalog.',
     inner: `<main>
       <h1>Gallery</h1>
@@ -365,7 +365,7 @@ ${gallery
           .join('\n')
       : ''
     return {
-      title: 'Tour — TMACK48',
+      title: 'Tour — TMACK48 · TaylorMade Hits',
       description: seoProps(file).description ?? 'TMACK48 live dates and tour updates.',
       inner: `<main>
 ${renderBlocks(blocks)}
@@ -381,7 +381,7 @@ ${eventsHtml}
 // ContactForm's fields, inquiry types, and confirmation copy — nothing
 // invented here).
 builders['/contact'] = () => ({
-  title: 'Contact — TMACK48',
+  title: 'Contact — TMACK48 · TaylorMade Hits',
   description: 'Contact TMACK48 — booking, features, and business inquiries via the Connect page.',
   inner: `<main>
       <h1>Contact</h1>
@@ -424,7 +424,7 @@ builders['/links'] = () => {
     ...socialRows.map(([label, href]) => ({ label, href })),
   ]
   return {
-    title: 'Links — TMACK48',
+    title: 'Links — TMACK48 · TaylorMade Hits',
     description: seo.description ?? 'Every way to connect with TMACK48 — YouTube, socials, support, and booking.',
     inner: `<main>
       <h1>TMACK48 · Links</h1>
@@ -455,7 +455,7 @@ builders['/request'] = () => {
   const seen = new Set()
   const unique = blocks.filter((b) => (seen.has(b.text) ? false : (seen.add(b.text), true)))
   return {
-    title: seo.title ? `${seo.title} — TMACK48` : 'Request a Song — TMACK48',
+    title: seo.title ? `${seo.title} — TMACK48 · TaylorMade Hits` : 'Request a Song — TMACK48 · TaylorMade Hits',
     description: seo.description ?? 'Request a custom song from TMACK48.',
     inner: `<main>
 ${renderBlocks(unique)}
@@ -481,7 +481,7 @@ builders['/stories'] = () => {
   const seo = seoProps(file)
   const blocks = pageBlocks(file)
   return {
-    title: seo.title ? `${seo.title} — TMACK48` : 'Stories — TMACK48',
+    title: seo.title ? `${seo.title} — TMACK48 · TaylorMade Hits` : 'Stories — TMACK48 · TaylorMade Hits',
     description: seo.description ?? 'Daily stories and updates from the TMACK48 universe.',
     inner: `<main>
 ${renderBlocks(blocks)}
@@ -518,7 +518,7 @@ for (const [route, file] of Object.entries(STATIC_PAGES)) {
     const blocks = pageBlocks(full)
     const hasH1 = blocks.some((b) => b.level === 1)
     return {
-      title: seo.title ? `${seo.title} — TMACK48` : `TMACK48 — Official Artist Universe`,
+      title: seo.title ? `${seo.title} — TMACK48 · TaylorMade Hits` : `TMACK48 — Official Artist Universe`,
       description: seo.description ?? siteConfig.description,
       inner: `<main>
 ${hasH1 ? '' : `      <h1>${esc(seo.title ?? route.slice(1))}</h1>\n`}${renderBlocks(blocks)}
@@ -532,7 +532,7 @@ for (const t of tracks) {
   builders[`/music/${t.slug}`] = () => {
     const related = tracks.filter((x) => x.slug !== t.slug).slice(0, 3)
     return {
-      title: `${t.title} — TMACK48`,
+      title: `${t.title} — TMACK48 · TaylorMade Hits`,
       description: t.blurb ?? `${t.title} by TMACK48 — watch the official video on YouTube and follow the universe.`,
       inner: `<main>
       <h1>${esc(t.title)}</h1>
@@ -563,7 +563,7 @@ ${related
 
 for (const p of posts) {
   builders[`/news/${p.slug}`] = () => ({
-    title: `${p.title} — TMACK48`,
+    title: `${p.title} — TMACK48 · TaylorMade Hits`,
     description: p.excerpt,
     inner: `<main>
       <article>

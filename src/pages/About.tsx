@@ -27,7 +27,7 @@ export default function About() {
         <div className="container-lux pt-16 pb-20">
           <Reveal>
             <span className="eyebrow">The Artist</span>
-            <h1 className="mt-2 display-title text-5xl sm:text-6xl lg:text-8xl font-black text-balance">
+            <h1 className="mt-2 page-title text-balance">
               <span className="gold-text">Meet TMACK48</span>
             </h1>
             <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">

@@ -2,6 +2,7 @@ const envOr = (v: string | undefined, fallback = ""): string => (v && v.trim() ?
 
 export const siteConfig = {
   name: "TMACK48",
+  brand: "TMACK48 — TaylorMade Hits",
   tagline: "Official Artist Universe",
   description:
     "TaylorMade Hits just busted 1,000 subscribers on YouTube. Watch the latest TMACK48 drops, subscribe to @TaylorMadeHits, and support the movement.",

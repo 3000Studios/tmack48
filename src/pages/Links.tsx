@@ -88,7 +88,7 @@ export default function Links() {
         <Reveal>
           <div className="text-center">
             <span className="eyebrow">One Tap Away</span>
-            <h1 className="mt-2 display-title text-5xl sm:text-6xl font-black">
+            <h1 className="mt-2 page-title">
               <span className="gold-text">TMACK48 · Links</span>
             </h1>
             <p className="mt-4 text-platinum/75">

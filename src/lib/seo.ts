@@ -32,7 +32,7 @@ export function seo(input: SeoInput = {}): SeoData {
 export const artistSchema = () => ({
   "@context": "https://schema.org",
   "@type": "MusicGroup",
-  name: "TMACK48",
+  name: "TMACK48 — TaylorMade Hits",
   url: siteConfig.url,
   sameAs: [
     siteConfig.social.youtube,

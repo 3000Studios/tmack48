@@ -19,7 +19,7 @@ export default function Press() {
 
       <header className="container-lux pt-16 pb-6">
         <span className="eyebrow">Electronic Press Kit</span>
-        <h1 className="mt-2 display-title text-5xl sm:text-6xl lg:text-7xl font-black">
+        <h1 className="mt-2 page-title">
           <span className="gold-text">Press / EPK</span>
         </h1>
       </header>

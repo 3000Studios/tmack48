@@ -168,7 +168,7 @@ export default function Footer() {
           <SiteDevMark />
         </div>
         <p className="text-xs uppercase tracking-[0.3em] text-platinum/50">
-          © {year} TMACK48 — All rights reserved.
+          © {year} TMACK48 · TaylorMade Hits — All rights reserved.
         </p>
       </div>
     </footer>

@@ -16,7 +16,7 @@ export default function Seo(props: SeoInput & { children?: React.ReactNode; sche
       <meta property="og:url" content={canonical} />
       <meta property="og:image" content={image} />
       <meta property="og:image:alt" content={title} />
-      <meta property="og:site_name" content="TMACK48" />
+      <meta property="og:site_name" content="TMACK48 — TaylorMade Hits" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />

@@ -12,7 +12,7 @@ export default function NotFound() {
         <AmbientParticles count={60} className="opacity-40" />
         <div className="container-lux text-center">
           <p className="eyebrow">404</p>
-          <h1 className="mt-3 display-title text-7xl sm:text-9xl font-black">
+          <h1 className="mt-3 display-title text-[clamp(4.5rem,22vw,9rem)] font-black">
             <span className="gold-text">Off the Grid</span>
           </h1>
           <p className="mt-5 mx-auto max-w-xl text-platinum/80 text-lg">

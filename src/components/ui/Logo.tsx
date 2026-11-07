@@ -4,7 +4,7 @@ export default function Logo({ className = "" }: { className?: string }) {
   return (
     <Link
       to="/"
-      aria-label="TMACK48 home"
+      aria-label="TMACK48 — TaylorMade Hits home"
       className={`group inline-flex items-center gap-2 ${className}`}
     >
       <span
@@ -19,7 +19,7 @@ export default function Logo({ className = "" }: { className?: string }) {
       </span>
       <span className="hidden sm:flex flex-col leading-tight">
         <span className="display-title text-lg font-black tracking-wide gold-text">TMACK48</span>
-        <span className="text-[10px] uppercase tracking-[0.3em] text-platinum/60">Official</span>
+        <span className="text-[10px] uppercase tracking-[0.3em] text-platinum/60">TaylorMade Hits</span>
       </span>
     </Link>
   );

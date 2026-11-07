@@ -759,7 +759,15 @@ body.cursor-trail-active {
   }
 
   .section-title {
-    @apply display-title text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tight;
+    @apply display-title font-black tracking-tight;
+    font-size: clamp(1.9rem, 1.35rem + 2.6vw, 3.4rem);
+    line-height: 1.05;
+  }
+
+  .page-title {
+    @apply display-title font-black tracking-tight;
+    font-size: clamp(2.1rem, 1.45rem + 3.4vw, 4.3rem);
+    line-height: 1.02;
   }
 
   .eyebrow {
@@ -1098,6 +1106,6 @@ a, button, .btn-gold, .btn-ghost, .btn-diamond, .chip, input, textarea, select {
 img { transition: transform .6s cubic-bezier(.22,1,.36,1), filter .6s cubic-bezier(.22,1,.36,1), opacity .4s ease; }
 main { animation: tmFadeIn .55s cubic-bezier(.22,1,.36,1) both; }
 
-/* Fresh clean body — no wallpaper in the body, ever */
+/* Body base under the fixed spotlight wallpaper (PageBackdrop) */
 body { background: radial-gradient(1100px 620px at 50% -12%, #14202b 0%, #070b10 52%, #030507 100%) fixed; }
 @media (prefers-reduced-motion: reduce){ .site-header-slide,.site-footer-slide,.milestone-banner{ animation:none !important } .card-premium:hover::after,.rail-card:hover::after{ animation:none !important } }

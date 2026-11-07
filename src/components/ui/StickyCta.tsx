@@ -37,7 +37,7 @@ export default function StickyCta() {
         className="btn-gold glint w-full justify-center text-sm font-medium text-ink-950 shadow-gold-xl"
       >
         <YoutubeIcon className="h-4 w-4" />
-        Subscribe to TMACK48 on YouTube
+        Subscribe to TaylorMade Hits on YouTube
       </a>
     </div>
   );

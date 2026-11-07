@@ -20,7 +20,7 @@ export default function Merch() {
 
       <header className="container-lux pt-16 pb-6">
         <span className="eyebrow">Wear the Crown</span>
-        <h1 className="mt-2 display-title text-5xl sm:text-6xl lg:text-7xl font-black">
+        <h1 className="mt-2 page-title">
           <span className="gold-text">Merch</span>
         </h1>
         <p className="mt-4 max-w-2xl text-platinum/75 text-lg">

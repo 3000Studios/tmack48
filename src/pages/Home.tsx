@@ -37,12 +37,21 @@ export default function Home() {
 
   const dropTrio = useMemo(() => {
     const fallback = videos.slice(0, 3);
+    if (featuredPool.length >= 6) return featuredPool.slice(3, 6);
     return featuredPool.length >= 3 ? featuredPool.slice(0, 3) : fallback;
   }, [videos, featuredPool]);
 
-  const previewGrid = useMemo(() => videos.slice(0, 6), [videos]);
-  const marqueeA = useMemo(() => videos.slice(0, 10), [videos]);
-  const marqueeB = useMemo(() => [...videos].reverse().slice(0, 10), [videos]);
+  // Section pools are windowed so the same faces don't repeat down the page:
+  // LatestDaily owns the newest 12 longs; marquees and the catalog preview
+  // draw from deeper in the catalog, and the preview rotates daily.
+  const longs = useMemo(() => videos.filter((v) => v.category !== "short"), [videos]);
+  const previewGrid = useMemo(() => {
+    if (longs.length <= 6) return longs;
+    const start = (Math.floor(Date.now() / 86400000) * 6) % longs.length;
+    return [...longs.slice(start), ...longs.slice(0, start)].slice(0, 6);
+  }, [longs]);
+  const marqueeA = useMemo(() => longs.slice(12, 20), [longs]);
+  const marqueeB = useMemo(() => [...longs.slice(20, 28)].reverse(), [longs]);
 
   const dropCopy = [
     {

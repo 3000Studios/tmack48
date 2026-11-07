@@ -42,22 +42,35 @@ export default function LatestDaily({
     const newestVideos = videos.filter((v) => v.category !== "short").slice(0, 12);
     const shorts = videos.filter((v) => v.category === "short").slice(0, 4);
 
+    const VIDEO_BLURBS = [
+      "Fresh from the TaylorMade Hits vault.",
+      "New heat, straight off the channel.",
+      "Cinematic visuals, heavy low-end.",
+      "One of the newest drops — press play.",
+      "Made to be replayed. Loudly.",
+    ];
+    const SHORT_BLURBS = [
+      "Short-form heat.",
+      "Quick hit, big energy.",
+      "Sixty seconds of fire.",
+      "Blink and you'll replay it.",
+    ];
     const pool: DailyItem[] = [
-      ...newestVideos.map((v) => ({
+      ...newestVideos.map((v, i) => ({
         kind: "video" as const,
         id: v.id,
         title: v.title,
-        blurb: v.blurb ?? "Fresh from the TMACK48 vault.",
+        blurb: v.blurb ?? VIDEO_BLURBS[i % VIDEO_BLURBS.length],
         href: `/videos`,
         thumb: v.thumbnailHqUrl,
         meta: v.featured ? "Featured video" : "Latest video",
         video: v,
       })),
-      ...shorts.map((v) => ({
+      ...shorts.map((v, i) => ({
         kind: "video" as const,
         id: `short-${v.id}`,
         title: v.title,
-        blurb: v.blurb ?? "Short-form heat.",
+        blurb: v.blurb ?? SHORT_BLURBS[i % SHORT_BLURBS.length],
         href: `/shorts`,
         thumb: v.thumbnailHqUrl,
         meta: "Short",

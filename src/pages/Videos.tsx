@@ -70,7 +70,7 @@ export default function Videos() {
 
       <header className="page-header">
         <span className="eyebrow">Watch Hub</span>
-        <h1 className="mt-2 display-title text-5xl sm:text-6xl lg:text-7xl font-black">
+        <h1 className="mt-2 page-title">
           <span className="gold-text">Videos</span>
           <span className="platinum-text"> &amp; Shorts</span>
         </h1>
