@@ -43,6 +43,50 @@ function PageFallback() {
 export default function App() {
   useEffect(() => {
     initAnalytics();
+    // First-party beacon for the admin panel's visitor/error counts
+    // (KV-backed /api/analytics; silently no-ops when storage is unbound).
+    try {
+      const post = (body: Record<string, string>) => {
+        const payload = JSON.stringify(body);
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon("/api/analytics", new Blob([payload], { type: "application/json" }));
+        } else {
+          fetch("/api/analytics", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: payload,
+            keepalive: true,
+          }).catch(() => undefined);
+        }
+      };
+      if (!sessionStorage.getItem("tmack48_beacon_view")) {
+        sessionStorage.setItem("tmack48_beacon_view", "1");
+        post({ type: "view", path: window.location.pathname });
+      }
+      let errCount = 0;
+      const onError = (e: ErrorEvent) => {
+        if (errCount >= 3) return;
+        errCount += 1;
+        post({ type: "error", path: window.location.pathname, msg: e.message || "Script error" });
+      };
+      const onRejection = (e: PromiseRejectionEvent) => {
+        if (errCount >= 3) return;
+        errCount += 1;
+        post({
+          type: "error",
+          path: window.location.pathname,
+          msg: `Unhandled promise: ${String(e.reason).slice(0, 160)}`,
+        });
+      };
+      window.addEventListener("error", onError);
+      window.addEventListener("unhandledrejection", onRejection);
+      return () => {
+        window.removeEventListener("error", onError);
+        window.removeEventListener("unhandledrejection", onRejection);
+      };
+    } catch {
+      // beacon is best-effort only
+    }
   }, []);
 
   return (

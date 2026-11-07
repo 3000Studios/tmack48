@@ -14,6 +14,7 @@ import VideoModal from "@/components/video/VideoModal";
 import Reveal from "@/components/effects/Reveal";
 import Newsletter from "@/components/support/Newsletter";
 import { useVideos } from "@/hooks/useVideos";
+import { useSiteOverrides, type CustomSection } from "@/lib/siteOverrides";
 import type { Video } from "@/data/videos";
 import { artistSchema, siteSchema } from "@/lib/seo";
 import { gallery } from "@/data/gallery";
@@ -22,18 +23,78 @@ import LatestDaily from "@/components/home/LatestDaily";
 import { ArrowRightIcon, HeartIcon, MailIcon, YoutubeIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
 
+/** Sections added from the admin editor — rendered at the chosen spot. */
+function CustomSections({ position }: { position: CustomSection["position"] }) {
+  const ov = useSiteOverrides();
+  const sections = ov.sections.filter((s) => s.position === position);
+  if (!sections.length) return null;
+  return (
+    <>
+      {sections.map((s) => (
+        <section key={s.id} className="section" aria-label={s.heading}>
+          <Reveal>
+            <div className="card-premium overflow-hidden">
+              {s.imageUrl && (
+                <img src={s.imageUrl} alt="" className="h-56 w-full object-cover sm:h-72" loading="lazy" />
+              )}
+              <div className="p-8 sm:p-10">
+                <h2 className="display-title text-3xl font-black sm:text-4xl">
+                  <span className="gold-text">{s.heading}</span>
+                </h2>
+                {s.body && (
+                  <p className="mt-4 max-w-3xl whitespace-pre-line text-platinum/80 leading-relaxed">{s.body}</p>
+                )}
+                {s.linkUrl && (
+                  <a
+                    href={s.linkUrl}
+                    target={s.linkUrl.startsWith("http") ? "_blank" : undefined}
+                    rel={s.linkUrl.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="btn-gold mt-6 inline-flex text-sm"
+                  >
+                    {s.linkLabel || "Check it out"} <ArrowRightIcon className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
+            </div>
+          </Reveal>
+        </section>
+      ))}
+    </>
+  );
+}
+
 export default function Home() {
   const { videos } = useVideos();
+  const ov = useSiteOverrides();
   const [active, setActive] = useState<Video | null>(null);
   const [heroVideo, setHeroVideo] = useState<Video | null>(null);
 
   useEffect(() => {
     if (!videos.length) return;
+    // Admin editor can pin the lead video; otherwise it rotates hourly.
+    const pinned = ov.heroVideoId ? videos.find((v) => v.videoId === ov.heroVideoId) : undefined;
+    if (pinned) {
+      setHeroVideo(pinned);
+      return;
+    }
     const hour = Math.floor(Date.now() / (1000 * 60 * 60));
     setHeroVideo(videos[hour % videos.length]);
-  }, [videos]);
+  }, [videos, ov.heroVideoId]);
 
   const featuredPool = useMemo(() => videos.filter((v) => v.featured), [videos]);
+
+  // Hero carousel pool — the TOP videos: featured first, then the rest of
+  // the long-form catalog, with the hourly hero pick guaranteed a seat.
+  // Capped at 10 so the U stays readable (Boss order 2026-11-07).
+  const topPool = useMemo(() => {
+    const longsAll = videos.filter((v) => v.category !== "short");
+    const ordered = [...featuredPool, ...longsAll.filter((v) => !v.featured)];
+    const withHero =
+      heroVideo && !ordered.some((v) => v.id === heroVideo.id)
+        ? [heroVideo, ...ordered]
+        : ordered;
+    return withHero.slice(0, 10);
+  }, [videos, featuredPool, heroVideo]);
 
   const dropTrio = useMemo(() => {
     const fallback = videos.slice(0, 3);
@@ -83,12 +144,18 @@ export default function Home() {
         }}
       />
 
-      {heroVideo && <Hero video={heroVideo} playlist={videos} />}
+      {/* home-bob: home-screen cards float on the water (see index.css) */}
+      <div className="home-bob">
+      {heroVideo && <Hero video={heroVideo} playlist={topPool} />}
+
+      <CustomSections position="after-hero" />
 
       {/* Daily auto-populated latest content from the site catalog */}
       <LatestDaily videos={videos} onOpenVideo={setActive} />
 
       <FeaturedSpotlight pool={featuredPool.length ? featuredPool : videos} />
+
+      <CustomSections position="mid-page" />
 
       {/* Marquees — thumbnails only (click opens modal player) */}
       <section aria-label="Video marquees" className="container-lux overflow-hidden py-8 space-y-5">
@@ -240,8 +307,11 @@ export default function Home() {
         </Reveal>
       </section>
 
+      <CustomSections position="before-footer" />
+
       {/* Support CTA */}
       <SupportCta />
+      </div>
 
       {/* Modal */}
       <VideoModal video={active} onClose={() => setActive(null)} />

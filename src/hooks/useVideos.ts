@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { videos as staticVideos, type Video } from "@/data/videos";
 import { fetchLiveStats, fetchLiveVideos, type LiveStats } from "@/lib/youtube";
+import { applyOverridesToVideos, useSiteOverrides } from "@/lib/siteOverrides";
 
 export function useVideos(): { videos: Video[]; loading: boolean; source: "api" | "fallback" } {
-  const [videos, setVideos] = useState<Video[]>(staticVideos);
+  const [rawVideos, setRawVideos] = useState<Video[]>(staticVideos);
   const [loading, setLoading] = useState<boolean>(true);
   const [source, setSource] = useState<"api" | "fallback">("fallback");
+  // Admin editor overrides (hidden/featured/added videos) apply site-wide.
+  const overrides = useSiteOverrides();
 
   useEffect(() => {
     let cancelled = false;
@@ -14,7 +17,7 @@ export function useVideos(): { videos: Video[]; loading: boolean; source: "api" 
         const live = await fetchLiveVideos();
         if (cancelled) return;
         if (live !== staticVideos) {
-          setVideos(live);
+          setRawVideos(live);
           setSource("api");
         }
       } finally {
@@ -25,6 +28,11 @@ export function useVideos(): { videos: Video[]; loading: boolean; source: "api" 
       cancelled = true;
     };
   }, []);
+
+  const videos = useMemo(
+    () => applyOverridesToVideos(rawVideos, overrides),
+    [rawVideos, overrides]
+  );
 
   return { videos, loading, source };
 }

@@ -87,7 +87,6 @@ export default function HeaderAcorns() {
   const shakeRef = useRef({ lastT: 0, lastMag: 0 });
 
   const [motionReady, setMotionReady] = useState(false);
-  const [asked, setAsked] = useState(false);
 
   const rollersRef = useRef<Vec[]>([
     { x: 18, y: 22, vx: 0, vy: 0, r: 12 },
@@ -99,7 +98,24 @@ export default function HeaderAcorns() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("DeviceOrientationEvent" in window)) return;
-    if (!needsMotionPermission()) setMotionReady(true);
+    if (!needsMotionPermission()) {
+      setMotionReady(true);
+      return;
+    }
+    // Boss order 2026-11-07: the "Enable Motion" button is gone. On
+    // platforms that gate motion behind a permission prompt (iOS), the
+    // permission is requested on the visitor's first tap anywhere
+    // instead — no button, no visible gate.
+    let cancelled = false;
+    const onFirstTap = async () => {
+      const ok = await requestMotionPermission();
+      if (!cancelled && ok) setMotionReady(true);
+    };
+    window.addEventListener("pointerdown", onFirstTap, { once: true });
+    return () => {
+      cancelled = true;
+      window.removeEventListener("pointerdown", onFirstTap);
+    };
   }, []);
 
   const triggerDropRef = useRef<() => void>(() => {});
@@ -280,27 +296,9 @@ export default function HeaderAcorns() {
     };
   }, []);
 
-  const showEnable = !motionReady && typeof window !== "undefined" && needsMotionPermission();
-
   return (
     <div ref={hostRef} className="pointer-events-none absolute inset-0 overflow-hidden">
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
-      {showEnable && (
-        <div className="pointer-events-auto absolute right-3 top-3">
-          <button
-            type="button"
-            className="btn-ghost !px-3 !py-2 text-[10px] uppercase tracking-[0.22em]"
-            onClick={async () => {
-              if (asked) return;
-              setAsked(true);
-              const ok = await requestMotionPermission();
-              setMotionReady(ok);
-            }}
-          >
-            Enable Motion
-          </button>
-        </div>
-      )}
     </div>
   );
 }

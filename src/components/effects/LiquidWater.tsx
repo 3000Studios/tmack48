@@ -121,9 +121,47 @@ export default function LiquidWater() {
       lastX = -1;
       lastY = -1;
     };
+    // Finger-drag path (Boss order 2026-11-07 evening): on touch screens a
+    // drag usually becomes a page scroll, and the browser fires
+    // pointercancel and stops pointermove — so the water also listens to
+    // raw touchmove (passive: scrolling is never blocked) and traces the
+    // finger's path with the same interpolation as the pointer path. A
+    // finger dragged anywhere across the screen trails gold ripples.
+    const traceTo = (cx: number, cy: number, str: number) => {
+      if (lastX < 0) {
+        disturb(cx, cy, str);
+        lastX = cx;
+        lastY = cy;
+        return;
+      }
+      const steps = Math.max(1, Math.round(Math.hypot(cx - lastX, cy - lastY) / 16));
+      for (let s = 0; s <= steps; s++) {
+        disturb(lastX + ((cx - lastX) * s) / steps, lastY + ((cy - lastY) * s) / steps, str);
+      }
+      lastX = cx;
+      lastY = cy;
+    };
+    const onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      disturb(t.clientX, t.clientY, 30);
+      lastX = t.clientX;
+      lastY = t.clientY;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      const t = e.touches[0];
+      if (!t) return;
+      traceTo(t.clientX, t.clientY, 15);
+    };
+    const onTouchEnd = () => onLeave();
     if (!reduced) {
       window.addEventListener("pointerdown", onDown);
       window.addEventListener("pointermove", onMove);
+      window.addEventListener("pointercancel", onLeave);
+      window.addEventListener("touchstart", onTouchStart, { passive: true });
+      window.addEventListener("touchmove", onTouchMove, { passive: true });
+      window.addEventListener("touchend", onTouchEnd);
+      window.addEventListener("touchcancel", onTouchEnd);
       document.documentElement.addEventListener("pointerleave", onLeave);
       window.addEventListener("blur", onLeave);
     }
@@ -234,6 +272,11 @@ export default function LiquidWater() {
       io.disconnect();
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointercancel", onLeave);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
       document.documentElement.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("blur", onLeave);
     };

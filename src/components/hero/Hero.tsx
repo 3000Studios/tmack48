@@ -1,27 +1,29 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import AmbientParticles from "@/components/effects/AmbientParticles";
+import HeroCarousel from "@/components/hero/HeroCarousel";
 import type { Video } from "@/data/videos";
-import { buildEmbedUrl, YOUTUBE_EMBED_MESSAGE_ORIGIN } from "@/lib/youtube";
-import { HeartIcon, SoundOffIcon, SoundOnIcon, SparkleIcon } from "@/components/ui/Icon";
+import { HeartIcon, SparkleIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
 import { siteConfig } from "@/data/siteConfig";
+import { useSiteOverrides } from "@/lib/siteOverrides";
 
-const HERO_AUDIO_PREF_KEY = "tmack48-hero-audio";
-
+/**
+ * Hero — Boss order 2026-11-07 (evening): the old single Now Playing
+ * player card is replaced by the U-shaped top-videos carousel (auto-
+ * scrolling, swipeable, tap-to-lift-and-play), and the JUST BUSTED
+ * 1,000-subscriber card moves BELOW the carousel.
+ */
 export default function Hero({ video, playlist }: { video: Video; playlist?: Video[] }) {
+  // Admin editor overrides — hero words + banner are editable live.
+  const ov = useSiteOverrides();
   const pool = useMemo(() => (playlist && playlist.length ? playlist : [video]), [playlist, video]);
-  const initialIndex = useMemo(() => Math.max(0, pool.findIndex((v) => v.id === video.id)), [pool, video.id]);
-  const [idx, setIdx] = useState(initialIndex);
-
-  // Start muted so autoplay works without sign-in / browser blocks
-  const [muted, setMuted] = useState(true);
-  const [showPlayer, setShowPlayer] = useState(false);
+  const initialIndex = useMemo(
+    () => Math.max(0, pool.findIndex((v) => v.id === video.id)),
+    [pool, video.id]
+  );
   // PERF: spotlight position lives in a ref + direct DOM style write.
-  // It used to be React state updated on every mousemove, re-rendering
-  // the entire hero (incl. the player) dozens of times per second.
   const spotRef = useRef<HTMLDivElement | null>(null);
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
 
   const moveSpot = useCallback((clientX: number, clientY: number, rect: DOMRect) => {
     const el = spotRef.current;
@@ -30,103 +32,6 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
     const y = ((clientY - rect.top) / rect.height) * 100;
     el.style.background = `radial-gradient(420px 420px at ${x}% ${y}%, rgba(212,175,55,0.5), rgba(212,175,55,0.1) 40%, transparent 72%)`;
   }, []);
-
-  useEffect(() => {
-    // Delay iframe mount so the page paints first; user can unmute after load
-    const t = window.setTimeout(() => setShowPlayer(true), 280);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    setIdx(initialIndex);
-  }, [initialIndex]);
-
-  const current = pool[Math.min(Math.max(idx, 0), pool.length - 1)] ?? video;
-
-  const heroEmbedSrc = useMemo(
-    () =>
-      buildEmbedUrl(current.videoId, {
-        autoplay: true,
-        mute: muted,
-        loop: true,
-        controls: false,
-        enableJsApi: true,
-      }),
-    [current.videoId, muted]
-  );
-
-  const sendCommand = useCallback((func: string) => {
-    if (!iframeRef.current) return;
-    try {
-      iframeRef.current.contentWindow?.postMessage(
-        JSON.stringify({
-          event: "command",
-          func,
-          args: [],
-        }),
-        YOUTUBE_EMBED_MESSAGE_ORIGIN
-      );
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  const toggleMute = () => {
-    if (!iframeRef.current) return;
-    const next = !muted;
-    setMuted(next);
-    try {
-      window.localStorage.setItem(HERO_AUDIO_PREF_KEY, next ? "0" : "1");
-    } catch {
-      // ignore
-    }
-    try {
-      sendCommand(next ? "mute" : "unMute");
-    } catch {
-      iframeRef.current.src = buildEmbedUrl(current.videoId, {
-        autoplay: true,
-        mute: next,
-        loop: true,
-        controls: false,
-        enableJsApi: true,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (!showPlayer) return;
-    const onMessage = (event: MessageEvent) => {
-      // Accept both youtube.com and legacy nocookie origins
-      if (
-        event.origin !== YOUTUBE_EMBED_MESSAGE_ORIGIN &&
-        event.origin !== "https://www.youtube-nocookie.com"
-      ) {
-        return;
-      }
-      let data: unknown = event.data;
-      if (typeof data === "string") {
-        try {
-          data = JSON.parse(data);
-        } catch {
-          return;
-        }
-      }
-      if (!data || typeof data !== "object") return;
-      const evt = (data as { event?: string }).event;
-      if (evt !== "onStateChange") return;
-      const info = (data as { info?: number }).info;
-      if (info !== 0) return;
-      // ended -> next song (loop playlist)
-      setIdx((v) => (pool.length ? (v + 1) % pool.length : v));
-    };
-    window.addEventListener("message", onMessage);
-    return () => window.removeEventListener("message", onMessage);
-  }, [pool.length, showPlayer]);
-
-  useEffect(() => {
-    if (!showPlayer || !iframeRef.current) return;
-    iframeRef.current.src = heroEmbedSrc;
-  }, [heroEmbedSrc, showPlayer]);
 
   return (
     <section
@@ -153,19 +58,65 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
       />
       <div className="noise-overlay" />
 
-      <div className="relative container-lux grid gap-7 lg:gap-8 lg:grid-cols-12 items-center py-8 sm:py-12 lg:py-20">
-        <div className="lg:col-span-6 relative z-10 max-w-2xl min-w-0">
-          {/* PERF: entrance animations are CSS (.hero-in) — same easing,
-              delays and rise; only the h1's blur-in is dropped (animating
-              blur on the largest text on the page = full-layer repaints). */}
-          <p className="hero-in eyebrow flex items-center gap-2" style={{ animationDuration: "0.8s" }}>
-            <SparkleIcon className="h-4 w-4 text-gold-300" />
-            TaylorMade Hits · Official Artist Universe
-          </p>
+      <div className="relative container-lux py-8 sm:py-12 lg:py-20 w-full">
+        <div className="grid gap-7 lg:gap-8 lg:grid-cols-12 items-center">
+          <div className="lg:col-span-6 relative z-10 max-w-2xl min-w-0">
+            <p className="hero-in eyebrow flex items-center gap-2" style={{ animationDuration: "0.8s" }}>
+              <SparkleIcon className="h-4 w-4 text-gold-300" />
+              TaylorMade Hits · Official Artist Universe
+            </p>
 
-          <div className="hero-in milestone-banner mt-5" style={{ animationDuration: "0.9s", animationDelay: "0.05s" }}>
-            <p className="milestone-title">JUST BUSTED 1,000 SUBSCRIBERS ON YOUTUBE</p>
-            <p className="mt-1 text-sm text-platinum/85">TaylorMade Hits just crossed 1K — thank you. Join the next 1,000.</p>
+            <h1
+              className="hero-in mt-4 display-title font-black text-[clamp(3rem,9vw,6.25rem)] leading-[0.92] tracking-tight"
+              style={{ animationDuration: "1s", animationDelay: "0.1s" }}
+            >
+              {ov.heroHeading ? (
+                <span className="gold-text">{ov.heroHeading}</span>
+              ) : (
+                <>
+                  <span className="gold-text">TMACK</span>
+                  <span className="platinum-text">48</span>
+                </>
+              )}
+            </h1>
+
+            <p
+              className="hero-in mt-5 max-w-xl text-lg sm:text-xl text-white font-semibold drop-shadow-md leading-relaxed text-balance"
+              style={{ animationDuration: "0.9s", animationDelay: "0.3s" }}
+            >
+              {ov.heroSubtext ||
+                "Luxury-flashy music, cinematic visuals, and relentless energy. Press play, feel the grind, and watch the movement take over."}
+            </p>
+          </div>
+
+          <div
+            className="hero-in lg:col-span-6 relative z-10 w-full min-w-0"
+            style={{ animationDuration: "1s", animationDelay: "0.35s" }}
+          >
+            <HeroCarousel pool={pool} initialIndex={initialIndex} />
+            <div className="mt-4 sm:mt-5 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Link
+                to="/support"
+                onClick={() => trackCta("hero_support")}
+                className="btn-diamond !px-4 !py-2 text-xs sm:text-sm"
+              >
+                <HeartIcon className="h-5 w-5" /> Support the Artist
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* JUST BUSTED — below the carousel (Boss order 2026-11-07);
+            title/text/visibility are editable in the admin editor */}
+        {ov.bannerEnabled !== false && (
+          <div
+            className="hero-in milestone-banner mx-auto mt-10 max-w-3xl text-center lg:mt-14"
+            style={{ animationDuration: "0.9s", animationDelay: "0.05s" }}
+          >
+            <p className="milestone-title">{ov.bannerTitle || "JUST BUSTED 1,000 SUBSCRIBERS ON YOUTUBE"}</p>
+            <p className="mt-1 text-sm text-platinum/85">
+              {ov.bannerText || "TaylorMade Hits just crossed 1K — thank you. Join the next 1,000."}
+            </p>
             <a
               href={siteConfig.channel.subscribeUrl}
               target="_blank"
@@ -176,88 +127,7 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
               <SparkleIcon className="h-4 w-4" /> Subscribe — @TaylorMadeHits
             </a>
           </div>
-
-          <h1
-            className="hero-in mt-4 display-title font-black text-[clamp(3rem,9vw,6.25rem)] leading-[0.92] tracking-tight"
-            style={{ animationDuration: "1s", animationDelay: "0.1s" }}
-          >
-            <span className="gold-text">TMACK</span>
-            <span className="platinum-text">48</span>
-          </h1>
-
-          <p
-            className="hero-in mt-5 max-w-xl text-lg sm:text-xl text-white font-semibold drop-shadow-md leading-relaxed text-balance"
-            style={{ animationDuration: "0.9s", animationDelay: "0.3s" }}
-          >
-            Luxury-flashy music, cinematic visuals, and relentless energy. Press play, feel the grind,
-            and watch the movement take over.
-          </p>
-
-          {/* Text scroll removed per mobile layout request */}
-        </div>
-
-        <div
-          className="hero-in lg:col-span-6 relative z-10 w-full max-w-[min(100%,560px)] mx-auto lg:ml-auto lg:mr-0 self-center"
-          style={{ animationDuration: "1s", animationDelay: "0.35s" }}
-        >
-          <div className="relative rounded-[1.25rem] sm:rounded-[1.5rem] card-premium overflow-hidden shadow-gold-xl ring-2 ring-gold-400 ring-offset-4 ring-offset-black">
-            <div className="aspect-video-frame w-full max-h-[min(28svh,260px)] sm:max-h-[46dvh] lg:max-h-[72dvh] relative overflow-hidden bg-black flex items-center justify-center">
-              {showPlayer ? (
-                <iframe
-                  key={current.videoId}
-                  ref={iframeRef}
-                  title={current.title}
-                  src={heroEmbedSrc}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  className="block h-full w-full border-0"
-                />
-              ) : (
-                <img
-                  src={current.thumbnailMaxUrl}
-                  onError={(e) => {
-                    e.currentTarget.src = current.thumbnailHqUrl;
-                  }}
-                  alt=""
-                  className="h-full w-full object-cover"
-                />
-              )}
-              <div className="pointer-events-none absolute inset-0 bg-black/40" />
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/95 via-black/70 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-5">
-                <span className="chip chip-active">Now Playing</span>
-                <h2 className="mt-2 display-title text-2xl sm:text-3xl font-bold text-platinum drop-shadow">
-                  {current.title}
-                </h2>
-                {current.blurb && (
-                  <p className="mt-1 text-sm text-platinum/70 line-clamp-2">{current.blurb}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between gap-2 px-5 py-3">
-              <button
-                type="button"
-                onClick={toggleMute}
-                className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-platinum/80 hover:text-gold-200"
-                aria-label={muted ? "Unmute hero" : "Mute hero"}
-              >
-                {muted ? <SoundOffIcon className="h-4 w-4" /> : <SoundOnIcon className="h-4 w-4" />}
-                {muted ? "Unmute" : "Mute"}
-              </button>
-            </div>
-          </div>
-          <div className="mt-4 sm:mt-5 flex flex-wrap gap-3">
-            <Link
-              to="/support"
-              onClick={() => trackCta("hero_support")}
-              className="btn-diamond !px-4 !py-2 text-xs sm:text-sm"
-            >
-              <HeartIcon className="h-5 w-5" /> Support the Artist
-            </Link>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-[10px] uppercase tracking-[0.4em] text-platinum/60">

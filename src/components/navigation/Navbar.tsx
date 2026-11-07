@@ -10,6 +10,7 @@ import { trackCta } from "@/lib/analytics";
 const HeaderAcorns = lazy(() => import("@/components/effects/HeaderAcorns"));
 import NavIdleLink, { IDLE_FX, type IdleFx } from "@/components/navigation/NavIdleLink";
 import MobileMenuWallpaper from "@/components/navigation/MobileMenuWallpaper";
+import { useSiteOverrides } from "@/lib/siteOverrides";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -48,6 +49,17 @@ export default function Navbar() {
       ),
     []
   );
+
+  // Extra tabs added from the admin editor (incl. the shop link) — they
+  // appear in both the desktop bar and the mobile menu, live.
+  const ov = useSiteOverrides();
+  const extraLinks = useMemo(() => {
+    const links = [...ov.navLinks];
+    if (ov.shopUrl && !links.some((l) => l.url === ov.shopUrl)) {
+      links.push({ label: ov.shopLabel || "Shop", url: ov.shopUrl });
+    }
+    return links;
+  }, [ov.navLinks, ov.shopUrl, ov.shopLabel]);
 
   useEffect(() => {
     // Route change: close instantly (no exit fade while navigating).
@@ -137,6 +149,27 @@ export default function Navbar() {
                 variant="desktop"
               />
             ))}
+            {extraLinks.map((l) =>
+              l.url.startsWith("/") ? (
+                <NavLink
+                  key={l.url}
+                  to={l.url}
+                  className="nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium text-gold-200/90 transition-all duration-300 hover:text-gold-100 hover:scale-[1.04]"
+                >
+                  {l.label}
+                </NavLink>
+              ) : (
+                <a
+                  key={l.url}
+                  href={l.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium text-gold-200/90 transition-all duration-300 hover:text-gold-100 hover:scale-[1.04]"
+                >
+                  {l.label}
+                </a>
+              )
+            )}
             <NavLink
               to="/admin"
               className={({ isActive }) =>
@@ -229,6 +262,25 @@ export default function Navbar() {
                       variant="mobile"
                       onActivate={closeMenu}
                     />
+                  </div>
+                ))}
+
+                {extraLinks.map((l, i) => (
+                  <div
+                    key={l.url}
+                    className="mmenu-item"
+                    style={{ animationDelay: `${0.06 + (items.length + i) * 0.045}s` }}
+                  >
+                    <a
+                      href={l.url}
+                      {...(l.url.startsWith("/")
+                        ? { onClick: closeMenu }
+                        : { target: "_blank", rel: "noopener noreferrer" })}
+                      className="nav-link-mobile group relative flex items-center justify-between overflow-hidden rounded-2xl border border-gold-300/40 bg-gold-300/10 px-5 py-4 text-base font-semibold uppercase tracking-[0.18em] text-gold-200 backdrop-blur-md transition-all duration-300 active:scale-[0.98]"
+                    >
+                      <span className="relative z-[1]">{l.label}</span>
+                      <span className="relative z-[1] opacity-70">→</span>
+                    </a>
                   </div>
                 ))}
 

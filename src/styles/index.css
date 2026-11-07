@@ -1022,3 +1022,34 @@ main { animation: tmFadeIn .55s cubic-bezier(.22,1,.36,1) both; }
 /* Body base under the fixed spotlight wallpaper (PageBackdrop) */
 body { background: radial-gradient(1100px 620px at 50% -12%, #14202b 0%, #070b10 52%, #030507 100%) fixed; }
 @media (prefers-reduced-motion: reduce){ .site-header-slide,.site-footer-slide,.milestone-banner{ animation:none !important } .card-premium:hover::after,.rail-card:hover::after{ animation:none !important } }
+
+/* ANIMATED LOGO BADGE (Boss order 2026-11-07 evening — replaces the old
+   static gold block): rotating sheen ring + bouncing equalizer bars. */
+@keyframes logoSpin { to { transform: rotate(360deg); } }
+.logo-ring { animation: logoSpin 10s linear infinite; will-change: transform; }
+@keyframes logoEq { 0%,100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+.logo-eq-bar { transform-origin: 50% 100%; animation: logoEq 1s ease-in-out infinite; }
+@keyframes logoGlow { 0%,100% { box-shadow: 0 0 0 0 rgba(212,175,55,.35), 0 8px 24px -8px rgba(212,175,55,.55); } 50% { box-shadow: 0 0 0 5px rgba(212,175,55,0), 0 10px 30px -6px rgba(212,175,55,.85); } }
+.logo-badge { animation: logoGlow 3.2s ease-in-out infinite; border-radius: 9999px; }
+
+/* FLOATING ON THE WATER (Boss order 2026-11-07 evening): home-screen
+   cards bob gently like they're sitting on top of the water surface.
+   Uses the independent `translate`/`rotate` properties so it composes
+   with the cards' existing transform-based hover/active states instead
+   of fighting them. Staggered phases keep the surface alive, never
+   in lockstep. */
+@keyframes cardBob {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  30% { translate: 0 -5px; rotate: 0.35deg; }
+  60% { translate: 0 2px; rotate: -0.3deg; }
+}
+.home-bob .card-premium, .home-bob .rail-card, .video-bob {
+  animation: cardBob 7s ease-in-out infinite;
+}
+.home-bob .card-premium:nth-child(2n), .home-bob .rail-card:nth-child(2n) { animation-delay: -2.3s; animation-duration: 8.3s; }
+.home-bob .card-premium:nth-child(3n), .home-bob .rail-card:nth-child(3n) { animation-delay: -4.1s; animation-duration: 7.6s; }
+.home-bob .card-premium:nth-child(4n), .home-bob .rail-card:nth-child(4n) { animation-delay: -1.2s; animation-duration: 8.8s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-ring, .logo-eq-bar, .logo-badge, .home-bob .card-premium, .home-bob .rail-card, .video-bob { animation: none !important; }
+}

@@ -14,3 +14,11 @@ SITE_NAME = "TMACK48"
 SITE_URL = "https://tmack48.com"
 YOUTUBE_CHANNEL_ID = "UCVlBvVymaIh7DQRYM410d-w"
 YOUTUBE_CHANNEL_HANDLE = "TaylorMadeHits"
+
+# Site editor storage (Boss order 2026-11-07): the admin control center's
+# website editor, analytics counters and developer inbox live in this KV
+# namespace (title "tmack48-site"). Keys: site_config_v1, analytics_v1,
+# dev_inbox_v1. Functions degrade gracefully when the binding is absent.
+[[kv_namespaces]]
+binding = "SITE_KV"
+id = "6799425ac2f74de3a2d79c71765448de"

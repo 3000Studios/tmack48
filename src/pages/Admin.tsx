@@ -5,18 +5,13 @@ import Reveal from "@/components/effects/Reveal";
 import MrBigNutsWidget from "@/components/ui/MrBigNutsWidget";
 import { siteConfig } from "@/data/siteConfig";
 import { ArrowRightIcon, DiamondIcon, SparkleIcon, StarIcon } from "@/components/ui/Icon";
-import {
-  deleteComment,
-  getMetrics,
-  loadAdminConfig,
-  loadComments,
-  saveAdminConfig,
-  type AdminConfig,
-} from "@/lib/community";
+import { deleteComment, getMetrics, loadComments } from "@/lib/community";
+import SiteEditor from "@/components/admin/SiteEditor";
 
 const SESSION_KEY = "tmack48-admin-session";
+const PASS_KEY = "tmack48-admin-pass";
 const USER = "admin";
-const PASSCODE = "5555";
+const PASSCODE = "3000";
 
 function isSessionValid(): boolean {
   return sessionStorage.getItem(SESSION_KEY) === "ok";
@@ -26,18 +21,20 @@ export default function Admin() {
   const [authed, setAuthed] = useState(false);
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
+  const [passcode, setPasscode] = useState("");
   const [err, setErr] = useState<string | null>(null);
-  const [cfg, setCfg] = useState<AdminConfig>(() => loadAdminConfig());
   const [comments, setComments] = useState(() => loadComments());
 
   useEffect(() => {
-    setAuthed(isSessionValid());
+    if (isSessionValid()) {
+      setAuthed(true);
+      setPasscode(sessionStorage.getItem(PASS_KEY) || PASSCODE);
+    }
   }, []);
 
   useEffect(() => {
     if (!authed) return;
     setComments(loadComments());
-    setCfg(loadAdminConfig());
   }, [authed]);
 
   // getMetrics() reads from storage; recompute whenever the comments list changes (e.g. after delete).
@@ -50,6 +47,8 @@ export default function Admin() {
       setErr(null);
       if (user.trim() === USER && pass === PASSCODE) {
         sessionStorage.setItem(SESSION_KEY, "ok");
+        sessionStorage.setItem(PASS_KEY, pass);
+        setPasscode(pass);
         setAuthed(true);
         setPass("");
       } else {
@@ -61,6 +60,7 @@ export default function Admin() {
 
   const logout = useCallback(() => {
     sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(PASS_KEY);
     setAuthed(false);
   }, []);
 
@@ -141,7 +141,9 @@ export default function Admin() {
             </button>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <SiteEditor passcode={passcode} />
+
+          <div className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             <Reveal>
               <div className="card-premium p-6 h-full flex flex-col">
                 <SparkleIcon className="h-9 w-9 text-gold-300" />
@@ -239,52 +241,6 @@ export default function Admin() {
                 <p className="text-xs uppercase tracking-[0.2em] text-platinum/60">Tips</p>
                 <p className="mt-2 text-sm text-platinum/80">PayPal / merch URLs live in Support + env.</p>
               </div>
-            </div>
-
-            <div className="card-premium p-6">
-              <h2 className="display-title text-xl text-platinum">Quick site fields</h2>
-              <p className="mt-2 text-sm text-platinum/65">
-                Stored in this browser&apos;s localStorage — use for staging copy ideas (production content still
-                ships from the repo).
-              </p>
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                <label className="text-xs uppercase tracking-[0.2em] text-platinum/60">
-                  Hero video id
-                  <input
-                    value={cfg.heroVideoId || ""}
-                    onChange={(e) => setCfg((s) => ({ ...s, heroVideoId: e.target.value }))}
-                    className="mt-1 w-full rounded-xl bg-black/40 px-3 py-2 normal-case tracking-normal ring-1 ring-white/15 focus:outline-none focus:ring-gold-300"
-                  />
-                </label>
-                <label className="text-xs uppercase tracking-[0.2em] text-platinum/60">
-                  Hero title
-                  <input
-                    value={cfg.heroTitle || ""}
-                    onChange={(e) => setCfg((s) => ({ ...s, heroTitle: e.target.value }))}
-                    className="mt-1 w-full rounded-xl bg-black/40 px-3 py-2 normal-case tracking-normal ring-1 ring-white/15 focus:outline-none focus:ring-gold-300"
-                  />
-                </label>
-                <label className="text-xs uppercase tracking-[0.2em] text-platinum/60 md:col-span-2">
-                  Hero bio
-                  <textarea
-                    value={cfg.heroBio || ""}
-                    onChange={(e) => setCfg((s) => ({ ...s, heroBio: e.target.value }))}
-                    rows={3}
-                    className="mt-1 w-full rounded-xl bg-black/40 px-3 py-2 normal-case tracking-normal ring-1 ring-white/15 focus:outline-none focus:ring-gold-300"
-                  />
-                </label>
-                <label className="text-xs uppercase tracking-[0.2em] text-platinum/60 md:col-span-2">
-                  PayPal URL (override hint)
-                  <input
-                    value={cfg.paypalUrl || ""}
-                    onChange={(e) => setCfg((s) => ({ ...s, paypalUrl: e.target.value }))}
-                    className="mt-1 w-full rounded-xl bg-black/40 px-3 py-2 normal-case tracking-normal ring-1 ring-white/15 focus:outline-none focus:ring-gold-300"
-                  />
-                </label>
-              </div>
-              <button type="button" className="btn-gold mt-4" onClick={() => saveAdminConfig(cfg)}>
-                Save local edits
-              </button>
             </div>
 
             <div className="card-premium p-6">
