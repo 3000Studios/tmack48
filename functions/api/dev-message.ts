@@ -1,4 +1,4 @@
-// Email the Developer — the admin control center's message board. A
+// Email Your Brother — the admin control center's message board. A
 // message is ALWAYS saved to the developer inbox in SITE_KV first (never
 // lost), and if DEV_FORWARD_URL is configured in the Pages environment
 // (e.g. a form-to-email relay for the developer's mailbox), it is also

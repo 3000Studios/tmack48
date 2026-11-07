@@ -235,8 +235,8 @@ export default function SiteEditor({ passcode }: { passcode: string }) {
       if (res.ok && data.ok) {
         setDevStatus(
           data.emailed
-            ? "Sent! It went to the developer's email and is saved below."
-            : "Sent! It's saved in the developer inbox below — he'll see it here."
+            ? "Sent! It went to your brother's email and is saved below."
+            : "Sent! It's saved in your brother's inbox below — he'll see it here."
         );
         setDevBody("");
         setDevTopic("");
@@ -604,7 +604,7 @@ export default function SiteEditor({ passcode }: { passcode: string }) {
             )}
             {!!analytics.errors.length && (
               <div className="mt-6">
-                <p className={labelCls}>Latest problems (send these to the developer if something looks broken)</p>
+                <p className={labelCls}>Latest problems (send these to your brother if something looks broken)</p>
                 <ul className="space-y-1.5">
                   {analytics.errors.slice(0, 8).map((e, i) => (
                     <li key={i} className="rounded-xl bg-black/40 px-3 py-2 text-sm text-platinum/80">
@@ -628,15 +628,15 @@ export default function SiteEditor({ passcode }: { passcode: string }) {
         )}
       </div>
 
-      {/* ---------- EMAIL THE DEVELOPER ---------- */}
+      {/* ---------- EMAIL YOUR BROTHER ---------- */}
       <div className="card-premium p-6 sm:p-8 border border-gold-500/40">
         <div className="flex items-center gap-3">
           <SparkleIcon className="h-8 w-8 text-gold-300" />
-          <h3 className="display-title text-2xl font-bold text-platinum">Email the developer</h3>
+          <h3 className="display-title text-2xl font-bold text-platinum">Email your brother</h3>
         </div>
         <p className="mt-2 text-sm text-platinum/70">
-          Something broken? Want something changed? Write it here like you'd say it — it goes straight to the
-          developer.
+          Something broken? Want something changed? Write it here like you'd say it — it goes straight to your
+          brother.
         </p>
         <div className="mt-6 grid gap-4">
           <div className="grid gap-4 md:grid-cols-2">
@@ -655,14 +655,14 @@ export default function SiteEditor({ passcode }: { passcode: string }) {
           </div>
           <div className="flex flex-wrap items-center gap-4">
             <button type="button" className="btn-gold" onClick={sendDevMessage} disabled={devSending}>
-              {devSending ? "Sending…" : "Send to the developer"}
+              {devSending ? "Sending…" : "Send to your brother to fix the shit"}
             </button>
             {devStatus && <p className="text-sm text-gold-200">{devStatus}</p>}
           </div>
         </div>
         {!!inbox.length && (
           <div className="mt-8">
-            <p className={labelCls}>Messages sent to the developer</p>
+            <p className={labelCls}>Messages sent to your brother</p>
             <ul className="space-y-2">
               {inbox.slice(0, 10).map((m) => (
                 <li key={m.id} className="rounded-xl bg-black/40 px-3 py-2">
