@@ -430,7 +430,7 @@ body.cursor-trail-active {
     font-weight: 700;
     text-transform: none;
     letter-spacing: 0.08em;
-    font-size: 12px;
+    font-size: 10px;
     line-height: 1;
     display: inline-flex;
     align-items: baseline;
@@ -1052,4 +1052,46 @@ body { background: radial-gradient(1100px 620px at 50% -12%, #14202b 0%, #070b10
 
 @media (prefers-reduced-motion: reduce) {
   .logo-ring, .logo-eq-bar, .logo-badge, .home-bob .card-premium, .home-bob .rail-card, .video-bob { animation: none !important; }
+}
+
+/* ==== Splash menu + Playfair + stardust (Boss order 2026-11-07) ====
+   The hamburger splash page speaks Playfair Display. Tapping a tab
+   flashes it gold, fizzles it into stardust, then the page changes
+   (see navigation/stardust.ts + NavIdleLink). */
+.font-playfair {
+  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+}
+
+@keyframes navBurst {
+  0% { filter: brightness(1) blur(0); }
+  22% {
+    background-color: rgba(212, 175, 55, 0.92);
+    color: #0c0a05;
+    box-shadow: 0 0 46px -6px rgba(212, 175, 55, 0.9);
+    filter: brightness(1.25) blur(0);
+  }
+  60% { filter: brightness(1.5) blur(1.5px); opacity: 0.75; }
+  100% { filter: brightness(1.8) blur(4px); opacity: 0.2; }
+}
+.nav-bursting {
+  animation: navBurst 0.68s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes stardustFly {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.15); opacity: 0; }
+}
+.stardust-bit {
+  position: absolute;
+  z-index: 3;
+  border-radius: 9999px;
+  pointer-events: none;
+  background: radial-gradient(circle, #fff6cf 0%, #e9c860 55%, rgba(212, 175, 55, 0) 100%);
+  box-shadow: 0 0 7px 2px rgba(212, 175, 55, 0.75);
+  animation: stardustFly 0.68s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-bursting, .stardust-bit { animation: none !important; }
 }

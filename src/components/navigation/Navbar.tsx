@@ -1,18 +1,21 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { stardustBurst } from "@/components/navigation/stardust";
 import Logo from "@/components/ui/Logo";
 import { navPrimaryPublic, siteConfig } from "@/data/siteConfig";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { YoutubeIcon } from "@/components/ui/Icon";
 import { cn, isSupportedLink } from "@/lib/utils";
 import { trackCta } from "@/lib/analytics";
-// Decorative acorn ornaments (2D canvas) — lazy, zero WebGL.
-const HeaderAcorns = lazy(() => import("@/components/effects/HeaderAcorns"));
+// Three curvy sound-responsive sheen lines across the top — these
+// replaced the header acorns (Boss order 2026-11-07).
+const AudioLines = lazy(() => import("@/components/effects/AudioLines"));
 import NavIdleLink, { IDLE_FX, type IdleFx } from "@/components/navigation/NavIdleLink";
 import MobileMenuWallpaper from "@/components/navigation/MobileMenuWallpaper";
 import { useSiteOverrides } from "@/lib/siteOverrides";
 
 export default function Navbar() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   // PERF (2026-10-24): the mobile menu was framer-motion AnimatePresence,
   // which kept the ~133 KB motion chunk in the eager bundle of EVERY page
@@ -129,7 +132,7 @@ export default function Navbar() {
         style={{ zIndex: 60 }}
       >
         <Suspense fallback={null}>
-          <HeaderAcorns />
+          <AudioLines />
         </Suspense>
         <div className="container-lux relative z-10 flex h-16 md:h-20 items-center justify-between gap-3 md:gap-4">
           <Logo className="shrink-0 origin-left lg:scale-90 xl:scale-100" />
@@ -274,9 +277,17 @@ export default function Navbar() {
                     <a
                       href={l.url}
                       {...(l.url.startsWith("/")
-                        ? { onClick: closeMenu }
+                        ? {
+                            onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+                              e.preventDefault();
+                              stardustBurst(e.currentTarget, () => {
+                                closeMenu();
+                                navigate(l.url);
+                              });
+                            },
+                          }
                         : { target: "_blank", rel: "noopener noreferrer" })}
-                      className="nav-link-mobile group relative flex items-center justify-between overflow-hidden rounded-2xl border border-gold-300/40 bg-gold-300/10 px-5 py-4 text-base font-semibold uppercase tracking-[0.18em] text-gold-200 backdrop-blur-md transition-all duration-300 active:scale-[0.98]"
+                      className="nav-link-mobile font-playfair group relative flex items-center justify-between overflow-hidden rounded-2xl border border-gold-300/40 bg-gold-300/10 px-5 py-4 text-[22px] font-semibold tracking-[0.04em] text-gold-200 backdrop-blur-md transition-all duration-300 active:scale-[0.98]"
                     >
                       <span className="relative z-[1]">{l.label}</span>
                       <span className="relative z-[1] opacity-70">→</span>
@@ -290,8 +301,14 @@ export default function Navbar() {
                 >
                   <Link
                     to="/admin"
-                    onClick={closeMenu}
-                    className="nav-link-mobile flex items-center justify-center rounded-2xl btn-gold px-5 py-4 text-base font-black uppercase tracking-widest shadow-gold-xl active:scale-[0.98]"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      stardustBurst(e.currentTarget, () => {
+                        closeMenu();
+                        navigate("/admin");
+                      });
+                    }}
+                    className="nav-link-mobile font-playfair relative flex items-center justify-center overflow-hidden rounded-2xl btn-gold px-5 py-4 text-[22px] font-bold tracking-[0.04em] shadow-gold-xl active:scale-[0.98]"
                   >
                     Admin
                   </Link>
@@ -300,17 +317,23 @@ export default function Navbar() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackCta("nav_subscribe_mobile")}
-                    className="btn-gold justify-center py-3.5 active:scale-[0.98]"
+                    className="btn-gold font-playfair justify-center py-3.5 text-lg active:scale-[0.98]"
                   >
                     <YoutubeIcon className="h-5 w-5" />
                     Subscribe on YouTube
                   </a>
                   <Link
                     to="/support"
-                    className="btn-ghost justify-center py-3.5 active:scale-[0.98]"
-                    onClick={closeMenu}
+                    className="btn-ghost font-playfair relative justify-center overflow-hidden py-3.5 text-lg active:scale-[0.98]"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      stardustBurst(e.currentTarget, () => {
+                        closeMenu();
+                        navigate("/support");
+                      });
+                    }}
                   >
-                    Support & Contact
+                    Support &amp; Contact
                   </Link>
                 </div>
               </div>

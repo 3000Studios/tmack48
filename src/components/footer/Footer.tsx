@@ -10,19 +10,31 @@ import { lazy, Suspense, useEffect, useState } from "react";
 const FooterAcornObject = lazy(() => import("@/components/effects/FooterAcornObject"));
 
 function SiteDevMark() {
-  const text = "Site dev 3000 Studios";
+  // Boss order 2026-11-07: tiny, barely-there credit at the very bottom —
+  // the domain written like a website, and clickable to the site itself.
+  const text = "Site dev ";
   return (
-    <span className="site-dev-3000" aria-label={text}>
-      {Array.from(text).map((ch, i) => (
-        <span
-          key={`${ch}-${i}`}
-          className={ch === " " ? "site-dev-space" : "site-dev-char"}
-          style={{ ["--i" as never]: i }}
-          aria-hidden="true"
-        >
-          {ch === " " ? "\u00A0" : ch}
-        </span>
-      ))}
+    <span className="inline-flex items-baseline gap-1.5 leading-none opacity-60" aria-label="Site dev 3000studios.vip">
+      <span className="site-dev-3000" aria-hidden="true">
+        {Array.from(text).map((ch, i) => (
+          <span
+            key={`${ch}-${i}`}
+            className={ch === " " ? "site-dev-space" : "site-dev-char"}
+            style={{ ["--i" as never]: i }}
+          >
+            {ch === " " ? "\u00A0" : ch}
+          </span>
+        ))}
+      </span>
+      <a
+        href="https://3000studios.vip"
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => trackOutbound("https://3000studios.vip", "footer_site_dev")}
+        className="text-[10px] tracking-[0.08em] text-gold-200/70 underline-offset-2 transition-colors hover:text-gold-100 hover:underline"
+      >
+        3000studios.vip
+      </a>
     </span>
   );
 }

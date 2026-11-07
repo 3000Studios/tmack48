@@ -10,7 +10,6 @@ import SiteEditor from "@/components/admin/SiteEditor";
 
 const SESSION_KEY = "tmack48-admin-session";
 const PASS_KEY = "tmack48-admin-pass";
-const USER = "admin";
 const PASSCODE = "3000";
 
 function isSessionValid(): boolean {
@@ -19,7 +18,6 @@ function isSessionValid(): boolean {
 
 export default function Admin() {
   const [authed, setAuthed] = useState(false);
-  const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [passcode, setPasscode] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -41,21 +39,24 @@ export default function Admin() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const metrics = useMemo(() => getMetrics(), [comments]);
 
+  // Passcode only — no username, no email (Boss order 2026-11-07).
   const login = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
       setErr(null);
-      if (user.trim() === USER && pass === PASSCODE) {
+      if (pass === PASSCODE) {
         sessionStorage.setItem(SESSION_KEY, "ok");
         sessionStorage.setItem(PASS_KEY, pass);
+        // Mr Big Nuts greets Taylor out loud the moment he lands.
+        sessionStorage.setItem("tmack48-mbn-greet", "1");
         setPasscode(pass);
         setAuthed(true);
         setPass("");
       } else {
-        setErr("Invalid credentials.");
+        setErr("Wrong passcode — just the 4 numbers.");
       }
     },
-    [user, pass]
+    [pass]
   );
 
   const logout = useCallback(() => {
@@ -84,23 +85,13 @@ export default function Admin() {
                 <form onSubmit={login} className="mt-8 space-y-4">
                   <div>
                     <label className="block text-xs uppercase tracking-[0.2em] text-platinum/60 mb-2">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      autoComplete="username"
-                      value={user}
-                      onChange={(e) => setUser(e.target.value)}
-                      className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-platinum focus:border-gold-400 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs uppercase tracking-[0.2em] text-platinum/60 mb-2">
-                      Passcode
+                      Passcode — just the 4 numbers
                     </label>
                     <input
                       type="password"
+                      inputMode="numeric"
                       autoComplete="current-password"
+                      autoFocus
                       value={pass}
                       onChange={(e) => setPass(e.target.value)}
                       className="w-full rounded-2xl bg-black/40 border border-white/10 px-4 py-3 text-platinum focus:border-gold-400 outline-none"

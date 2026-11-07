@@ -1,5 +1,6 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { stardustBurst } from "@/components/navigation/stardust";
 
 // "Wet gold" idle language (Boss order 2026-11-07): only two subtle,
 // scene-blending effects remain — a soft gold glow (like the alley sign
@@ -28,15 +29,26 @@ export default function NavIdleLink({
   variant = "desktop",
   index = 0,
 }: Props) {
+  const navigate = useNavigate();
+
   if (variant === "mobile") {
     return (
       <NavLink
         to={href}
         end={href === "/"}
-        onClick={onActivate}
+        onClick={(e) => {
+          // Splash tap (Boss order 2026-11-07): gold flash + stardust
+          // fizzle first, THEN the page changes.
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+          e.preventDefault();
+          stardustBurst(e.currentTarget, () => {
+            onActivate?.();
+            navigate(href);
+          });
+        }}
         className={({ isActive }) =>
           cn(
-            "nav-link-mobile group relative flex items-center justify-between overflow-hidden rounded-2xl border px-5 py-4 text-base font-semibold uppercase tracking-[0.18em] transition-all duration-300",
+            "nav-link-mobile font-playfair group relative flex items-center justify-between overflow-hidden rounded-2xl border px-5 py-4 text-[22px] font-semibold tracking-[0.04em] transition-all duration-300",
             "active:scale-[0.98] active:brightness-110",
             "hover:border-gold-300 hover:bg-gold-300/95 hover:text-ink-950 hover:shadow-[0_0_40px_-8px_rgba(212,175,55,0.75)]",
             isActive
