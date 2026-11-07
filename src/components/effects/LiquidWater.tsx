@@ -3,24 +3,27 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 /**
  * Space Water — the SAME interactive liquid surface as 3000studios.space
- * (3000-space-water, © Jeremy William Swain), ported to a header/footer band:
- * a real height-field simulation (two-buffer wave propagation, two sub-steps
- * per frame, 0.994 damping).
+ * (3000-space-water, © Jeremy William Swain): a real height-field
+ * simulation (two-buffer wave propagation, two sub-steps per frame,
+ * 0.994 damping).
  *
  * Boss order 2026-11-07: the water is CLEAR and the ripples are GOLD.
- * The flat surface renders fully transparent so the alley wallpaper and
- * the dark chrome beneath show straight through; only moving water —
- * specular glints, caustic crest sparkle and slope energy — catches the
- * gold of the TMACK48 wall sign (deep gold #C4962C up to hot highlight
- * #FFEAA6), with alpha proportional to that light. Colors are matched
- * to the wallpaper scene (rainy night, gold sign) so the bands blend in.
+ * The flat surface renders fully transparent so the alley wallpaper
+ * beneath shows straight through; only moving water — specular glints,
+ * caustic crest sparkle and slope energy — catches the gold of the
+ * TMACK48 wall sign (deep gold #C4962C up to hot highlight #FFEAA6),
+ * with alpha proportional to that light. Colors are matched to the
+ * wallpaper scene (rainy night, gold sign) so the surface blends in.
  * Ambient rain drops keep it barely alive; moving a pointer (or finger)
- * across the header/footer throws bright gold ripples.
+ * anywhere on the page throws bright gold ripples.
  *
- * DESIGN LAW: header and footer ONLY. Pauses off-screen; reduced-motion
- * gets one still (clear) frame.
+ * Boss order 2026-11-07 (afternoon): the water fills the WHOLE PAGE on
+ * every page — it mounts as the top layer of PageBackdrop, above the
+ * alley film and below every element (nav, content, footer all sit on
+ * higher stacking layers). It supersedes the earlier header/footer-band
+ * placement. Reduced-motion gets one still (clear) frame.
  */
-export default function LiquidWater({ variant = "header" }: { variant?: "header" | "footer" }) {
+export default function LiquidWater() {
   const ref = useRef<HTMLCanvasElement | null>(null);
   const reduced = useReducedMotion();
 
@@ -29,7 +32,6 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const host = canvas.parentElement ?? canvas;
 
     let raf = 0;
     let running = true;
@@ -38,9 +40,9 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
     let H = 0;
     const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
-    // --- height-field grid, sized from the band (cell ≈ 3px like .space) ---
+    // --- height-field grid, sized from the viewport (cell ≈ 4px) ---
     let GW = 160;
-    let GH = 40;
+    let GH = 120;
     let cur = new Float32Array(0);
     let prev = new Float32Array(0);
     const off = document.createElement("canvas");
@@ -48,8 +50,8 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
     let img: ImageData | null = null;
 
     const buildGrid = () => {
-      GW = Math.max(120, Math.min(520, Math.round(W / 3)));
-      GH = Math.max(24, Math.min(170, Math.round(H / 3)));
+      GW = Math.max(160, Math.min(640, Math.round(W / 4)));
+      GH = Math.max(120, Math.min(400, Math.round(H / 4)));
       cur = new Float32Array(GW * GH);
       prev = new Float32Array(GW * GH);
       off.width = GW;
@@ -91,7 +93,9 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
       }
     };
 
-    // Pointer ripples — listeners on the host band so links stay clickable.
+    // Pointer ripples — the canvas is pointer-events-none and behind all
+    // content, so listeners live on the window: a pointer moving anywhere
+    // on the page ripples the water under it, and links stay clickable.
     let lastX = -1;
     let lastY = -1;
     const onDown = (e: PointerEvent) => {
@@ -118,9 +122,10 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
       lastY = -1;
     };
     if (!reduced) {
-      host.addEventListener("pointerdown", onDown);
-      host.addEventListener("pointermove", onMove);
-      host.addEventListener("pointerleave", onLeave);
+      window.addEventListener("pointerdown", onDown);
+      window.addEventListener("pointermove", onMove);
+      document.documentElement.addEventListener("pointerleave", onLeave);
+      window.addEventListener("blur", onLeave);
     }
 
     const io = new IntersectionObserver(
@@ -140,9 +145,9 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
       frameN++;
 
       // ambient rain — a faint gold shimmer before it's touched
-      if (!reduced && frameN - rainTimer > 42) {
+      if (!reduced && frameN - rainTimer > 30) {
         rainTimer = frameN;
-        if (Math.random() < 0.8) {
+        if (Math.random() < 0.85) {
           const rect = canvas.getBoundingClientRect();
           disturb(rect.left + Math.random() * rect.width, rect.top + Math.random() * rect.height, 8);
         }
@@ -227,17 +232,18 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
-      host.removeEventListener("pointerdown", onDown);
-      host.removeEventListener("pointermove", onMove);
-      host.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointermove", onMove);
+      document.documentElement.removeEventListener("pointerleave", onLeave);
+      window.removeEventListener("blur", onLeave);
     };
-  }, [reduced, variant]);
+  }, [reduced]);
 
   return (
     <canvas
       ref={ref}
       aria-hidden="true"
-      data-space-water={variant}
+      data-space-water="page"
       className="space-water pointer-events-none absolute inset-0 h-full w-full"
     />
   );

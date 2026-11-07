@@ -8,7 +8,6 @@ import { cn, isSupportedLink } from "@/lib/utils";
 import { trackCta } from "@/lib/analytics";
 // Decorative acorn ornaments (2D canvas) — lazy, zero WebGL.
 const HeaderAcorns = lazy(() => import("@/components/effects/HeaderAcorns"));
-const LiquidWater = lazy(() => import("@/components/effects/LiquidWater"));
 import NavIdleLink, { IDLE_FX, type IdleFx } from "@/components/navigation/NavIdleLink";
 import MobileMenuWallpaper from "@/components/navigation/MobileMenuWallpaper";
 
@@ -117,9 +116,6 @@ export default function Navbar() {
         )}
         style={{ zIndex: 60 }}
       >
-        <Suspense fallback={null}>
-          <LiquidWater variant="header" />
-        </Suspense>
         <Suspense fallback={null}>
           <HeaderAcorns />
         </Suspense>

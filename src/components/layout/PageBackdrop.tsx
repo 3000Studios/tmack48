@@ -1,6 +1,11 @@
+import { lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 import { backdropVariantForPath, BACKDROP_PRESETS } from "@/lib/pageBackdropVariant";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+
+// The clear-water / gold-ripple surface (see LiquidWater) — lazy so the
+// simulation never blocks first paint.
+const LiquidWater = lazy(() => import("@/components/effects/LiquidWater"));
 
 /**
  * Fixed wallpaper behind all page content (z above body bg, below chrome).
@@ -9,8 +14,13 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
  * the gold TMACK48 MUSIC wall in the rain, looping full-viewport behind
  * every page (poster frame for reduced motion). It supersedes the
  * 2026-11-06 spotlight rig as the wallpaper; the per-variant color wash
- * stays as a light tint layer, and header/footer carry the clear-water
- * surface with gold ripples (see LiquidWater), blended to this scene.
+ * stays as a light tint layer.
+ *
+ * Boss order 2026-11-07 (afternoon): the clear-water surface with gold
+ * ripples fills the WHOLE page on every page — it renders as this
+ * backdrop's top layer, above the alley film and behind every element
+ * (nav z-60, main z-10, footer content z-10 all sit above this fixed
+ * z-[2] stack).
  */
 export default function PageBackdrop() {
   const { pathname } = useLocation();
@@ -63,6 +73,13 @@ export default function PageBackdrop() {
         }}
       />
       <div className="noise-overlay absolute inset-0 opacity-[0.04]" style={{ zIndex: 4, pointerEvents: "none" }} />
+      {/* Full-page clear water with gold ripples — top backdrop layer,
+          behind every element on the page (Boss order 2026-11-07) */}
+      <div className="absolute inset-0" style={{ zIndex: 5 }}>
+        <Suspense fallback={null}>
+          <LiquidWater />
+        </Suspense>
+      </div>
     </div>
   );
 }

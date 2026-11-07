@@ -8,7 +8,6 @@ import { subscribeAcornLandingCount } from "@/lib/acornBus";
 import { lazy, Suspense, useEffect, useState } from "react";
 // Decorative acorn (SVG + CSS sway) — lazy, zero WebGL.
 const FooterAcornObject = lazy(() => import("@/components/effects/FooterAcornObject"));
-const LiquidWater = lazy(() => import("@/components/effects/LiquidWater"));
 
 function SiteDevMark() {
   const text = "Site dev 3000 Studios";
@@ -78,9 +77,6 @@ export default function Footer() {
         style={{ background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent)" }}
       />
 
-      <Suspense fallback={null}>
-        <LiquidWater variant="footer" />
-      </Suspense>
       {/* 3D layer: behind footer content but above wallpaper */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <Suspense fallback={null}>
