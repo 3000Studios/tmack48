@@ -4,23 +4,24 @@ export const siteConfig = {
   name: "TMACK48",
   tagline: "Official Artist Universe",
   description:
-    "TMACK48 — Premium flashy universe of music, videos, and moments. Watch the latest drops, subscribe on YouTube, and support the movement.",
+    "TaylorMade Hits just busted 1,000 subscribers on YouTube. Watch the latest TMACK48 drops, subscribe to @TaylorMadeHits, and support the movement.",
   url: envOr(import.meta.env.VITE_SITE_URL, "https://tmack48.com"),
   locale: "en-US",
 
   channel: {
-    id: envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_ID, "UCoshH9Hn9nCEC0z8BS6WdIQ"),
-    handle: envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_HANDLE, "TMACK48SONGS"),
+    name: "TaylorMade Hits",
+    id: envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_ID, "UCVlBvVymaIh7DQRYM410d-w"),
+    handle: envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_HANDLE, "TaylorMadeHits"),
     url:
       "https://www.youtube.com/@" +
-      envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_HANDLE, "TMACK48SONGS"),
+      envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_HANDLE, "TaylorMadeHits"),
     subscribeUrl:
       "https://www.youtube.com/@" +
-      envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_HANDLE, "TMACK48SONGS") +
+      envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_HANDLE, "TaylorMadeHits") +
       "?sub_confirmation=1",
     channelIdUrl:
       "https://www.youtube.com/channel/" +
-      envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_ID, "UCoshH9Hn9nCEC0z8BS6WdIQ"),
+      envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_ID, "UCVlBvVymaIh7DQRYM410d-w"),
   },
 
   contact: {
@@ -41,7 +42,7 @@ export const siteConfig = {
     x: envOr(import.meta.env.VITE_X_URL),
     youtube:
       "https://www.youtube.com/@" +
-      envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_HANDLE, "TMACK48SONGS"),
+      envOr(import.meta.env.VITE_YOUTUBE_CHANNEL_HANDLE, "TaylorMadeHits"),
   },
 
   analytics: {
@@ -53,9 +54,9 @@ export const siteConfig = {
   youtubeApiKey: envOr(import.meta.env.VITE_YOUTUBE_API_KEY),
 
   stats: {
-    videos: "15+",
+    videos: "78",
     years: "Active",
-    fans: "Growing",
+    fans: "1,000+",
     moves: "Unstoppable",
   },
 } as const;

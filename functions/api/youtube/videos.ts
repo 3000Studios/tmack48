@@ -23,7 +23,7 @@ interface YTSearchResponse {
 
 export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
   const key = env.YOUTUBE_API_KEY;
-  const channelId = env.YOUTUBE_CHANNEL_ID ?? "UCoshH9Hn9nCEC0z8BS6WdIQ";
+  const channelId = env.YOUTUBE_CHANNEL_ID ?? "UCVlBvVymaIh7DQRYM410d-w";
 
   if (!key) return json({ videos: [] }, 200); // graceful: client falls back to static
 

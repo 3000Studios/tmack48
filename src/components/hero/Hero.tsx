@@ -5,6 +5,7 @@ import type { Video } from "@/data/videos";
 import { buildEmbedUrl, YOUTUBE_EMBED_MESSAGE_ORIGIN } from "@/lib/youtube";
 import { HeartIcon, SoundOffIcon, SoundOnIcon, SparkleIcon } from "@/components/ui/Icon";
 import { trackCta } from "@/lib/analytics";
+import { siteConfig } from "@/data/siteConfig";
 
 const HERO_AUDIO_PREF_KEY = "tmack48-hero-audio";
 
@@ -159,8 +160,22 @@ export default function Hero({ video, playlist }: { video: Video; playlist?: Vid
               blur on the largest text on the page = full-layer repaints). */}
           <p className="hero-in eyebrow flex items-center gap-2" style={{ animationDuration: "0.8s" }}>
             <SparkleIcon className="h-4 w-4 text-gold-300" />
-            Official Artist Universe
+            TaylorMade Hits · Official Artist Universe
           </p>
+
+          <div className="hero-in milestone-banner mt-5" style={{ animationDuration: "0.9s", animationDelay: "0.05s" }}>
+            <p className="milestone-title">JUST BUSTED 1,000 SUBSCRIBERS ON YOUTUBE</p>
+            <p className="mt-1 text-sm text-platinum/85">TaylorMade Hits just crossed 1K — thank you. Join the next 1,000.</p>
+            <a
+              href={siteConfig.channel.subscribeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackCta("hero_subscribe_1k")}
+              className="btn-gold glint mt-3 !px-6 !py-3 text-sm font-black uppercase tracking-widest"
+            >
+              <SparkleIcon className="h-4 w-4" /> Subscribe — @TaylorMadeHits
+            </a>
+          </div>
 
           <h1
             className="hero-in mt-4 display-title font-black text-4xl sm:text-5xl lg:text-[6.5rem] leading-[0.9] tracking-tight"

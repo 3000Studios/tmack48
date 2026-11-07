@@ -1059,3 +1059,45 @@ body.cursor-trail-active {
     }
   }
 }
+
+/* ============================================================
+   REVAMP 2026-11-06 — TaylorMade Hits · fresh, mobile-first
+   Liquid water lives ONLY in header + footer (.liquid-water is
+   mounted only by Navbar/Footer). Body stays clean.
+   ============================================================ */
+@keyframes headerSlideIn { from { transform: translateY(-100%); opacity:.4 } to { transform: translateY(0); opacity:1 } }
+@keyframes footerSlideIn { from { transform: translateY(48px); opacity:0 } to { transform: translateY(0); opacity:1 } }
+@keyframes milestonePulse { 0%,100% { box-shadow: 0 0 0 0 rgba(212,175,55,.45), 0 18px 50px -18px rgba(212,175,55,.55) } 50% { box-shadow: 0 0 0 8px rgba(212,175,55,0), 0 22px 60px -14px rgba(212,175,55,.8) } }
+@keyframes goldShimmerSweep { 0% { transform: translateX(-130%) skewX(-14deg) } 100% { transform: translateX(230%) skewX(-14deg) } }
+
+.site-header-slide { animation: headerSlideIn .7s cubic-bezier(.22,1,.36,1) both; will-change: transform; }
+.site-footer-slide { animation: footerSlideIn .8s cubic-bezier(.22,1,.36,1) both; }
+.liquid-water { opacity:.9; mix-blend-mode: screen; }
+
+/* Milestone banner — mobile first, scales up */
+.milestone-banner { position:relative; overflow:hidden; border-radius:1.25rem; padding:1rem 1.1rem; max-width:36rem;
+  background: linear-gradient(135deg, rgba(212,175,55,.22), rgba(10,32,44,.72) 55%, rgba(212,175,55,.10));
+  border:1px solid rgba(255,226,154,.55); backdrop-filter: blur(10px); animation: milestonePulse 3.2s ease-in-out infinite; }
+.milestone-title { font-family:"Unbounded","Source Sans 3",sans-serif; font-weight:900; line-height:1.08; letter-spacing:-.01em;
+  font-size: clamp(1.25rem, 5.6vw, 2.1rem);
+  background: linear-gradient(120deg,#fff2c4,#ffe29a 30%,#d4af37 60%,#fff2c4); -webkit-background-clip:text; background-clip:text; color:transparent; }
+@media (min-width:1024px){ .milestone-banner{ padding:1.25rem 1.4rem } }
+
+/* GOLD SHIMMER on tiles/cards — hover (desktop) + touch/active (mobile) */
+.card-premium, .rail-card, .glass { position:relative; }
+.card-premium::after, .rail-card::after { content:""; position:absolute; inset:0; z-index:2; pointer-events:none; opacity:0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255,226,154,.14) 42%, rgba(255,255,255,.5) 50%, rgba(212,175,55,.28) 58%, transparent 72%);
+  width:55%; transform: translateX(-130%) skewX(-14deg); transition: opacity .25s ease; }
+.card-premium:hover::after, .card-premium:active::after, .rail-card:hover::after, .rail-card:active::after, .rail-card:focus-visible::after {
+  opacity:1; animation: goldShimmerSweep .85s cubic-bezier(.22,1,.36,1) both; }
+.card-premium:hover, .rail-card:hover { border-color: rgba(255,226,154,.65); }
+.card-premium:active, .rail-card:active { transform: translateY(-2px) scale(.99); }
+
+/* Smooth-as-glass global transitions */
+a, button, .btn-gold, .btn-ghost, .btn-diamond, .chip, input, textarea, select { transition-timing-function: cubic-bezier(.22,1,.36,1); }
+img { transition: transform .6s cubic-bezier(.22,1,.36,1), filter .6s cubic-bezier(.22,1,.36,1), opacity .4s ease; }
+main { animation: tmFadeIn .55s cubic-bezier(.22,1,.36,1) both; }
+
+/* Fresh clean body — no wallpaper in the body, ever */
+body { background: radial-gradient(1100px 620px at 50% -12%, #14202b 0%, #070b10 52%, #030507 100%) fixed; }
+@media (prefers-reduced-motion: reduce){ .site-header-slide,.site-footer-slide,.milestone-banner{ animation:none !important } .card-premium:hover::after,.rail-card:hover::after{ animation:none !important } }

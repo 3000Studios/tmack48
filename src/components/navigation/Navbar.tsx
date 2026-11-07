@@ -8,6 +8,7 @@ import { cn, isSupportedLink } from "@/lib/utils";
 import { trackCta } from "@/lib/analytics";
 // Decorative acorn ornaments (2D canvas) — lazy, zero WebGL.
 const HeaderAcorns = lazy(() => import("@/components/effects/HeaderAcorns"));
+const LiquidWater = lazy(() => import("@/components/effects/LiquidWater"));
 import NavIdleLink, { IDLE_FX, type IdleFx } from "@/components/navigation/NavIdleLink";
 import MobileMenuWallpaper from "@/components/navigation/MobileMenuWallpaper";
 
@@ -117,7 +118,7 @@ export default function Navbar() {
     <>
       <header
         className={cn(
-          "fixed inset-x-0 top-0 transition-[transform,background,backdrop-filter,border-color] duration-500 ease-out",
+          "site-header-slide fixed inset-x-0 top-0 overflow-hidden transition-[transform,background,backdrop-filter,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
           "border-b header-3d",
           open || y > 40
             ? "bg-ink-950/85 backdrop-blur-xl border-white/5 shadow-[0_10px_30px_-20px_rgba(0,0,0,0.8)]"
@@ -127,9 +128,12 @@ export default function Navbar() {
         style={{ zIndex: 60 }}
       >
         <Suspense fallback={null}>
+          <LiquidWater variant="header" />
+        </Suspense>
+        <Suspense fallback={null}>
           <HeaderAcorns />
         </Suspense>
-        <div className="container-lux flex h-16 md:h-20 items-center justify-between gap-3 md:gap-4">
+        <div className="container-lux relative z-10 flex h-16 md:h-20 items-center justify-between gap-3 md:gap-4">
           <Logo />
 
           {/* Desktop — same primary set as mobile */}

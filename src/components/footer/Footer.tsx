@@ -8,6 +8,7 @@ import { subscribeAcornLandingCount } from "@/lib/acornBus";
 import { lazy, Suspense, useEffect, useState } from "react";
 // Decorative acorn (SVG + CSS sway) — lazy, zero WebGL.
 const FooterAcornObject = lazy(() => import("@/components/effects/FooterAcornObject"));
+const LiquidWater = lazy(() => import("@/components/effects/LiquidWater"));
 
 function SiteDevMark() {
   const text = "Site dev 3000 Studios";
@@ -46,7 +47,7 @@ export default function Footer() {
 
   return (
     <footer
-      className="relative z-10 mt-20 border-t border-white/5 bg-ink-950/80 backdrop-blur-xl transition-[filter,background-color] duration-700"
+      className="site-footer-slide relative z-10 mt-20 overflow-hidden border-t border-gold-400/20 bg-ink-950/80 backdrop-blur-xl transition-[filter,background-color,transform] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
       style={{
         filter: `brightness(${bgBoost})`,
         boxShadow: glow
@@ -77,6 +78,9 @@ export default function Footer() {
         style={{ background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent)" }}
       />
 
+      <Suspense fallback={null}>
+        <LiquidWater variant="footer" />
+      </Suspense>
       {/* 3D layer: behind footer content but above wallpaper */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <Suspense fallback={null}>
@@ -89,7 +93,7 @@ export default function Footer() {
           <Logo />
           <p className="mt-5 max-w-md text-platinum/70 leading-relaxed">
             TMACK48 is a premium music universe — luxury-flashy visuals, street-smart anthems,
-            and a relentless grind. Watch on YouTube, follow the drops, and support the movement.
+            and a relentless grind. TaylorMade Hits just busted 1,000 subscribers — watch on YouTube, follow the drops, and support the movement.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a

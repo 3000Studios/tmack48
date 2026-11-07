@@ -260,7 +260,9 @@ const builders = {
     title: 'TMACK48 — Official Artist Universe',
     description: siteConfig.description,
     inner: `<main>
-      <h1>TMACK48 — ${esc(siteConfig.tagline)}</h1>
+      <h1>JUST BUSTED 1,000 SUBSCRIBERS ON YOUTUBE</h1>
+      <p>TaylorMade Hits (@TaylorMadeHits) just passed 1,000 subscribers — thank you. Subscribe and watch the latest drops.</p>
+      <h2>TMACK48 — ${esc(siteConfig.tagline)}</h2>
       <p>${esc(siteConfig.description)}</p>
       <p><a href="${esc(siteConfig.channel.subscribeUrl)}">Subscribe on YouTube</a> · <a href="/music">Music</a> · <a href="/videos">Videos</a> · <a href="/news">News</a></p>
       <section>
@@ -276,7 +278,7 @@ ${posts.slice(0, 3).map((p) => postCard(p)).join('\n')}
 
   '/videos': () => ({
     title: 'Videos — TMACK48',
-    description: `Watch the official TMACK48 video catalog: ${longs.length} music videos and drops, direct from the @TMACK48SONGS YouTube channel.`,
+    description: `Watch the official TMACK48 video catalog: ${longs.length} music videos and drops, direct from the @TaylorMadeHits YouTube channel.`,
     inner: `<main>
       <h1>Videos</h1>
       <p>The official TMACK48 video catalog — every view on YouTube supports the artist directly.</p>

@@ -5,8 +5,8 @@ interface CurtainsIntroProps {
   enabled: boolean;
 }
 
-/** Curtains intro — https://youtu.be/G6Ij9iPkQQo */
-const CURTAINS_INTRO_VIDEO_ID = "G6Ij9iPkQQo";
+/** Curtains intro — https://www.youtube.com/watch?v=z0bAIMtrjOQ */
+const CURTAINS_INTRO_VIDEO_ID = "z0bAIMtrjOQ";
 
 const INTRO_STORAGE_KEY = "tmack48-curtains-intro-seen";
 /** Safety cap if iframe end events do not fire (full-length ceiling). */
