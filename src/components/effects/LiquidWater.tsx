@@ -5,14 +5,20 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
  * Space Water — the SAME interactive liquid surface as 3000studios.space
  * (3000-space-water, © Jeremy William Swain), ported to a header/footer band:
  * a real height-field simulation (two-buffer wave propagation, two sub-steps
- * per frame, 0.994 damping) with the rich shading pass from the original —
- * height-mixed deep-water palette, light-facing diffuse, tight + broad
- * specular, fresnel sky lift, caustic crest sparkle and motion glow.
- * Ambient rain drops keep it alive; moving a pointer (or finger) across the
- * header/footer throws real ripples, exactly like the splash on .space.
+ * per frame, 0.994 damping).
  *
- * DESIGN LAW: header and footer ONLY — the page body carries the spotlight
- * wallpaper instead. Pauses off-screen; reduced-motion gets one still frame.
+ * Boss order 2026-11-07: the water is CLEAR and the ripples are GOLD.
+ * The flat surface renders fully transparent so the alley wallpaper and
+ * the dark chrome beneath show straight through; only moving water —
+ * specular glints, caustic crest sparkle and slope energy — catches the
+ * gold of the TMACK48 wall sign (deep gold #C4962C up to hot highlight
+ * #FFEAA6), with alpha proportional to that light. Colors are matched
+ * to the wallpaper scene (rainy night, gold sign) so the bands blend in.
+ * Ambient rain drops keep it barely alive; moving a pointer (or finger)
+ * across the header/footer throws bright gold ripples.
+ *
+ * DESIGN LAW: header and footer ONLY. Pauses off-screen; reduced-motion
+ * gets one still (clear) frame.
  */
 export default function LiquidWater({ variant = "header" }: { variant?: "header" | "footer" }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
@@ -89,20 +95,20 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
     let lastX = -1;
     let lastY = -1;
     const onDown = (e: PointerEvent) => {
-      disturb(e.clientX, e.clientY, 26);
+      disturb(e.clientX, e.clientY, 34);
       lastX = e.clientX;
       lastY = e.clientY;
     };
     const onMove = (e: PointerEvent) => {
       if (lastX < 0) {
-        disturb(e.clientX, e.clientY, 7);
+        disturb(e.clientX, e.clientY, 10);
         lastX = e.clientX;
         lastY = e.clientY;
         return;
       }
       const steps = Math.max(1, Math.round(Math.hypot(e.clientX - lastX, e.clientY - lastY) / 16));
       for (let s = 0; s <= steps; s++) {
-        disturb(lastX + ((e.clientX - lastX) * s) / steps, lastY + ((e.clientY - lastY) * s) / steps, 9);
+        disturb(lastX + ((e.clientX - lastX) * s) / steps, lastY + ((e.clientY - lastY) * s) / steps, 13);
       }
       lastX = e.clientX;
       lastY = e.clientY;
@@ -133,12 +139,12 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
       if (!visible || document.hidden || !img || !ox) return;
       frameN++;
 
-      // ambient rain — the surface is alive before it's touched
+      // ambient rain — a faint gold shimmer before it's touched
       if (!reduced && frameN - rainTimer > 42) {
         rainTimer = frameN;
         if (Math.random() < 0.8) {
           const rect = canvas.getBoundingClientRect();
-          disturb(rect.left + Math.random() * rect.width, rect.top + Math.random() * rect.height, 11);
+          disturb(rect.left + Math.random() * rect.width, rect.top + Math.random() * rect.height, 8);
         }
       }
 
@@ -156,7 +162,11 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
         cur = tmp;
       }
 
-      // rich shading pass — same math family as space-water.js
+      // CLEAR + GOLD shading pass (Boss order 2026-11-07): the flat
+      // surface is fully transparent; only moving water catches gold
+      // light — specular glints, caustic crest sparkle, slope energy —
+      // ramped from deep gold (196,150,44) to hot highlight (255,234,166),
+      // alpha proportional to the light so still water disappears.
       const data = img.data;
       const shim = (frameN >> 1) * 7;
       const K = GW / 200;
@@ -172,63 +182,36 @@ export default function LiquidWater({ variant = "header" }: { variant?: "header"
             K *
             K;
           const o = i * 4;
-          let t = 0.5 + h * 0.014;
-          t = t < 0 ? 0 : t > 1 ? 1 : t;
-          let r: number, g: number, b: number;
-          if (t < 0.5) {
-            const u = t * 2;
-            r = 5 + 4 * u;
-            g = 11 + 19 * u;
-            b = 30 + 38 * u;
-          } else {
-            const u = (t - 0.5) * 2;
-            r = 9 + 19 * u;
-            g = 30 + 52 * u;
-            b = 68 + 66 * u;
-          }
-          const dif = 1 + (dx * 0.85 + dy * 0.5) * 0.011;
-          const dc = dif < 0.55 ? 0.55 : dif > 1.45 ? 1.45 : dif;
-          r *= dc;
-          g *= dc;
-          b *= dc;
+          // gold light terms, same math family as space-water.js
           const sa = dx * 0.83 + dy * 0.55;
           const su = sa > 0 ? Math.min(1, sa * 0.05) : 0;
           const su2 = su * su;
-          const spec = su2 * su2 * 185 + su2 * 34;
-          r += spec * 0.75;
-          g += spec * 0.92;
-          b += spec;
+          const spec = su2 * su2 * 185 + su2 * 34; // specular, 0..~219
           const q = dx * dx + dy * dy;
-          const fr = Math.min(0.55, q * 0.0035);
-          r += fr * 46;
-          g += fr * 88;
-          b += fr * 118;
+          const fres = Math.min(0.55, q * 0.0035); // slope sheen, 0..0.55
+          let spark = 0;
           const cr = -lap * 0.016;
           if (cr > 0) {
             const cf = cr > 1 ? 1 : cr;
             const nz = NOISE[(x * 31 + y * 57 + shim) & 255] / 255;
-            const sp = cf * cf * (0.5 + 0.5 * nz) * 118;
-            r += sp * 0.8;
-            g += sp * 0.95;
-            b += sp;
+            spark = cf * cf * (0.5 + 0.5 * nz) * 118; // caustic sparkle, 0..~118
           }
-          const en = Math.min(1, q / 150);
-          if (en > 0.02) {
-            const gl = en * en * 105;
-            r += gl * 0.45;
-            g += gl * 0.85;
-            b += gl;
-          }
-          if (h < 0) {
-            const smc = Math.max(0.62, 1 + h * 0.006);
-            r *= smc;
-            g *= smc;
-            b *= smc;
-          }
-          data[o] = r < 0 ? 0 : r > 255 ? 255 : r;
-          data[o + 1] = g < 0 ? 0 : g > 255 ? 255 : g;
-          data[o + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
-          data[o + 3] = 255;
+          const en = Math.min(1, q / 150); // motion energy, 0..1
+          const energy = en * en * 105;
+          // diffuse tilt — light-facing slopes read a touch brighter
+          const dif = 1 + (dx * 0.85 + dy * 0.5) * 0.011;
+          const dc = dif < 0.6 ? 0.6 : dif > 1.4 ? 1.4 : dif;
+          let glow = (spec / 219) * 0.85 + (spark / 118) * 0.55 + fres * 0.5 + (energy / 105) * 0.45;
+          glow *= dc;
+          // crests catch a whisper of light even between glints
+          if (h > 0) glow += Math.min(0.12, h * 0.0022);
+          glow = glow < 0 ? 0 : glow > 1 ? 1 : glow;
+          // gamma so faint motion stays faint and real ripples pop
+          const lit = glow * glow * (3 - 2 * glow);
+          data[o] = 196 + (255 - 196) * lit;
+          data[o + 1] = 150 + (234 - 150) * lit;
+          data[o + 2] = 44 + (166 - 44) * lit;
+          data[o + 3] = Math.round(lit * 238);
         }
       }
       ox.putImageData(img, 0, 0);
