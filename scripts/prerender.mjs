@@ -501,7 +501,6 @@ ${featuredVideos.slice(0, 3).map((v) => videoCard(v)).join('\n')}
 const STATIC_PAGES = {
   '/about': 'About.tsx',
   '/press': 'Press.tsx',
-  '/support': 'Support.tsx',
   '/community': 'Community.tsx',
   '/merch': 'Merch.tsx',
   '/privacy': 'Privacy.tsx',
@@ -524,6 +523,73 @@ for (const [route, file] of Object.entries(STATIC_PAGES)) {
 ${hasH1 ? '' : `      <h1>${esc(seo.title ?? route.slice(1))}</h1>\n`}${renderBlocks(blocks)}
     </main>`,
     }
+  }
+}
+
+// /support (Connect) — the support cards and FAQ entries live in data
+// arrays in Support.tsx that the JSX text extraction cannot see, so mirror
+// them here from the page's own copy: card titles/subtitles/CTAs and FAQ
+// Q&As verbatim, filtered by the same isSupportedLink rule the app uses.
+builders['/support'] = () => {
+  const file = path.join(srcRoot, 'pages', 'Support.tsx')
+  const seo = seoProps(file)
+  // Drop the empty-state fallback copy ("Tip links are being finalized…") —
+  // the extraction keeps both branches of the conditional, and the cards
+  // section below states the real state.
+  const blocks = pageBlocks(file).filter((b) => !b.text.startsWith('Tip links are being finalized'))
+  const hasH1 = blocks.some((b) => b.level === 1)
+  const isSupportedLink = (v) => !!(v && v.trim() && v.trim() !== '#')
+  const cards = [
+    { title: 'Cash App', subtitle: 'Quick, clean, instant.', cta: 'Tip on Cash App', href: siteConfig.support.cashapp },
+    { title: 'PayPal', subtitle: 'International-friendly.', cta: 'Tip via PayPal', href: siteConfig.support.paypal },
+    { title: 'Official Merch', subtitle: 'Rep the universe.', cta: 'Shop Merch', href: siteConfig.support.merch },
+  ].filter((c) => isSupportedLink(c.href))
+  const cardsHtml = cards.length
+    ? cards
+        .map(
+          (c) => `        <article>
+          <h3>${esc(c.title)}</h3>
+          <p>${esc(c.subtitle)}</p>
+          <p><a href="${esc(c.href)}">${esc(c.cta)}</a></p>
+        </article>`,
+        )
+        .join('\n')
+    : `        <p>Tip links are being finalized. In the meantime, the biggest support is to <a href="${esc(siteConfig.channel.subscribeUrl)}">subscribe on YouTube</a> and share the drops.</p>`
+  const src = fs.readFileSync(file, 'utf8')
+  const faqBlock = src.match(/const faqs = \[([\s\S]*?)\n\]/)?.[1] ?? ''
+  const faqRe =
+    /q:\s*"((?:[^"\\]|\\.)*)",\s*a:\s*(?:isSupportedLink\([^)]*\)\s*\?\s*"((?:[^"\\]|\\.)*)"\s*:\s*"((?:[^"\\]|\\.)*)"|"((?:[^"\\]|\\.)*)")/g
+  const faqs = []
+  let m
+  while ((m = faqRe.exec(faqBlock))) {
+    const unesc = (s) => s.replace(/\\"/g, '"').replace(/\\'/g, "'")
+    const a = m[4] ?? (isSupportedLink(siteConfig.support.merch) ? m[2] : m[3])
+    faqs.push({ q: unesc(m[1]), a: unesc(a) })
+  }
+  const faqHtml = faqs.length
+    ? `      <section>
+        <h2>Support FAQ</h2>
+${faqs
+  .map(
+    (f) => `        <article>
+          <h3>${esc(f.q)}</h3>
+          <p>${esc(f.a)}</p>
+        </article>`,
+  )
+  .join('\n')}
+      </section>`
+    : ''
+  return {
+    title: seo.title ? `${seo.title} — TMACK48 · TaylorMade Hits` : 'Connect — TMACK48 · TaylorMade Hits',
+    description: seo.description ?? siteConfig.description,
+    inner: `<main>
+${hasH1 ? '' : `      <h1>${esc(seo.title ?? 'Support')}</h1>\n`}${renderBlocks(blocks)}
+      <section>
+        <h2>Ways to support</h2>
+${cardsHtml}
+      </section>
+${faqHtml}
+    </main>`,
   }
 }
 

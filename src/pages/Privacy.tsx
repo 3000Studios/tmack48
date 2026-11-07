@@ -42,7 +42,7 @@ export default function Privacy() {
           not break core functionality.
         </p>
         <p className="mt-3">
-          <strong>Google AdSense & Third-Party Cookies:</strong> Google, as a third-party vendor, uses cookies to serve ads on our site. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our sites and/or other sites on the Internet. Users may opt out of personalized advertising by visiting{" "}
+          <strong>Google AdSense & Third-Party Cookies:</strong> Google, as a third-party vendor, uses cookies — including the DoubleClick DART cookie — to serve ads on our site. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our sites and/or other sites on the Internet. Third-party vendors and ad networks may also serve ads on this site using cookies. Users may opt out of personalized advertising (including the DART cookie) by visiting{" "}
           <a
             href="https://www.google.com/settings/ads"
             target="_blank"
