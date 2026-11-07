@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { answerQuestion } from "@/lib/bigNutsBrain";
-import { speak, startListening, stopSpeaking, type VoicePersona } from "@/lib/botVoice";
+import {
+  recognitionSupported,
+  requestMicPermission,
+  speak,
+  startListening,
+  stopSpeaking,
+  type VoicePersona,
+} from "@/lib/botVoice";
 import { siteConfig } from "@/data/siteConfig";
 
 type Msg = { role: "bot" | "user"; text: string };
@@ -194,13 +201,38 @@ export default function MrBigNutsWidget() {
     setDevRequest("");
   };
 
-  const mic = () => {
-    if (listening) return;
-    const started = startListening({
-      onText: (transcript) => send(transcript),
-      onEnd: () => setListening(false),
+  const stopListenRef = useRef<(() => void) | null>(null);
+
+  const mic = async () => {
+    if (listening) {
+      stopListenRef.current?.();
+      return;
+    }
+    if (!recognitionSupported()) {
+      post("This browser can't hear worth a damn — Chrome can. Type it and I'll still talk back.", false);
+      return;
+    }
+    setListening(true);
+    const perm = await requestMicPermission();
+    if (perm === "denied") {
+      setListening(false);
+      post("Mic's blocked. Lock icon by the address bar → allow the microphone for this site → hit Mic again. Even I can't yell through a brick wall.", false);
+      return;
+    }
+    const stop = startListening({
+      onInterim: (t) => setDraft(t),
+      onText: (t) => {
+        setDraft("");
+        send(t);
+      },
+      onError: (message) => post(message, false),
+      onEnd: () => {
+        stopListenRef.current = null;
+        setListening(false);
+      },
     });
-    if (started) setListening(true);
+    if (stop) stopListenRef.current = stop;
+    else setListening(false);
   };
 
   if (view === "closed") return null;
@@ -342,7 +374,7 @@ export default function MrBigNutsWidget() {
           />
           <button
             type="button"
-            onClick={mic}
+            onClick={() => void mic()}
             className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
               listening
                 ? "border-red-300/70 bg-red-500/20 text-red-100"
