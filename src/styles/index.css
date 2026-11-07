@@ -1012,8 +1012,6 @@ body.cursor-trail-active {
 .card-premium:hover::after, .card-premium:active::after, .rail-card:hover::after, .rail-card:active::after, .rail-card:focus-visible::after {
   opacity:1; animation: goldShimmerSweep .85s cubic-bezier(.22,1,.36,1) both; }
 .card-premium:hover, .rail-card:hover { border-color: rgba(255,226,154,.65); }
-/* Wet-gold nav hover (2026-11-07): soft sign-like glow joins the underline sweep */
-.nav-link-desktop:hover { text-shadow: 0 0 16px rgba(212,175,55,.5); }
 .card-premium:active, .rail-card:active { transform: translateY(-2px) scale(.99); }
 
 /* Smooth-as-glass global transitions */
