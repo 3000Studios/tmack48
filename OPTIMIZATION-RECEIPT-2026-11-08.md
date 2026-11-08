@@ -155,10 +155,27 @@ Fix (`src/lib/botVoice.ts`, both bots):
 
 ## Ship
 
-- Commit: `__COMMIT_HASH__` (single commit, all scopes + A/B/C/D)
+- Commit: `f01dc35` (single commit, all scopes + A/B/C/D; 21 files,
+  +1975/−241). This receipt's final live results ride a receipt-only
+  follow-up commit.
 - Pushed to `main` → Cloudflare Pages project "tmack48" (git-connected).
-- Live verification: see below (filled in after deploy poll).
 
-### Live verification (https://tmack48.com)
+### Live verification (https://tmack48.com) — 2026-11-08 ~11:17 EST
 
-__LIVE_RESULTS__
+All six routes fetched fresh (crawled <1 min before check, after the push)
+and serving real content:
+
+- `/` — 200, homepage content live.
+- `/videos` — 200, full catalog rendering.
+- `/shorts` — 200, full Shorts catalog rendering.
+- `/music` — 200, full track catalog rendering.
+- `/about` — 200.
+- `/contact` — 200.
+
+New-build proof: the live homepage's stylesheet is
+`/assets/index-D3Fp7PtD.css` — the exact content hash of the local dist
+build from commit `f01dc35` — and the served file contains the new
+`.nav-hover-underline` rules (gold gradient, `scaleX` sweep 0.28s,
+`:focus-visible` and `[aria-current=page]` states) and the
+`.nav-link-label` letter-spacing ease. The new deploy is live, not just
+committed.
