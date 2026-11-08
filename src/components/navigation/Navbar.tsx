@@ -157,9 +157,11 @@ export default function Navbar() {
                 <NavLink
                   key={l.url}
                   to={l.url}
-                  className="nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium text-gold-200/90 transition-all duration-300 hover:text-gold-100 hover:scale-[1.04]"
+                  className="nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium text-gold-200/90 transition-[transform,color,text-shadow,filter] duration-300 hover:text-gold-100 hover:scale-[1.04]"
                 >
-                  {l.label}
+                  <span className="nav-link-label relative z-[1]">{l.label}</span>
+                  <span className="nav-shine" aria-hidden />
+                  <span className="nav-hover-underline" aria-hidden />
                 </NavLink>
               ) : (
                 <a
@@ -167,9 +169,11 @@ export default function Navbar() {
                   href={l.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium text-gold-200/90 transition-all duration-300 hover:text-gold-100 hover:scale-[1.04]"
+                  className="nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium text-gold-200/90 transition-[transform,color,text-shadow,filter] duration-300 hover:text-gold-100 hover:scale-[1.04]"
                 >
-                  {l.label}
+                  <span className="nav-link-label relative z-[1]">{l.label}</span>
+                  <span className="nav-shine" aria-hidden />
+                  <span className="nav-hover-underline" aria-hidden />
                 </a>
               )
             )}
@@ -287,7 +291,7 @@ export default function Navbar() {
                             },
                           }
                         : { target: "_blank", rel: "noopener noreferrer" })}
-                      className="nav-link-mobile font-playfair group relative flex items-center justify-between overflow-hidden rounded-2xl border border-gold-300/40 bg-gold-300/10 px-5 py-4 text-[22px] font-semibold tracking-[0.04em] text-gold-200 backdrop-blur-md transition-all duration-300 active:scale-[0.98]"
+                      className="nav-link-mobile font-playfair group relative flex items-center justify-between overflow-hidden rounded-2xl border border-gold-300/40 bg-gold-300/10 px-5 py-4 text-[22px] font-semibold tracking-[0.04em] text-gold-200 backdrop-blur-md transition-[transform,color,background-color,border-color,box-shadow,filter] duration-300 active:scale-[0.98]"
                     >
                       <span className="relative z-[1]">{l.label}</span>
                       <span className="relative z-[1] opacity-70">→</span>

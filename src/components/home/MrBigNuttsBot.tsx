@@ -2,13 +2,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Video } from "@/data/videos";
 import { answerQuestion, cleanTitle } from "@/lib/bigNutsBrain";
 import {
+  MIC_STATUS_COPY,
+  MIC_UNSUPPORTED_MESSAGE,
   PUBLIC_PERSONA,
+  diagnoseMic,
   recognitionSupported,
-  requestMicPermission,
   speak,
-  startListening,
+  startListeningSession,
   stopSpeaking,
   toSpeakable,
+  type MicStatus,
 } from "@/lib/botVoice";
 
 type Msg = { role: "bot" | "user"; text: string; play?: Video };
@@ -31,6 +34,7 @@ export default function MrBigNuttsBot() {
   const [talk, setTalk] = useState(true);
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
+  const [micStatus, setMicStatus] = useState<MicStatus>("idle");
   const [msgs, setMsgs] = useState<Msg[]>([{ role: "bot", text: GREETING }]);
   const tagline = useMemo(() => TAGLINES[Math.floor(Math.random() * TAGLINES.length)], []);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -45,7 +49,7 @@ export default function MrBigNuttsBot() {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const ttsDeadRef = useRef(false);
-  const stopListenRef = useRef<(() => void) | null>(null);
+  const sessionRef = useRef<ReturnType<typeof startListeningSession>>(null);
 
   const stopAllAudio = () => {
     stopSpeaking();
@@ -111,12 +115,18 @@ export default function MrBigNuttsBot() {
     say(answer.text);
   };
 
-  const mic = async () => {
+  // Deliberately NOT async: no await may intervene between the tap and
+  // startListeningSession — it invokes getUserMedia and calls
+  // recognition.start() synchronously, inside this handler's call stack.
+  const mic = () => {
     if (listening) {
-      stopListenRef.current?.();
+      sessionRef.current?.stop();
       return;
     }
     if (!recognitionSupported()) {
+      setMicStatus("unsupported");
+      // Still exercise the permission + device-detection path — never silent.
+      void diagnoseMic();
       setMsgs((m) => [
         ...m,
         {
@@ -127,21 +137,8 @@ export default function MrBigNuttsBot() {
       return;
     }
     setListening(true);
-    // Ask for the mic up front — this tap is what makes the browser's
-    // permission prompt appear, instead of the old silent failure.
-    const perm = await requestMicPermission();
-    if (perm === "denied") {
-      setListening(false);
-      setMsgs((m) => [
-        ...m,
-        {
-          role: "bot",
-          text: "Mic's blocked, superstar. Tap the lock icon next to the address bar, allow the microphone for tmack48.com, then hit the mic again.",
-        },
-      ]);
-      return;
-    }
-    const stop = startListening({
+    setMicStatus("listening");
+    const session = startListeningSession({
       // Live speech-to-text: your words land in the input as you talk…
       onInterim: (t) => setDraft(t),
       // …and the finished sentence sends itself.
@@ -149,15 +146,24 @@ export default function MrBigNuttsBot() {
         setDraft("");
         send(t);
       },
-      onError: (message) =>
-        setMsgs((m) => [...m, { role: "bot", text: message }]),
+      onError: (message, status) => {
+        if (status) setMicStatus(status);
+        setMsgs((m) => [...m, { role: "bot", text: message }]);
+      },
       onEnd: () => {
-        stopListenRef.current = null;
+        sessionRef.current = null;
         setListening(false);
+        // Clear back to idle — unless an error status just landed.
+        setMicStatus((s) => (s === "listening" ? "idle" : s));
       },
     });
-    if (stop) stopListenRef.current = stop;
-    else setListening(false);
+    if (session) {
+      sessionRef.current = session;
+    } else {
+      setListening(false);
+      setMicStatus("unsupported");
+      setMsgs((m) => [...m, { role: "bot", text: MIC_UNSUPPORTED_MESSAGE }]);
+    }
   };
 
   if (view === "closed") return null;
@@ -178,10 +184,10 @@ export default function MrBigNuttsBot() {
   }
 
   return (
-    <div className="fixed bottom-24 right-4 z-[85] w-[min(92vw,360px)]">
-      <div className="overflow-hidden rounded-2xl border border-gold-300/45 bg-[#050505]/97 shadow-[0_14px_45px_rgba(0,0,0,0.72)] backdrop-blur-md">
+    <div className="fixed bottom-24 right-4 z-[85] flex max-h-[min(640px,calc(100dvh-8rem))] w-[min(92vw,360px)] flex-col max-sm:bottom-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:left-[max(0.75rem,env(safe-area-inset-left))] max-sm:right-[max(0.75rem,env(safe-area-inset-right))] max-sm:top-[max(0.75rem,env(safe-area-inset-top))] max-sm:max-h-none max-sm:w-auto">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gold-300/45 bg-[#050505]/97 shadow-[0_14px_45px_rgba(0,0,0,0.72)] backdrop-blur-md">
         {/* Header: title, voice toggle, minimize, close */}
-        <div className="flex items-center gap-2 border-b border-white/10 px-3 py-2.5">
+        <div className="flex shrink-0 items-center gap-2 border-b border-white/10 px-3 py-2.5">
           <span className="animate-bounce text-lg" aria-hidden>
             🐿️
           </span>
@@ -233,11 +239,11 @@ export default function MrBigNuttsBot() {
         </div>
 
         {/* Messages */}
-        <div ref={scrollRef} className="max-h-[46vh] space-y-2 overflow-y-auto p-3">
+        <div ref={scrollRef} className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
           {msgs.map((m, i) => (
-            <div key={i}>
+            <div key={i} className="min-w-0">
               <p
-                className={`rounded-xl px-3 py-2 text-sm leading-relaxed ${
+                className={`break-words rounded-xl px-3 py-2 text-sm leading-relaxed ${
                   m.role === "bot" ? "bg-gold-300/12 text-gold-50" : "bg-[#161616] text-platinum"
                 }`}
               >
@@ -258,7 +264,7 @@ export default function MrBigNuttsBot() {
                     href={m.play.watchUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block bg-black/60 px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] text-gold-200/90 hover:text-gold-100"
+                    className="block break-words bg-black/60 px-3 py-1.5 text-[11px] uppercase tracking-[0.14em] text-gold-200/90 hover:text-gold-100"
                   >
                     {cleanTitle(m.play.title)} — open on YouTube ↗
                   </a>
@@ -269,7 +275,7 @@ export default function MrBigNuttsBot() {
         </div>
 
         {/* Quick chips */}
-        <div className="flex flex-wrap gap-1.5 px-3 pb-2">
+        <div className="flex shrink-0 flex-wrap gap-1.5 px-3 pb-2">
           {CHIPS.map((c) => (
             <button
               key={c}
@@ -282,8 +288,23 @@ export default function MrBigNuttsBot() {
           ))}
         </div>
 
+        {/* Mic status line — persistent live region directly above the input row */}
+        <p
+          role="status"
+          aria-live="polite"
+          className={
+            micStatus === "idle"
+              ? "sr-only"
+              : `shrink-0 px-3 pt-2 text-[11px] font-semibold ${
+                  micStatus === "listening" || micStatus === "unsupported" ? "text-gold-200" : "text-red-200"
+                }`
+          }
+        >
+          {MIC_STATUS_COPY[micStatus]}
+        </p>
+
         {/* Input */}
-        <div className="flex gap-2 border-t border-white/10 p-3">
+        <div className="flex shrink-0 gap-2 border-t border-white/10 p-3">
           <input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -291,13 +312,13 @@ export default function MrBigNuttsBot() {
               if (e.key === "Enter") send();
             }}
             placeholder={listening ? "Listening… talk to me" : "Ask for a song, a fact, a vibe…"}
-            className="flex-1 rounded-lg border border-white/15 bg-[#111111] px-3 py-2 text-sm text-platinum outline-none focus:border-gold-300/60"
+            className="min-w-0 flex-1 rounded-lg border border-white/15 bg-[#111111] px-3 py-2 text-sm text-platinum outline-none focus:border-gold-300/60"
             aria-label="Ask Mr Big Nuts"
           />
           <button
             type="button"
             onClick={() => void mic()}
-            className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
+            className={`shrink-0 rounded-lg border px-3 py-2 text-sm font-semibold ${
               listening
                 ? "animate-pulse border-red-300/70 bg-red-500/20 text-red-100"
                 : "border-gold-300/40 bg-black text-gold-200"
@@ -311,12 +332,12 @@ export default function MrBigNuttsBot() {
             type="button"
             onClick={() => send()}
             disabled={!draft.trim()}
-            className="rounded-lg bg-gold-300 px-3 py-2 text-sm font-semibold text-ink-950 disabled:cursor-not-allowed disabled:opacity-40"
+            className="shrink-0 rounded-lg bg-gold-300 px-3 py-2 text-sm font-semibold text-ink-950 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Send
           </button>
         </div>
-        <p className="border-t border-white/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] text-platinum/45">
+        <p className="shrink-0 border-t border-white/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.14em] text-platinum/45">
           Knows all 78 catalog videos · facts from the real YouTube listings
         </p>
       </div>

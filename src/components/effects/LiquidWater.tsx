@@ -38,7 +38,13 @@ export default function LiquidWater() {
     let visible = true;
     let W = 0;
     let H = 0;
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    // PERF (2026-11-08): the draw scale no longer multiplies the sim cost —
+    // buildGrid caps GW/GH from the CSS size, and drawImage upscales the
+    // small grid canvas to the backing store. The backing store itself is
+    // capped harder on small screens (phones have the least GPU headroom
+    // and the soft upscaled look is unchanged at these sizes).
+    const dprCap = window.innerWidth < 768 ? 1 : 1.5;
+    const dpr = Math.min(window.devicePixelRatio || 1, dprCap);
 
     // --- height-field grid, sized from the viewport (cell ≈ 4px) ---
     let GW = 160;
@@ -50,13 +56,28 @@ export default function LiquidWater() {
     let img: ImageData | null = null;
 
     const buildGrid = () => {
-      GW = Math.max(160, Math.min(640, Math.round(W / 4)));
-      GH = Math.max(120, Math.min(400, Math.round(H / 4)));
+      // PERF (2026-11-08): cell ≈ 5px on small screens, ≈ 4px on desktop.
+      // The per-frame sim + shading passes scale with GW*GH, so phones —
+      // the weakest GPUs — get ~35% fewer cells; the surface is soft
+      // specular light, upscaled either way, so the look holds.
+      const cell = W < 768 ? 5 : 4;
+      GW = Math.max(120, Math.min(640, Math.round(W / cell)));
+      GH = Math.max(96, Math.min(400, Math.round(H / cell)));
       cur = new Float32Array(GW * GH);
       prev = new Float32Array(GW * GH);
       off.width = GW;
       off.height = GH;
       img = ox ? ox.createImageData(GW, GH) : null;
+    };
+
+    // PERF (2026-11-08): the canvas is fixed inset-0 (PageBackdrop), so its
+    // rect only changes on resize. disturb() used to force a layout read
+    // (getBoundingClientRect) on EVERY pointermove/touchmove event; it now
+    // reads the rect cached by resize(), refreshed on scroll too (a no-op
+    // for a fixed layer, kept for safety if placement ever changes).
+    let rectCache: DOMRect | null = null;
+    const refreshRect = () => {
+      rectCache = canvas.getBoundingClientRect();
     };
 
     const resize = () => {
@@ -65,11 +86,13 @@ export default function LiquidWater() {
       H = Math.max(1, r.height);
       canvas.width = Math.floor(W * dpr);
       canvas.height = Math.floor(H * dpr);
+      refreshRect();
       buildGrid();
     };
     resize();
     const ro = new ResizeObserver(resize);
     ro.observe(canvas);
+    window.addEventListener("scroll", refreshRect, { passive: true });
 
     const NOISE = new Uint8Array(256);
     for (let n = 0; n < 256; n++) {
@@ -78,7 +101,7 @@ export default function LiquidWater() {
     }
 
     const disturb = (cx: number, cy: number, str: number) => {
-      const rect = canvas.getBoundingClientRect();
+      const rect = rectCache ?? canvas.getBoundingClientRect();
       const gx = Math.round(((cx - rect.left) / Math.max(1, rect.width)) * GW);
       const gy = Math.round(((cy - rect.top) / Math.max(1, rect.height)) * GH);
       const rC = 3;
@@ -186,7 +209,7 @@ export default function LiquidWater() {
       if (!reduced && frameN - rainTimer > 30) {
         rainTimer = frameN;
         if (Math.random() < 0.85) {
-          const rect = canvas.getBoundingClientRect();
+          const rect = rectCache ?? canvas.getBoundingClientRect();
           disturb(rect.left + Math.random() * rect.width, rect.top + Math.random() * rect.height, 8);
         }
       }
@@ -270,6 +293,7 @@ export default function LiquidWater() {
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
+      window.removeEventListener("scroll", refreshRect);
       window.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointercancel", onLeave);

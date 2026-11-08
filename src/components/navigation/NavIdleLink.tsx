@@ -48,7 +48,7 @@ export default function NavIdleLink({
         }}
         className={({ isActive }) =>
           cn(
-            "nav-link-mobile font-playfair group relative flex items-center justify-between overflow-hidden rounded-2xl border px-5 py-4 text-[22px] font-semibold tracking-[0.04em] transition-all duration-300",
+            "nav-link-mobile font-playfair group relative flex items-center justify-between overflow-hidden rounded-2xl border px-5 py-4 text-[22px] font-semibold tracking-[0.04em] transition-[transform,color,background-color,border-color,box-shadow,filter] duration-300",
             "active:scale-[0.98] active:brightness-110",
             "hover:border-gold-300 hover:bg-gold-300/95 hover:text-ink-950 hover:shadow-[0_0_40px_-8px_rgba(212,175,55,0.75)]",
             isActive
@@ -75,7 +75,10 @@ export default function NavIdleLink({
       onClick={onActivate}
       className={({ isActive }) =>
         cn(
-          "nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium transition-all duration-300",
+          // PERF (2026-11-08): explicit transition list — `transition-all`
+          // would also animate the label's hover letter-spacing through
+          // layout; the list keeps every animated property composited.
+          "nav-link-desktop group relative whitespace-nowrap rounded-lg px-1.5 xl:px-2.5 py-1.5 text-[11px] xl:text-[13px] uppercase tracking-[0.12em] xl:tracking-[0.18em] font-medium transition-[transform,color,text-shadow,filter] duration-300",
           "hover:text-gold-100 hover:scale-[1.04]",
           "active:scale-95 active:text-gold-50",
           isActive ? "text-gold-300" : "text-platinum/80",
@@ -86,13 +89,9 @@ export default function NavIdleLink({
     >
       <span className="nav-link-label relative z-[1]">{label}</span>
       <span className="nav-shine" aria-hidden />
-      <span
-        className={cn(
-          "pointer-events-none absolute inset-x-1 -bottom-0.5 h-px origin-left scale-x-0 bg-gradient-to-r from-transparent via-gold-300 to-transparent transition-transform duration-400 group-hover:scale-x-100",
-          // active underline handled via NavLink parent text color
-        )}
-        aria-hidden
-      />
+      {/* Gold sweep underline (index.css .nav-hover-underline) — slides
+          in on hover/focus and stays lit on the active route. */}
+      <span className="nav-hover-underline" aria-hidden />
     </NavLink>
   );
 }

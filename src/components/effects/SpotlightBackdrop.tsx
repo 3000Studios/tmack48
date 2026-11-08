@@ -16,6 +16,9 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
  *
  * Perf: one canvas, DPR-capped, ~5 gradient cones per frame, pauses in a
  * hidden tab; reduced-motion visitors get one still, softly lit frame.
+ * (2026-11-08: DPR cap tightened to 1.25 on small screens / 1.5 on desktop
+ * and an IntersectionObserver pauses the loop while the canvas is
+ * off-screen, matching the rest of the effects kit.)
  */
 
 type Spot = {
@@ -47,9 +50,10 @@ export default function SpotlightBackdrop() {
 
     let raf = 0;
     let running = true;
+    let visible = true;
     let W = 0;
     let H = 0;
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+    const dpr = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1.25 : 1.5);
 
     const resize = () => {
       W = Math.max(1, window.innerWidth);
@@ -94,11 +98,21 @@ export default function SpotlightBackdrop() {
     window.addEventListener("pointerdown", onPointer, { passive: true });
     window.addEventListener("mouseover", onOver, { passive: true });
 
+    // PERF (2026-11-08): pause while the canvas is off-screen too, not
+    // just in a hidden tab.
+    const io = new IntersectionObserver(
+      (entries) => {
+        visible = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0.02 }
+    );
+    io.observe(canvas);
+
     const BPM = 116;
     const draw = (now: number) => {
       if (!running) return;
       raf = requestAnimationFrame(draw);
-      if (document.hidden) return;
+      if (document.hidden || !visible) return;
       const t = now / 1000;
 
       // ---- band engine (the "EQ"): bass / mid / high from the beat clock ----
@@ -196,6 +210,7 @@ export default function SpotlightBackdrop() {
     return () => {
       running = false;
       cancelAnimationFrame(raf);
+      io.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("pointerdown", onPointer);

@@ -37,7 +37,10 @@ export default function CursorTrail({ enabled = true }: Props) {
 
     let w = window.innerWidth;
     let h = window.innerHeight;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // PERF (2026-11-08): DPR capped at 1.5 like the rest of the kit — this
+    // is a full-screen fixed canvas, so the cap halves its backing-store
+    // pixels on retina displays; the soft diamond look is unchanged.
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     const resize = () => {
       w = window.innerWidth;
       h = window.innerHeight;

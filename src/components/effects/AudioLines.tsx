@@ -98,11 +98,23 @@ export default function AudioLines() {
     ro.observe(canvas);
     resize();
 
+    let headerVisible = true;
+    const io = new IntersectionObserver(
+      (entries) => {
+        headerVisible = entries[0]?.isIntersecting ?? true;
+      },
+      { threshold: 0.02 }
+    );
+    io.observe(canvas);
+
     let raf = 0;
     let running = true;
     const draw = (t: number) => {
       if (!running) return;
       raf = window.requestAnimationFrame(draw);
+      // PERF (2026-11-08): the header slides away on scroll-down — while
+      // it is off-screen the lines do no canvas work at all.
+      if (document.hidden || !headerVisible) return;
 
       // Target energy: live mic level, or idle breathing.
       let target = 0.13 + 0.05 * (0.5 + 0.5 * Math.sin(t / 2600));
@@ -167,6 +179,7 @@ export default function AudioLines() {
       running = false;
       window.cancelAnimationFrame(raf);
       ro.disconnect();
+      io.disconnect();
     };
   }, []);
 

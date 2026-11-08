@@ -14,9 +14,12 @@ export default function MobileMenuWallpaper() {
     let h = 0;
     let raf = 0;
     let t = 0;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // PERF (2026-11-08): DPR capped at 1.5 and fewer particles under
+    // 640 px — this canvas only ever runs on phones/tablets (the mobile
+    // menu), which have the least GPU headroom to spare.
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
-    const particles = Array.from({ length: 48 }, () => ({
+    const particles = Array.from({ length: window.innerWidth < 640 ? 28 : 48 }, () => ({
       x: Math.random(),
       y: Math.random(),
       r: 0.8 + Math.random() * 2.4,
@@ -38,6 +41,8 @@ export default function MobileMenuWallpaper() {
     window.addEventListener("resize", resize);
 
     const loop = () => {
+      raf = requestAnimationFrame(loop);
+      if (document.hidden) return;
       t += 0.016;
       ctx.clearRect(0, 0, w, h);
 
@@ -108,8 +113,6 @@ export default function MobileMenuWallpaper() {
       vig.addColorStop(1, "rgba(0,0,0,0.65)");
       ctx.fillStyle = vig;
       ctx.fillRect(0, 0, w, h);
-
-      raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
 

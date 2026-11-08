@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Golden nut">
+  <defs>
+    <!-- Dome body: light from top-left, gold brand ramp -->
+    <radialGradient id="dome" cx="0.34" cy="0.26" r="0.95">
+      <stop offset="0" stop-color="#fff6cf" />
+      <stop offset="0.22" stop-color="#ffe29a" />
+      <stop offset="0.52" stop-color="#d4af37" />
+      <stop offset="0.8" stop-color="#a87e1c" />
+      <stop offset="1" stop-color="#8d7220" />
+    </radialGradient>
+    <!-- Cap band: darker, warmer, top-lit -->
+    <linearGradient id="capband" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#caa232" />
+      <stop offset="0.45" stop-color="#8d7220" />
+      <stop offset="1" stop-color="#5f4a12" />
+    </linearGradient>
+    <!-- Vertical shading so the nut reads round at small sizes -->
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3d2c05" stop-opacity="0.42" />
+      <stop offset="0.28" stop-color="#3d2c05" stop-opacity="0" />
+      <stop offset="0.72" stop-color="#3d2c05" stop-opacity="0" />
+      <stop offset="1" stop-color="#3d2c05" stop-opacity="0.5" />
+    </linearGradient>
+    <!-- Bottom bounce light -->
+    <radialGradient id="bounce" cx="0.5" cy="1.05" r="0.6">
+      <stop offset="0" stop-color="#ffe9a8" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#ffe9a8" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="stem" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8c766" />
+      <stop offset="1" stop-color="#6e5514" />
+    </linearGradient>
+    <clipPath id="nutclip">
+      <path d="M128 44c6-13 16-20 30-24-9 9-13 18-12 27l-1 7h-13l-1-6z M128 58c52 0 88 34 88 84 0 52-38 84-88 84s-88-32-88-84c0-50 36-84 88-84z" />
+    </clipPath>
+  </defs>
+
+  <!-- Stem -->
+  <path d="M128 44c6-13 16-20 30-24-9 9-13 18-12 27l-1 7h-13l-1-6z" fill="url(#stem)" stroke="#4a370c" stroke-width="3" stroke-linejoin="round" />
+
+  <!-- Dome -->
+  <path d="M128 58c52 0 88 34 88 84 0 52-38 84-88 84s-88-32-88-84c0-50 36-84 88-84z" fill="url(#dome)" />
+
+  <!-- Cap band: arched band across the top of the dome -->
+  <path d="M42 118c10-38 44-60 86-60s76 22 86 60c-26-9-55-13-86-13s-60 4-86 13z" fill="url(#capband)" />
+  <!-- Cap cross-hatch texture -->
+  <g clip-path="url(#nutclip)" stroke="#3f3007" stroke-width="2.4" opacity="0.38">
+    <path d="M52 74l150 66M30 104l196 84M84 58l128 96" fill="none" />
+    <path d="M204 74L54 140M226 104L30 188M172 58L44 154" fill="none" />
+  </g>
+  <g clip-path="url(#nutclip)" stroke="#ffe9a8" stroke-width="1.2" opacity="0.28">
+    <path d="M52 80l150 66M30 110l196 84" fill="none" />
+    <path d="M204 80L54 146M226 110L30 194" fill="none" />
+  </g>
+  <!-- Cap rim highlight + shadow under the band -->
+  <path d="M42 118c26-9 55-13 86-13s60 4 86 13" fill="none" stroke="#ffedb0" stroke-width="3" opacity="0.75" />
+  <path d="M44 124c25-8 53-12 84-12s59 4 84 12" fill="none" stroke="#4a370c" stroke-width="5" opacity="0.35" />
+
+  <!-- Roundness shading + bounce light, clipped to the nut -->
+  <g clip-path="url(#nutclip)">
+    <rect x="36" y="40" width="184" height="190" fill="url(#shade)" />
+    <rect x="36" y="40" width="184" height="190" fill="url(#bounce)" />
+  </g>
+
+  <!-- Specular highlight: soft ellipse, top-left -->
+  <ellipse cx="92" cy="142" rx="30" ry="46" transform="rotate(-18 92 142)" fill="#ffffff" opacity="0.34" />
+  <ellipse cx="86" cy="128" rx="13" ry="22" transform="rotate(-18 86 128)" fill="#ffffff" opacity="0.5" />
+
+  <!-- Outline for read against the dark footer -->
+  <path d="M128 58c52 0 88 34 88 84 0 52-38 84-88 84s-88-32-88-84c0-50 36-84 88-84z" fill="none" stroke="#3a2b06" stroke-width="4" stroke-linejoin="round" />
+</svg>

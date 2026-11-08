@@ -1,11 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { answerQuestion } from "@/lib/bigNutsBrain";
 import {
+  MIC_STATUS_COPY,
+  MIC_UNSUPPORTED_MESSAGE,
+  diagnoseMic,
   recognitionSupported,
-  requestMicPermission,
   speak,
-  startListening,
+  startListeningSession,
   stopSpeaking,
+  type MicStatus,
   type VoicePersona,
 } from "@/lib/botVoice";
 import { siteConfig } from "@/data/siteConfig";
@@ -111,6 +114,7 @@ export default function MrBigNutsWidget() {
   const [personaId, setPersonaId] = useState("hillbilly");
   const [draft, setDraft] = useState("");
   const [listening, setListening] = useState(false);
+  const [micStatus, setMicStatus] = useState<MicStatus>("idle");
   const [showDevForm, setShowDevForm] = useState(false);
   const [devRequest, setDevRequest] = useState("");
   const [msgs, setMsgs] = useState<Msg[]>([
@@ -201,38 +205,49 @@ export default function MrBigNutsWidget() {
     setDevRequest("");
   };
 
-  const stopListenRef = useRef<(() => void) | null>(null);
+  const sessionRef = useRef<ReturnType<typeof startListeningSession>>(null);
 
-  const mic = async () => {
+  // Deliberately NOT async: no await may intervene between the tap and
+  // startListeningSession — it invokes getUserMedia and calls
+  // recognition.start() synchronously, inside this handler's call stack.
+  const mic = () => {
     if (listening) {
-      stopListenRef.current?.();
+      sessionRef.current?.stop();
       return;
     }
     if (!recognitionSupported()) {
+      setMicStatus("unsupported");
+      // Still exercise the permission + device-detection path — never silent.
+      void diagnoseMic();
       post("This browser can't hear worth a damn — Chrome can. Type it and I'll still talk back.", false);
       return;
     }
     setListening(true);
-    const perm = await requestMicPermission();
-    if (perm === "denied") {
-      setListening(false);
-      post("Mic's blocked. Lock icon by the address bar → allow the microphone for this site → hit Mic again. Even I can't yell through a brick wall.", false);
-      return;
-    }
-    const stop = startListening({
+    setMicStatus("listening");
+    const session = startListeningSession({
       onInterim: (t) => setDraft(t),
       onText: (t) => {
         setDraft("");
         send(t);
       },
-      onError: (message) => post(message, false),
+      onError: (message, status) => {
+        if (status) setMicStatus(status);
+        post(message, false);
+      },
       onEnd: () => {
-        stopListenRef.current = null;
+        sessionRef.current = null;
         setListening(false);
+        // Clear back to idle — unless an error status just landed.
+        setMicStatus((s) => (s === "listening" ? "idle" : s));
       },
     });
-    if (stop) stopListenRef.current = stop;
-    else setListening(false);
+    if (session) {
+      sessionRef.current = session;
+    } else {
+      setListening(false);
+      setMicStatus("unsupported");
+      post(MIC_UNSUPPORTED_MESSAGE, false);
+    }
   };
 
   if (view === "closed") return null;
@@ -254,11 +269,11 @@ export default function MrBigNutsWidget() {
   }
 
   return (
-    <aside className="fixed bottom-28 right-4 z-[56] w-[min(92vw,350px)]">
-      <p className="mb-2 text-right text-xs uppercase tracking-[0.18em] text-gold-200/90">Mr Big Nuts</p>
-      <div className="overflow-hidden rounded-2xl border border-gold-300/45 bg-[#050505] shadow-[0_14px_45px_rgba(0,0,0,0.72)]">
+    <aside className="fixed bottom-28 right-4 z-[56] flex max-h-[min(640px,calc(100dvh-8rem))] w-[min(92vw,350px)] flex-col max-sm:bottom-[max(0.75rem,env(safe-area-inset-bottom))] max-sm:left-[max(0.75rem,env(safe-area-inset-left))] max-sm:right-[max(0.75rem,env(safe-area-inset-right))] max-sm:top-[max(0.75rem,env(safe-area-inset-top))] max-sm:max-h-none max-sm:w-auto">
+      <p className="mb-2 shrink-0 text-right text-xs uppercase tracking-[0.18em] text-gold-200/90">Mr Big Nuts</p>
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-gold-300/45 bg-[#050505] shadow-[0_14px_45px_rgba(0,0,0,0.72)]">
         {/* Header: persona picker, voice toggle, minimize, close */}
-        <div className="flex items-center gap-2 border-b border-white/10 px-3 py-2.5">
+        <div className="flex shrink-0 items-center gap-2 border-b border-white/10 px-3 py-2.5">
           <select
             value={personaId}
             onChange={(e) => {
@@ -318,11 +333,11 @@ export default function MrBigNutsWidget() {
           </button>
         </div>
 
-        <div ref={scrollRef} className="max-h-64 space-y-2 overflow-y-auto p-3">
+        <div ref={scrollRef} className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
           {msgs.map((m, i) => (
             <p
               key={i}
-              className={`rounded-xl px-3 py-2 text-sm leading-relaxed ${
+              className={`break-words rounded-xl px-3 py-2 text-sm leading-relaxed ${
                 m.role === "bot" ? "bg-gold-300/12 text-gold-100" : "bg-[#161616] text-platinum"
               }`}
             >
@@ -332,7 +347,7 @@ export default function MrBigNutsWidget() {
         </div>
 
         {showDevForm && (
-          <div className="border-t border-white/10 p-3 space-y-2">
+          <div className="shrink-0 space-y-2 border-t border-white/10 p-3">
             <label className="block text-[10px] uppercase tracking-[0.16em] text-platinum/60">
               Note for your brother
             </label>
@@ -362,7 +377,22 @@ export default function MrBigNutsWidget() {
           </div>
         )}
 
-        <div className="flex gap-2 border-t border-white/10 p-3">
+        {/* Mic status line — persistent live region directly above the input row */}
+        <p
+          role="status"
+          aria-live="polite"
+          className={
+            micStatus === "idle"
+              ? "sr-only"
+              : `shrink-0 px-3 pt-2 text-[11px] font-semibold ${
+                  micStatus === "listening" || micStatus === "unsupported" ? "text-gold-200" : "text-red-200"
+                }`
+          }
+        >
+          {MIC_STATUS_COPY[micStatus]}
+        </p>
+
+        <div className="flex shrink-0 gap-2 border-t border-white/10 p-3">
           <input
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
@@ -370,12 +400,12 @@ export default function MrBigNutsWidget() {
               if (e.key === "Enter") send();
             }}
             placeholder="Ask for a song… or say 'joke'"
-            className="flex-1 rounded-lg border border-white/15 bg-[#111111] px-3 py-2 text-sm text-platinum outline-none focus:border-gold-300/60"
+            className="min-w-0 flex-1 rounded-lg border border-white/15 bg-[#111111] px-3 py-2 text-sm text-platinum outline-none focus:border-gold-300/60"
           />
           <button
             type="button"
             onClick={() => void mic()}
-            className={`rounded-lg border px-3 py-2 text-sm font-semibold ${
+            className={`shrink-0 rounded-lg border px-3 py-2 text-sm font-semibold ${
               listening
                 ? "border-red-300/70 bg-red-500/20 text-red-100"
                 : "border-gold-300/40 bg-black text-gold-200"
@@ -389,19 +419,19 @@ export default function MrBigNutsWidget() {
             type="button"
             onClick={() => send()}
             disabled={!draft.trim()}
-            className="rounded-lg bg-gold-300 px-3 py-2 text-sm font-semibold text-ink-950 disabled:cursor-not-allowed disabled:opacity-40"
+            className="shrink-0 rounded-lg bg-gold-300 px-3 py-2 text-sm font-semibold text-ink-950 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Send
           </button>
           <button
             type="button"
             onClick={() => setShowDevForm((v) => !v)}
-            className="rounded-lg border border-gold-300/40 bg-black px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-gold-200"
+            className="shrink-0 rounded-lg border border-gold-300/40 bg-black px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-gold-200"
           >
             Dev
           </button>
         </div>
-        <div className="border-t border-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-platinum/50">
+        <div className="shrink-0 border-t border-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-platinum/50">
           Jokes every 2 minutes · Voice uses your browser audio · Channel: {siteConfig.channel.handle}
         </div>
       </div>

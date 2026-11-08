@@ -6,9 +6,29 @@
  * library (src/data/songFacts.ts: real durations, publish dates and
  * descriptions fetched from the YouTube Data API). Nothing is invented:
  * a song's "about" is its own site blurb or its own YouTube description.
+ *
+ * CONVERSATION LAYER (2026-11-08): this file is the CATALOG engine.
+ * The conversation engine lives in ./conversation.ts (thread memory,
+ * pronoun/context carry, trash-talk-back with a beef meter, engaged
+ * fallbacks) and is built entirely on the exports below — catalog logic
+ * is NOT duplicated there.
+ *
+ * - answerDirect(raw, topicWords?) is the stateless direct engine: the
+ *   exact historical answerQuestion behavior for direct questions.
+ * - answerQuestion(raw) keeps its original signature, but delegates to
+ *   converse() over a module-level DEFAULT SESSION (persona "public"),
+ *   so both shipped bot components — which call answerQuestion today —
+ *   get memory, context carry and trash-talk-back with zero component
+ *   changes. The default session is created lazily on first call (the
+ *   brain <-> conversation import is a deliberate, call-time-only cycle:
+ *   neither module touches the other while it is still evaluating).
+ * - Components SHOULD migrate to converse() with their own ConvoState
+ *   (see the integration snippet in conversation.ts) so each chat panel
+ *   owns an isolated thread instead of sharing the default session.
  */
 import { videos, type Video } from "@/data/videos";
 import { SONG_FACTS } from "@/data/songFacts";
+import { converse, createConvo, type ConvoState } from "./conversation";
 
 export interface SongAnswer {
   text: string;
@@ -39,7 +59,7 @@ export function cleanTitle(title: string): string {
     .trim();
 }
 
-function normalize(text: string): string {
+export function normalize(text: string): string {
   return text
     .toLowerCase()
     .replace(/['']/g, "")
@@ -57,14 +77,33 @@ const STOP_WORDS = new Set([
   "came", "released", "release", "date", "duration", "runtime", "run", "time",
 ]);
 
-function queryTokens(text: string): string[] {
+export function queryTokens(text: string): string[] {
   return normalize(text)
     .split(" ")
     .filter((w) => w.length > 1 && !STOP_WORDS.has(w));
 }
 
+/**
+ * Words that must never be echoed back at the user (profanity + insult
+ * vocabulary). Used to sanitize the salient words the engaged fallback
+ * quotes back and the rolling topic words in conversation.ts.
+ */
+const ECHO_BLOCKLIST = new Set([
+  "fuck", "fucking", "fuckin", "shit", "shitty", "bitch", "bitches", "damn",
+  "ass", "piss", "crap", "suck", "sucks", "sucked", "sucking", "trash",
+  "garbage", "stupid", "dumb", "lame", "loser", "losers", "hate", "hates",
+  "weak", "pathetic", "terrible", "awful", "boring", "useless", "stinks",
+]);
+
+/** The user's own salient words, sanitized for safe echo: max ~5, no profanity. */
+export function echoWords(raw: string, max = 5): string[] {
+  return queryTokens(raw)
+    .filter((w) => !ECHO_BLOCKLIST.has(w))
+    .slice(0, max);
+}
+
 /** Score a video against free-text tokens: title hits weigh most. */
-function scoreVideo(video: Video, tokens: string[]): number {
+export function scoreVideo(video: Video, tokens: string[]): number {
   const title = normalize(cleanTitle(video.title));
   const titleWords = new Set(title.split(" "));
   const haystack = normalize(
@@ -125,7 +164,12 @@ export function songFactsLine(video: Video): string {
   return parts.join(" · ");
 }
 
-function newestSong(): Video | null {
+export function songById(id: string | null | undefined): Video | null {
+  if (!id) return null;
+  return videos.find((v) => v.id === id) ?? null;
+}
+
+export function newestSong(): Video | null {
   let best: Video | null = null;
   let bestDate = "";
   for (const v of fullSongs) {
@@ -159,7 +203,51 @@ const CLEAN_JOKES = [
   "Why did the song go to the doctor? It had too many sick beats.",
 ];
 
-export function answerQuestion(raw: string): SongAnswer {
+/**
+ * The engaged fallback — the ONLY way the brain says "I don't know".
+ * It always references the user's own input (sanitized salient words,
+ * never profanity), admits honestly in character that the catalog has
+ * no match for THAT, and redirects with a concrete offer: the top
+ * vibe-scored song for those words, or the newest drop. topicWords are
+ * the conversation's rolling context tokens (empty for stateless use).
+ */
+export function engagedFallbackAnswer(raw: string, topicWords: string[] = []): SongAnswer {
+  const words = echoWords(raw);
+  const heard = words.length ? `"${words.join(" ")}"` : "that one";
+  const tokens = [...new Set([...queryTokens(raw), ...topicWords])];
+  let best: Video | null = null;
+  let bestScore = 0;
+  for (const v of fullSongs) {
+    const s = scoreVideo(v, tokens);
+    if (s > bestScore) {
+      bestScore = s;
+      best = v;
+    }
+  }
+  const offer = best && bestScore > 0 ? best : newestSong();
+  if (offer) {
+    const name = cleanTitle(offer.title);
+    return {
+      text:
+        best && bestScore > 0
+          ? `I hear you on ${heard} — no exact match for that on the shelf, so here's the closest heat I got: "${name}" (${songFactsLine(offer)}). It's queued up below.`
+          : `I hear you on ${heard} — that's not in the TaylorMade Hits catalog, and I know this catalog cold. Closest I can do is the freshest drop: "${name}" (${songFactsLine(offer)}). It's queued up below.`,
+      play: offer,
+    };
+  }
+  return {
+    text: `I hear you on ${heard} — that's not in the TaylorMade Hits catalog. Give me a title, or a vibe like anthem, street or classic, and I'll pull one up.`,
+  };
+}
+
+/**
+ * The stateless direct engine: one raw question in, one SongAnswer out,
+ * no memory. This is the historical answerQuestion behavior for direct
+ * questions — same catalog answers for the same direct questions. Its
+ * two old canned deflections are replaced by engagedFallbackAnswer.
+ * Prefer answerQuestion (session-aware) or converse() (explicit state).
+ */
+export function answerDirect(raw: string, topicWords: string[] = []): SongAnswer {
   const text = raw.trim();
   const lower = normalize(text);
 
@@ -252,13 +340,13 @@ export function answerQuestion(raw: string): SongAnswer {
   }
 
   if (wantsAbout || wantsLength || wantsWhen || wantsPlay) {
-    return {
-      text: "I couldn't match that to a song in the catalog. Give me a title — or a word from one — and I'll pull it up, tell you what it's about, or how long it runs.",
-    };
+    return engagedFallbackAnswer(text, topicWords);
   }
 
-  // Vibe fallback: score by tags/category words and recommend.
-  const tokens = queryTokens(text);
+  // Vibe fallback: score by tags/category words and recommend. The
+  // conversation's rolling topic words ride along so a vibe named
+  // earlier in the thread still steers the pick.
+  const tokens = [...new Set([...queryTokens(text), ...topicWords])];
   let best: Video | null = null;
   let bestScore = 0;
   for (const v of fullSongs) {
@@ -275,9 +363,29 @@ export function answerQuestion(raw: string): SongAnswer {
     };
   }
 
-  return {
-    text: `I know all ${fullSongs.length} songs and ${shorts.length} Shorts in this catalog cold. Try "play Save Me Wonder Woman", "what is Nobody To Save about", or "how long is it" about any title — or name a vibe like anthem, street or classic.`,
-  };
+  return engagedFallbackAnswer(text, topicWords);
+}
+
+/**
+ * The module-level DEFAULT SESSION. Both shipped bot components call
+ * answerQuestion(raw) with no state, so the brain keeps one shared
+ * public-persona session here and delegates to converse() — the site
+ * is conversational (memory, context carry, trash-talk-back) the
+ * moment this ships, before the components migrate to per-panel state.
+ * Created lazily: see the header note on the call-time-only cycle.
+ */
+let defaultSession: ConvoState | null = null;
+
+/**
+ * Session-aware entry point — original signature, original answers for
+ * direct questions, now with a memory. New code should call converse()
+ * from ./conversation.ts with its own ConvoState instead.
+ */
+export function answerQuestion(raw: string): SongAnswer {
+  if (!defaultSession) defaultSession = createConvo();
+  const result = converse(defaultSession, raw, "public");
+  defaultSession = result.state;
+  return result.answer;
 }
 
 function video2line(video: Video): string {

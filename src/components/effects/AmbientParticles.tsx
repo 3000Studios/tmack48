@@ -17,12 +17,15 @@ export default function AmbientParticles({
     if (!c) return;
     const ctx = c.getContext("2d");
     if (!ctx) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // PERF (2026-11-08): DPR capped at 1.5 like the rest of the kit, and
+    // the particle count scales down on small screens.
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    const effCount = window.innerWidth < 640 ? Math.ceil(count * 0.55) : count;
     let w = (c.width = c.clientWidth * dpr);
     let h = (c.height = c.clientHeight * dpr);
     ctx.scale(dpr, dpr);
 
-    const dots = Array.from({ length: count }, () => ({
+    const dots = Array.from({ length: effCount }, () => ({
       x: Math.random() * (w / dpr),
       y: Math.random() * (h / dpr),
       r: Math.random() * 1.4 + 0.4,

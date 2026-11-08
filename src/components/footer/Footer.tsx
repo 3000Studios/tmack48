@@ -6,8 +6,9 @@ import { isSupportedLink } from "@/lib/utils";
 import { trackOutbound } from "@/lib/analytics";
 import { subscribeAcornLandingCount } from "@/lib/acornBus";
 import { lazy, Suspense, useEffect, useState } from "react";
-// Decorative acorn (SVG + CSS sway) — lazy, zero WebGL.
-const FooterAcornObject = lazy(() => import("@/components/effects/FooterAcornObject"));
+// Decorative physics nut pile along the footer bottom — lazy so
+// matter-js never enters the eager bundle.
+const FooterNuts = lazy(() => import("@/components/footer/FooterNuts"));
 
 function SiteDevMark() {
   // Boss order 2026-11-07: tiny, barely-there credit at the very bottom —
@@ -66,35 +67,16 @@ export default function Footer() {
           : undefined,
       }}
     >
-      <img
-        src="/golden-acorn.svg"
-        alt=""
-        aria-hidden
-        className="pointer-events-none absolute -top-6 left-4 h-10 w-10 sm:h-12 sm:w-12 md:left-10 opacity-80 animate-float"
-      />
-      <img
-        src="/golden-acorn.svg"
-        alt=""
-        aria-hidden
-        className="pointer-events-none absolute -top-4 right-6 h-8 w-8 sm:h-10 sm:w-10 md:right-12 opacity-70 animate-float [animation-delay:1.2s]"
-      />
-      <img
-        src="/golden-acorn.svg"
-        alt=""
-        aria-hidden
-        className="pointer-events-none absolute bottom-8 left-[45%] hidden h-9 w-9 md:block opacity-60 animate-float [animation-delay:2s]"
-      />
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-px"
         style={{ background: "linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent)" }}
       />
 
-      {/* 3D layer: behind footer content but above wallpaper */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <Suspense fallback={null}>
-          <FooterAcornObject />
-        </Suspense>
-      </div>
+      {/* Physics nut pile: pinned to the footer bottom, below all content
+          (the bottom bar carries pb-28 clearance so nothing is obscured). */}
+      <Suspense fallback={null}>
+        <FooterNuts />
+      </Suspense>
 
       <div className="container-lux relative z-10 py-12 grid gap-10 md:grid-cols-3">
         <div>
@@ -125,7 +107,7 @@ export default function Footer() {
                 <li key={it.href}>
                   <Link
                     to={it.href}
-                    className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
+                    className="link-rise link-u py-0.5 text-platinum/80 hover:text-gold-300 transition-colors"
                   >
                     {it.label}
                   </Link>
@@ -141,7 +123,7 @@ export default function Footer() {
                 <li key={it.href}>
                   <Link
                     to={it.href}
-                    className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
+                    className="link-rise link-u py-0.5 text-platinum/80 hover:text-gold-300 transition-colors"
                   >
                     {it.label}
                   </Link>
@@ -160,7 +142,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => trackOutbound(href, `footer_${label}`)}
-                    className="link-rise text-platinum/80 hover:text-gold-300 transition-colors"
+                    className="link-rise link-u py-0.5 text-platinum/80 hover:text-gold-300 transition-colors"
                   >
                     {label}
                   </a>
@@ -171,7 +153,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="container-lux relative z-10 flex flex-col items-center justify-between gap-6 border-t border-white/5 pb-8 pt-5 md:flex-row">
+      <div className="container-lux relative z-10 flex flex-col items-center justify-between gap-6 border-t border-white/5 pb-28 pt-5 md:flex-row">
         <div className="flex w-full items-center justify-between gap-3 md:w-auto md:justify-start">
           <SiteDevMark />
         </div>
