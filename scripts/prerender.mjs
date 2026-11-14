@@ -154,7 +154,14 @@ function jsxBlocks(src) {
 }
 
 function pageBlocks(file) {
-  const src = fs.readFileSync(file, 'utf8')
+  const raw = fs.readFileSync(file, 'utf8')
+  // Resolve the build-time-constant expressions the JSX text extractor
+  // would otherwise drop, which left blank gaps in prerendered copy
+  // (e.g. "By accessing or using , you agree…" and "Last updated: ").
+  const src = raw
+    .replaceAll('{siteConfig.url}', SITE_URL)
+    .replaceAll('{siteConfig.name}', 'TMACK48')
+    .replaceAll('{new Date().getFullYear()}', String(new Date().getFullYear()))
   const start = src.indexOf('return')
   return jsxBlocks(start >= 0 ? src.slice(start) : src)
 }
@@ -497,12 +504,34 @@ ${featuredVideos.slice(0, 3).map((v) => videoCard(v)).join('\n')}
   }
 }
 
+// /merch renders one of two branches keyed on a configured store URL.
+// No store URL is configured (the live site-config overrides are empty and
+// VITE_MERCH_URL is unset), so the app serves the "being finalized" branch.
+// Prerender exactly that branch — the generic text extractor stitched both
+// branches together with JSX debris ("…Pay with PayPal ) : ( <>…").
+builders['/merch'] = () => {
+  const file = path.join(srcRoot, 'pages', 'Merch.tsx')
+  const seo = seoProps(file)
+  return {
+    title: 'Merch — TMACK48 · TaylorMade Hits',
+    description: seo.description ?? 'Official TMACK48 merch — wear the universe. Links go live when the store opens.',
+    inner: `<main>
+      <p>Wear the Crown</p>
+      <h1>Merch</h1>
+      <p>Premium drops ship with the same energy as the music — bold, polished, unmistakably TMACK48.</p>
+      <section>
+        <p>The merch line is being finalized. Until the store link is published here, the fastest way to back the movement is through support and subscriptions.</p>
+        <p><a href="/support">Support</a> · <a href="${esc(siteConfig.support.paypal)}">PayPal Support</a> · <a href="${esc(siteConfig.channel.subscribeUrl)}">Subscribe</a></p>
+      </section>
+    </main>`,
+  }
+}
+
 // Static pages whose copy lives in their page component (with <Seo> meta).
 const STATIC_PAGES = {
   '/about': 'About.tsx',
   '/press': 'Press.tsx',
   '/community': 'Community.tsx',
-  '/merch': 'Merch.tsx',
   '/privacy': 'Privacy.tsx',
   '/terms': 'Terms.tsx',
   '/cookies': 'Cookies.tsx',

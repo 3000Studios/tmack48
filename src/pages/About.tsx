@@ -40,13 +40,13 @@ export default function About() {
               The sound: A TMACK48 record is built for motion. The beats are hard and percussive, engineered to carry through big speakers — car-audio culture runs deep in the 3000 Studios family, and these mixes are tuned with that in mind. The vocal delivery is aggressive but controlled: clear diction, stacked ad-libs, and hooks written to be shouted back. Songs typically run short and punchy, cutting the fat and getting to the point.
             </p>
             <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
-              Releases and videos: TMACK48 releases through 3000 Studios with distribution across the major streaming platforms. His catalog spans solo singles, concept tracks, and high-energy anthems, each paired with official music videos published to the 3000 Studios YouTube channel. New music lands on a steady schedule, and every release ships with the full treatment: mixed and mastered audio, cover art, and a video.
+              Releases and videos: TMACK48 releases through 3000 Studios with distribution across the major streaming platforms. His catalog spans solo singles, concept tracks, and high-energy anthems, each paired with official music videos published to the TaylorMade Hits YouTube channel. New music lands on a steady schedule, and every release ships with the full treatment: mixed and mastered audio, cover art, and a video.
             </p>
             <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
               The work ethic behind the catalog: Sessions run long, revisions run deep, and no record gets released until it clears every check — the mix, the master, the car test, and the gut test. Fans know that when a new TMACK48 single drops, it's going to be finished, polished, and ready to play loud.
             </p>
             <p className="mt-6 max-w-3xl text-platinum/85 text-lg sm:text-xl leading-relaxed text-balance">
-              Where to listen: The full catalog is streaming on Spotify, Apple Music, and every major platform, with official videos on the 3000 Studios YouTube channel.
+              Where to listen: The full catalog is streaming on Spotify, Apple Music, and every major platform, with official videos on the TaylorMade Hits YouTube channel.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">

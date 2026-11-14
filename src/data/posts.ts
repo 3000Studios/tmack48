@@ -68,7 +68,7 @@ const RAW: Omit<Post, "slug">[] = [
   category: "Release",
   readMinutes: 3,
   body: [
-  "Every TMACK48 single gets the visual treatment. The official music videos all live in one place — the 3000 Studios YouTube channel — and they are half the art. If you have only streamed the audio, you have only heard half the record.",
+  "Every TMACK48 single gets the visual treatment. The official music videos all live in one place — the TaylorMade Hits YouTube channel — and they are half the art. If you have only streamed the audio, you have only heard half the record.",
   "What the videos are known for.",
   "The visual language is consistent: bold lighting, performance shots that put the artist front and center, and an edit that moves with the drums instead of against them. The presentation is deliberately premium — street subject matter, cinematic delivery. That tension between raw content and polished visuals is the signature, and it carries across the whole library.",
   "How to watch them right.",
@@ -106,13 +106,13 @@ const RAW: Omit<Post, "slug">[] = [
   body: [
   "New to TMACK48, or just want to make sure you're hearing everything? Here's the full rundown on where the music lives, how to keep up with new drops, and the best way to dive into the catalog.",
   "Every major platform.",
-  "TMACK48's full catalog is distributed across all major streaming services. On Spotify, follow the artist profile to get new releases in your Release Radar the moment they drop. On Apple Music the full catalog is available with offline listening. The 3000 Studios YouTube channel hosts every official music video — subscribe and turn on notifications. Amazon Music, Tidal, Deezer and more carry the catalog too. New singles land everywhere at the same time, so follow on whichever platform you use daily.",
+  "TMACK48's full catalog is distributed across all major streaming services. On Spotify, follow the artist profile to get new releases in your Release Radar the moment they drop. On Apple Music the full catalog is available with offline listening. The TaylorMade Hits YouTube channel hosts every official music video — subscribe and turn on notifications. Amazon Music, Tidal, Deezer and more carry the catalog too. New singles land everywhere at the same time, so follow on whichever platform you use daily.",
   "Start here: a listener's roadmap.",
   "Not sure where to begin? Start with the latest singles — the newest releases represent the current sound — then work backward. Watch the official music videos next; the visuals add a whole layer to the records. Then dig into the high-energy anthems, the core of the catalog, and finally the deeper cuts, where you'll hear the progression in the writing and production.",
   "Playlists worth building.",
   "TMACK48 records are playlist music by design. For workouts, stack the anthems back to back — the aggressive tempos and motivational bars were made for the gym. For late-night drives, the harder records carry perfectly on the highway. For pre-game lock-in, start here when you need to get your head right. And keep a new-music rotation updated with every single.",
   "Stay current.",
-  "Follow the artist profile on your streaming platform of choice, subscribe to the 3000 Studios YouTube channel with notifications on, follow TMACK48 on socials for drop announcements and teaser clips, and check the news section on this site — every release gets covered here with links.",
+  "Follow the artist profile on your streaming platform of choice, subscribe to the TaylorMade Hits YouTube channel with notifications on, follow TMACK48 on socials for drop announcements and teaser clips, and check the news section on this site — every release gets covered here with links.",
   "Support the music directly.",
   "Streaming is the foundation, but it doesn't stop there. Share the records with people who'd feel them. Add the singles to your public playlists — that's one of the biggest ways independent artists get discovered. Drop a comment on the YouTube videos. Every bit of engagement feeds the algorithm and keeps the releases coming. The catalog keeps growing. Stay locked in.",
   ],
@@ -128,11 +128,11 @@ const RAW: Omit<Post, "slug">[] = [
   body: [
   "New music follows a pattern, and once you know it, you will never miss a drop. Here is how releases from this camp typically roll out — and how to set yourself up so every single finds you on day one.",
   "The rollout pattern.",
-  "It usually starts with teaser clips on socials: short snippets, often the hook, with no context. Then comes the announcement post with the title, artwork, and release date. On release day, the single goes live on all streaming platforms at the same time. The official video premieres on the 3000 Studios YouTube channel, either the same day or within the week. And the news section on this site gets the full write-up with links.",
+  "It usually starts with teaser clips on socials: short snippets, often the hook, with no context. Then comes the announcement post with the title, artwork, and release date. On release day, the single goes live on all streaming platforms at the same time. The official video premieres on the TaylorMade Hits YouTube channel, either the same day or within the week. And the news section on this site gets the full write-up with links.",
   "Why the first 48 hours matter.",
   "New releases get their biggest push in the first two days. Streams, shares, playlist adds, and comments in that window carry extra weight with the algorithms — for an independent artist, that early surge is the difference between a single that travels and one that stalls. If you want to support a drop, the highest-leverage thing you can do is show up early.",
   "How to never miss a drop.",
-  "The gap between teaser and release is usually short, so get set up now: follow TMACK48 on socials with notifications on, follow the artist profile on Spotify and Apple Music so new singles hit your Release Radar, and subscribe to the 3000 Studios YouTube channel. Check the news section here too — every release gets covered with links. Stay locked in.",
+  "The gap between teaser and release is usually short, so get set up now: follow TMACK48 on socials with notifications on, follow the artist profile on Spotify and Apple Music so new singles hit your Release Radar, and subscribe to the TaylorMade Hits YouTube channel. Check the news section here too — every release gets covered with links. Stay locked in.",
   ],
 },
 {
